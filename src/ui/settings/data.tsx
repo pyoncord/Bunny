@@ -14,6 +14,9 @@ import Plugins from "@ui/settings/pages/Plugins";
 import Themes from "@ui/settings/pages/Themes";
 import Developer from "@ui/settings/pages/Developer";
 import { PROXY_PREFIX } from "@/lib/constants";
+import { findByProps } from "@/lib/metro/filters";
+
+const { useSafeAreaInsets } = findByProps("useSafeAreaInsets");
 
 interface Screen {
     [index: string]: any;
@@ -25,7 +28,13 @@ interface Screen {
     render: React.ComponentType<any>;
 }
 
-const styles = stylesheet.createThemedStyleSheet({ container: { flex: 1, backgroundColor: semanticColors.BACKGROUND_MOBILE_PRIMARY } });
+const styles = stylesheet.createThemedStyleSheet({ 
+    container: { 
+        flex: 1,
+        backgroundColor: semanticColors.BACKGROUND_MOBILE_PRIMARY 
+    }
+});
+
 const formatKey = (key: string, youKeys: boolean) => youKeys ? lodash.snakeCase(key).toUpperCase() : key;
 // If a function is passed, it is called with the screen object, and the return value is mapped. If a string is passed, we map to the value of the property with that name on the screen. Else, just map to the given data.
 // Question: Isn't this overengineered?
@@ -119,8 +128,9 @@ export const getYouData = () => {
         relationships: keyMap(screens, null),
         rendererConfigs: keyMap(screens, (s) => {
             const WrappedComponent = React.memo(({ navigation, route }: any) => {
+                const { bottom: paddingBottom } = useSafeAreaInsets();
                 navigation.addListener("focus", () => navigation.setOptions(s.options));
-                return <RN.View style={styles.container}><s.render {...route.params} /></RN.View>
+                return <RN.View style={[{ paddingBottom }, styles.container]}><s.render {...route.params} /></RN.View>
             });
 
             return {

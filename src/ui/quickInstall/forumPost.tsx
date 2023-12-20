@@ -1,58 +1,129 @@
 import { findByName, findByProps } from "@metro/filters";
 import { DISCORD_SERVER_ID, PLUGINS_CHANNEL_ID, THEMES_CHANNEL_ID, HTTP_REGEX_MULTI, PROXY_PREFIX } from "@lib/constants";
 import { after } from "@lib/patcher";
-import { installPlugin } from "@lib/plugins";
-import { installTheme } from "@lib/themes";
+import { installPlugin, plugins, removePlugin } from "@lib/plugins";
+import { installTheme, removeTheme, themes } from "@lib/themes";
 import { findInReactTree } from "@lib/utils";
 import { getAssetIDByName } from "@ui/assets";
 import { showToast } from "@ui/toasts";
-import { Forms } from "@ui/components";
+import { useProxy } from "@/lib/storage";
+
+type PostType = "Plugin" | "Theme";
 
 const ForumPostLongPressActionSheet = findByName("ForumPostLongPressActionSheet", false);
-const { FormRow, FormIcon } = Forms;
-
+const { ActionSheetRow } = findByProps("ActionSheetRow");
+const { Button } = findByProps("TableRow");
 const { useFirstForumPostMessage } = findByProps("useFirstForumPostMessage");
-const { hideActionSheet } = findByProps("openLazy", "hideActionSheet");
+const forumReactions = findByProps("MostCommonForumPostReaction");
 
-export default () => after("default", ForumPostLongPressActionSheet, ([{ thread }], res) => {
+const postMap = {
+    Plugin: {
+        storage: plugins,
+        urlsFilter: (url: string) => url.startsWith(PROXY_PREFIX),
+        installOrRemove: (url: string) => {
+            const isInstalled = postMap.Plugin.storage[url];
+            return isInstalled ? removePlugin(url) : installPlugin(url);
+        }
+    },
+    Theme: {
+        storage: themes,
+        urlsFilter: (url: string) => url.endsWith(".json"),
+        installOrRemove: (url: string) => {
+            const isInstalled = postMap.Theme.storage[url];
+            return isInstalled ? removeTheme(url) : installTheme(url);
+        },
+    }
+}
+
+function useExtractThreadContent(thread: any, _firstMessage = null, actionSheet = false): ([PostType, string]) | void {
     if (thread.guild_id !== DISCORD_SERVER_ID) return;
 
     // Determine what type of addon this is.
-    let postType: "Plugin" | "Theme";
+    let postType: PostType;
     if (thread.parent_id === PLUGINS_CHANNEL_ID) {
         postType = "Plugin";
     } else if (thread.parent_id === THEMES_CHANNEL_ID && window.__vendetta_loader?.features.themes) {
         postType = "Theme";
     } else return;
 
-    const { firstMessage } = useFirstForumPostMessage(thread);
+    const { firstMessage } = actionSheet ? useFirstForumPostMessage(thread) : { firstMessage: _firstMessage };
 
-    let urls = firstMessage?.content?.match(HTTP_REGEX_MULTI);
-    if (!urls) return;
+    let urls = firstMessage?.content?.match(HTTP_REGEX_MULTI)?.filter(postMap[postType].urlsFilter);
+    if (!urls || !urls[0]) return;
 
-    if (postType === "Plugin") {
-        urls = urls.filter((url: string) => url.startsWith(PROXY_PREFIX));
-    } else {
-        urls = urls.filter((url: string) => url.endsWith(".json"));
+    // Sync with lib/plugins
+    if (postType === "Plugin" && !urls[0].endsWith("/")) urls[0] += "/";
+
+    return [postType, urls[0]];
+}
+
+function useInstaller(thread: any, firstMessage = null, actionSheet = false): [true] | [false, PostType, boolean, boolean, () => Promise<void>] {
+    const [postType, url] = useExtractThreadContent(thread, firstMessage, actionSheet) ?? [];
+
+    useProxy(plugins);
+    useProxy(themes);
+
+    const [isInstalling, setIsInstalling] = React.useState(false);
+
+    if (!postType || !url) return [true];
+
+    const isInstalled = Boolean(postMap[postType].storage[url]);
+
+    const installOrRemove = async () => {
+        setIsInstalling(true);
+        try {
+            await postMap[postType].installOrRemove(url);
+        } catch (e: any) {
+            showToast(e.message, getAssetIDByName("Small"));
+        } finally {
+            setIsInstalling(false);
+        }
     };
 
-    const url = urls[0];
-    if (!url) return;
+    return [false, postType, isInstalled, isInstalling, installOrRemove]
+}
+
+const actionSheetPatch = () => after("default", ForumPostLongPressActionSheet, ([{ thread }], res) => {
+    const [shouldReturn, postType, installed, loading, installOrRemove] = useInstaller(thread);
+    if (shouldReturn) return;
 
     const actions = findInReactTree(res, (t) => t?.[0]?.key);
     const ActionsSection = actions[0].type;
 
     actions.unshift(<ActionsSection key="install">
-        <FormRow
-            leading={<FormIcon style={{ opacity: 1 }} source={getAssetIDByName("ic_download_24px")} />}
-            label={`Install ${postType}`}
-            onPress={() =>
-                (postType === "Plugin" ? installPlugin : installTheme)(url).then(() => {
-                    showToast(`Successfully installed ${thread.name}`, getAssetIDByName("Check"));
-                }).catch((e: Error) => {
-                    showToast(e.message, getAssetIDByName("Small"));
-                }).finally(() => hideActionSheet())
-            }
+        <ActionSheetRow
+            icon={<ActionSheetRow.Icon source={getAssetIDByName(installed ? "ic_message_delete" : "DownloadIcon")} />}
+            label={`${installed ? "Uninstall" : "Install"} ${postType}`}
+            disabled={loading}
+            onPress={installOrRemove}
         />
     </ActionsSection>);
 });
+
+const installButtonPatch = () => after("MostCommonForumPostReaction", forumReactions, ([{ thread, firstMessage }], res) => {
+    const [shouldReturn, _, installed, loading, installOrRemove] = useInstaller(thread, firstMessage, true);
+    if (shouldReturn) return;
+
+    return <>
+        {res}
+        <Button
+            size="sm"
+            loading={loading}
+            disabled={loading}
+            variant={installed ? "danger" : "primary"}
+            text={installed ? "Uninstall" : "Install"}
+            onPress={installOrRemove}
+            icon={getAssetIDByName(installed ? "ic_message_delete" : "DownloadIcon")}
+            style={{ marginLeft: 8 }}
+        />
+    </>
+});
+
+export default () => {
+    const patches = [
+        actionSheetPatch(),
+        installButtonPatch()
+    ]
+
+    return () => patches.map(p => p());
+}

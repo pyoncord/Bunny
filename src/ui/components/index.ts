@@ -8,7 +8,7 @@ export const Alert = findByDisplayName("FluxContainer(Alert)");
 export const Button = findByProps("Looks", "Colors", "Sizes") as React.ComponentType<any> & { Looks: any, Colors: any, Sizes: any };
 export const HelpMessage = findByName("HelpMessage");
 // React Native's included SafeAreaView only adds padding on iOS.
-export const SafeAreaView = findByProps("useSafeAreaInsets").SafeAreaView as typeof RN.SafeAreaView;
+export const SafeAreaView = findByProps("useSafeAreaInsets").SafeAreaView as any;
 
 // Vendetta
 export { default as Summary } from "@ui/components/Summary";

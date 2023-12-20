@@ -1,15 +1,23 @@
-import { ReactNative as RN, url } from "@metro/common";
+import { ReactNative as RN, stylesheet, url } from "@metro/common";
 import { DISCORD_SERVER, GITHUB } from "@lib/constants";
 import { getDebugInfo, toggleSafeMode } from "@lib/debug";
 import { useProxy } from "@lib/storage";
-import { BundleUpdaterManager } from "@lib/native";
 import { getAssetIDByName } from "@ui/assets";
-import { Forms, Summary, ErrorBoundary } from "@ui/components";
+import { Summary } from "@ui/components";
 import settings from "@lib/settings";
 import Version from "@ui/settings/components/Version";
+import { findByProps } from "@lib/metro/filters";
+import { semanticColors } from "@ui/color";
 
-const { FormRow, FormSwitchRow, FormSection, FormDivider } = Forms;
-const debugInfo = getDebugInfo();
+const { Stack, TableRow, TableSwitchRow, TableRowGroup } = findByProps("TableRow");
+const debugInfo = getDebugInfo() as any;
+
+const styles = stylesheet.createThemedStyleSheet({
+    container: {
+        flex: 1,
+        backgroundColor: semanticColors.BACKGROUND_MOBILE_SECONDARY,
+    }
+})
 
 export default function General() {
     useProxy(settings);
@@ -56,7 +64,7 @@ export default function General() {
         ...(debugInfo.os.sdk ? [{
             label: "SDK",
             version: debugInfo.os.sdk,
-            icon: "ic_profile_badge_verified_developer_color"
+            icon: "pencil"
         }] : []),
         {
             label: "Manufacturer",
@@ -81,66 +89,52 @@ export default function General() {
     ];
 
     return (
-        <ErrorBoundary>
-            <RN.ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 38 }}>
-                <FormSection title="Links" titleStyleType="no_border">
-                    <FormRow
+        <RN.ScrollView style={styles.container}>
+            <Stack style={{ paddingVertical: 24, paddingHorizontal: 12 }} spacing={24}>
+                <TableRowGroup title="Links">
+                    <TableRow
                         label="Discord Server"
-                        leading={<FormRow.Icon source={getAssetIDByName("Discord")} />}
-                        trailing={FormRow.Arrow}
+                        icon={<TableRow.Icon source={getAssetIDByName("Discord")} />}
+                        trailing={TableRow.Arrow}
                         onPress={() => url.openDeeplink(DISCORD_SERVER)}
                     />
-                    <FormDivider />
-                    <FormRow
+                    <TableRow
                         label="GitHub"
-                        leading={<FormRow.Icon source={getAssetIDByName("img_account_sync_github_white")} />}
-                        trailing={FormRow.Arrow}
+                        icon={<TableRow.Icon source={getAssetIDByName("img_account_sync_github_white")} />}
+                        trailing={TableRow.Arrow}
                         onPress={() => url.openURL(GITHUB)}
                     />
-                </FormSection>
-                <FormSection title="Actions">
-                    <FormRow
+                </TableRowGroup>
+                <TableRowGroup title="Actions">
+                    <TableRow
                         label="Reload Discord"
-                        leading={<FormRow.Icon source={getAssetIDByName("ic_message_retry")} />}
-                        onPress={() => BundleUpdaterManager.reload()}
+                        icon={<TableRow.Icon source={getAssetIDByName("ic_message_retry")} />}
+                        onPress={() => RN.NativeModules.BundleUpdaterManager.reload()}
                     />
-                    <FormDivider />
-                    <FormRow
+                    <TableRow
                         label={settings.safeMode?.enabled ? "Return to Normal Mode" : "Reload in Safe Mode"}
-                        subLabel={`This will reload Discord ${settings.safeMode?.enabled ? "normally." : "without loading plugins."}`}
-                        leading={<FormRow.Icon source={getAssetIDByName("ic_privacy_24px")} />}
+                        subLabel={`This will reload Discord ${settings.safeMode?.enabled ? "normally." : "without loading addons."}`}
+                        icon={<TableRow.Icon source={getAssetIDByName("ic_privacy_24px")} />}
                         onPress={toggleSafeMode}
                     />
-                    <FormDivider />
-                    <FormSwitchRow
+                    <TableSwitchRow
                         label="Developer Settings"
-                        leading={<FormRow.Icon source={getAssetIDByName("ic_progress_wrench_24px")} />}
+                        icon={<TableRow.Icon source={getAssetIDByName("ic_progress_wrench_24px")} />}
                         value={settings.developerSettings}
                         onValueChange={(v: boolean) => {
                             settings.developerSettings = v;
                         }}
                     />
-                </FormSection>
-                <FormSection title="Info">
-                    <Summary label="Versions" icon="ic_information_filled_24px">
-                        {versions.map((v, i) => (
-                            <>
-                                <Version label={v.label} version={v.version} icon={v.icon} />
-                                {i !== versions.length - 1 && <FormDivider />}
-                            </>
-                        ))}
+                </TableRowGroup>
+                <TableRowGroup title="Info">
+                    <Summary noPadding label="Versions" icon="ic_information_filled_24px">
+                        {versions.map(v => <Version padding label={v.label} version={v.version} icon={v.icon} />)}
                     </Summary>
-                    <FormDivider />
-                    <Summary label="Platform" icon="ic_mobile_device">
-                        {platformInfo.map((p, i) => (
-                            <>
-                                <Version label={p.label} version={p.version} icon={p.icon} />
-                                {i !== platformInfo.length - 1 && <FormDivider />}
-                            </>
-                        ))}
+                    <Summary noPadding label="Platform" icon="ic_mobile_device">
+                        {platformInfo.map(p => <Version padding label={p.label} version={p.version} icon={p.icon} />)}
                     </Summary>
-                </FormSection>
-            </RN.ScrollView>
-        </ErrorBoundary>
+                </TableRowGroup>
+            </Stack>
+        </RN.ScrollView>
     )
 }

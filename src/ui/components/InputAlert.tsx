@@ -42,7 +42,7 @@ export default function InputAlert({ title, confirmText, confirmColor, onConfirm
                 secureTextEntry={secureTextEntry}
                 autoFocus={true}
                 showBorder={true}
-                style={{ paddingVertical: 5, alignSelf: "stretch", paddingHorizontal: 0 }}
+                style={{ alignSelf: "stretch" }}
             />
         </Alert>
     );

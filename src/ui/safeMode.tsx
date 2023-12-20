@@ -81,13 +81,13 @@ export default () => after("render", ErrorBoundary.prototype, function (this: an
         ...!settings.safeMode?.enabled ? [{ text: "Restart in Safe Mode", onPress: toggleSafeMode }] : [],
         { text: "Retry Render", color: ButtonColors.RED, onPress: () => this.setState({ info: null, error: null }) },
     ]
-
+    
     return (
         <_ErrorBoundary>
             <SafeAreaView style={styles.container}>
                 <RN.View style={styles.header}>
-                    <RN.Image style={{ flex: 1, resizeMode: "contain", maxHeight: 96, paddingRight: 4 }} source={ThemeStore.theme === "light" ? ret.props.lightSource : ret.props.darkSource} />
-                    <RN.View style={{ flex: 2, paddingLeft: 4 }}>
+                    <ret.props.Illustration style={{ transform: [{ scale: 0.6 }], marginLeft: -40, marginRight: -80 }} />
+                    <RN.View style={{ flex: 2, paddingLeft: 24 }}>
                         <RN.Text style={styles.headerTitle}>{ret.props.title}</RN.Text>
                         <RN.Text style={styles.headerDescription}>{ret.props.body}</RN.Text>
                     </RN.View>

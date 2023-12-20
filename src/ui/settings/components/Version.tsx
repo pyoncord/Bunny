@@ -2,20 +2,24 @@ import { clipboard } from "@metro/common";
 import { getAssetIDByName } from "@ui/assets";
 import { showToast } from "@ui/toasts";
 import { Forms } from "@ui/components";
+import { findByProps } from "@/lib/metro/filters";
 
 interface VersionProps {
     label: string;
     version: string;
     icon: string;
+    padding: boolean;
 }
 
-const { FormRow, FormText } = Forms;
+const { TableRow } = findByProps("TableRow");
+const { FormText } = Forms;
 
-export default function Version({ label, version, icon }: VersionProps) {
+export default function Version({ label, version, icon, padding }: VersionProps) {
     return ( 
-        <FormRow
+        <TableRow
+            style={padding && { paddingHorizontal: 15, paddingVertical: -15 }}
             label={label}
-            leading={<FormRow.Icon source={getAssetIDByName(icon)} />}
+            icon={<TableRow.Icon source={getAssetIDByName(icon)} />}
             trailing={<FormText>{version}</FormText>}
             onPress={() => {
                 clipboard.setString(`${label} - ${version}`);

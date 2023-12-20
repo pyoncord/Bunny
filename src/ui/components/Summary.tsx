@@ -1,17 +1,19 @@
 import { SummaryProps } from "@types";
 import { ReactNative as RN } from "@metro/common";
 import { getAssetIDByName } from "@ui/assets";
-import { Forms } from "@ui/components";
+import { findByProps } from "@/lib/metro/filters";
+
+const { FormRow } = findByProps("FormRow");
+const { TableRow } = findByProps("TableRow");
 
 export default function Summary({ label, icon, noPadding = false, noAnimation = false, children }: SummaryProps) {
-    const { FormRow, FormDivider } = Forms;
     const [hidden, setHidden] = React.useState(true);
 
     return (
         <>
-            <FormRow
+            <TableRow
                 label={label}
-                leading={icon && <FormRow.Icon source={getAssetIDByName(icon)} />}
+                icon={icon && <TableRow.Icon source={getAssetIDByName(icon)} />}
                 trailing={<FormRow.Arrow style={{ transform: [{ rotate: `${hidden ? 180 : 90}deg` }] }} />}
                 onPress={() => {
                     setHidden(!hidden);
@@ -19,7 +21,6 @@ export default function Summary({ label, icon, noPadding = false, noAnimation = 
                 }}
             />
             {!hidden && <>
-                <FormDivider />
                 <RN.View style={!noPadding && { paddingHorizontal: 15 }}>{children}</RN.View>
             </>}
         </>
