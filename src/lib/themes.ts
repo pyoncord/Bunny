@@ -4,7 +4,7 @@ import { findInReactTree, safeFetch } from "@lib/utils";
 import { findByName, findByProps } from "@metro/filters";
 import { instead, after } from "@lib/patcher";
 import { createFileBackend, createMMKVBackend, createStorage, wrapSync, awaitSyncWrapper } from "@lib/storage";
-import logger from "./logger";
+import logger from "@lib/logger";
 
 //! As of 173.10, early-finding this does not work.
 // Somehow, this is late enough, though?

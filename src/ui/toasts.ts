@@ -1,6 +1,6 @@
 import { findByProps } from "@metro/filters";
 import { ReactNative, toasts } from "@metro/common";
-import { getAssetIDByName } from "./assets";
+import { getAssetIDByName } from "@ui/assets";
 
 const { uuid4 } = findByProps("uuid4");
 

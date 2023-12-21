@@ -1,8 +1,8 @@
 import { SearchProps } from "@types";
 import { ReactNative as RN } from "@metro/common";
 import { findByProps } from "@metro/filters";
-import ErrorBoundary from "./ErrorBoundary";
-import { getAssetIDByName } from "../assets";
+import ErrorBoundary from "@ui/components/ErrorBoundary";
+import { getAssetIDByName } from "@ui/assets";
 
 const { FormIcon } = findByProps("FormIcon");
 const { TextInput } = findByProps("TableRow");

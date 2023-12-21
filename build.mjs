@@ -5,7 +5,11 @@ import { promisify } from "util";
 import { exec as _exec } from "child_process";
 import fs from "fs/promises";
 import path from "path";
+import { argv } from "process";
 const exec = promisify(_exec);
+
+const hasArg = condition => argv.some(i => condition.test(i));
+const isDev = hasArg(/-d|--dev/);
 
 const tsconfig = JSON.parse(await fs.readFile("./tsconfig.json"));
 const aliases = Object.fromEntries(Object.entries(tsconfig.compilerOptions.paths).map(([alias, [target]]) => [alias, path.resolve(target)]));
@@ -15,7 +19,7 @@ try {
     await build({
         entryPoints: ["./src/entry.ts"],
         outfile: "./dist/vendetta.js",
-        minify: true,
+        minify: !isDev,
         bundle: true,
         format: "iife",
         target: "esnext",
@@ -44,7 +48,8 @@ try {
             alias(aliases),
         ],
         define: {
-            __vendettaVersion: `"${commit}"`,
+            __vendettaIsDev: `${isDev}`,
+            __vendettaVersion: `"${isDev ? commit : "local build"}"`,
         },
         footer: {
             js: "//# sourceURL=Vendetta",
@@ -52,7 +57,7 @@ try {
         legalComments: "none",
     });
 
-    console.log("Build successful!");
+    console.log("Build successful!", `isDev=${isDev}`);
 } catch (e) {
     console.error("Build failed...", e);
     process.exit(1);

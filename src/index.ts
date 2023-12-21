@@ -9,7 +9,6 @@ import initSettings from "@ui/settings";
 import initFixes from "@lib/fixes";
 import logger from "@lib/logger";
 import windowObject from "@lib/windowObject";
-import settings from "./lib/settings";
 
 export default async () => {
     // Load everything in parallel
