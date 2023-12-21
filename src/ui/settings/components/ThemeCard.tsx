@@ -62,7 +62,7 @@ export default function ThemeCard({ item: theme, index }: CardWrapper<Theme>) {
                     label: "Copy URL",
                     onPress: () => {
                         clipboard.setString(theme.id);
-                        showToast("Copied theme URL to clipboard.", getAssetIDByName("toast_copy_link"));
+                        showToast.showCopyToClipboard();
                     }
                 },
                 {

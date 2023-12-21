@@ -57,7 +57,7 @@ export default function PluginCard({ item: plugin, index }: CardWrapper<Plugin>)
                     label: "Copy URL",
                     onPress: () => {
                         clipboard.setString(plugin.id);
-                        showToast("Copied plugin URL to clipboard.", getAssetIDByName("toast_copy_link"));
+                        showToast.showCopyToClipboard();
                     }
                 },
                 {   

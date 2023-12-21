@@ -196,7 +196,7 @@ export async function initThemes() {
         }
     });
 
-    instead("resolveSemanticColor", color.default.meta, (args, orig) => {
+    instead("resolveSemanticColor", color.default.meta ?? color.default.internal, (args, orig) => {
         if (!selectedTheme) return orig(...args);
 
         const [theme, propIndex] = args;

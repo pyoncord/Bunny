@@ -1,5 +1,6 @@
 import { findByProps } from "@metro/filters";
-import { toasts } from "@metro/common";
+import { ReactNative, toasts } from "@metro/common";
+import { getAssetIDByName } from "./assets";
 
 const { uuid4 } = findByProps("uuid4");
 
@@ -11,3 +12,10 @@ export const showToast = (content: string, asset?: number) => toasts.open({
     source: asset,
     icon: asset,
 });
+
+showToast.showCopyToClipboard = () => {
+    // On Android, only show toast for 12 and lower
+    if (ReactNative.Platform.OS !== "android" || ReactNative.Platform.Version <= 32) {
+        showToast("Copied plugin URL to clipboard.", getAssetIDByName("toast_copy_link"));
+    }
+}
