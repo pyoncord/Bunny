@@ -6,6 +6,7 @@ import { getAssetIDByName } from "@ui/assets";
 import { showToast } from "@ui/toasts";
 import { showConfirmationAlert } from "@ui/alerts";
 import Card, { CardWrapper } from "@ui/settings/components/Card";
+import { useProxy } from "@/lib/storage";
 
 async function stopThenStart(plugin: Plugin, callback: Function) {
     if (plugin.enabled) stopPlugin(plugin.id, false);
@@ -14,6 +15,8 @@ async function stopThenStart(plugin: Plugin, callback: Function) {
 }
 
 export default function PluginCard({ item: plugin, index }: CardWrapper<Plugin>) {
+    useProxy(plugin);
+
     const settings = getSettings(plugin.id);
     const navigation = NavigationNative.useNavigation();
     const [removed, setRemoved] = React.useState(false);

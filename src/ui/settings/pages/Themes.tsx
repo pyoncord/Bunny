@@ -11,7 +11,7 @@ export default function Themes() {
 
     return (
         <AddonPage<Theme>
-            title={"Themes"}
+            title={"Theme"}
             fetchFunction={installTheme}
             items={themes}
             safeModeMessage={`You are in Safe Mode, meaning themes have been temporarily disabled.${settings.safeMode?.currentThemeId ? " If a theme appears to be causing the issue, you can press below to disable it persistently." : ""}`}

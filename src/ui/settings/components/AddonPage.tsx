@@ -4,7 +4,6 @@ import { HelpMessage, ErrorBoundary, Search } from "@ui/components";
 import { CardWrapper } from "@ui/settings/components/Card";
 import settings from "@lib/settings";
 import { findByProps } from "@/lib/metro/filters";
-import { showToast } from "@/ui/toasts";
 import { HTTP_REGEX_MULTI } from "@/lib/constants";
 import { showInputAlert } from "@/ui/alerts";
 import { getAssetIDByName } from "@/ui/assets";
@@ -22,7 +21,7 @@ const reanimated = findByProps("useSharedValue");
 const { FloatingActionButton } = findByProps("FloatingActionButton");
 
 export default function AddonPage<T>({ title, fetchFunction, items, safeModeMessage, safeModeExtras, card: CardComponent }: AddonPageProps<T>) {
-    useProxy(settings)
+    useProxy(settings);
     useProxy(items);
 
     const collapseText = reanimated.useSharedValue(0);

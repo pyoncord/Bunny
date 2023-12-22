@@ -2,10 +2,8 @@ import { ReactNative as RN, stylesheet } from "@metro/common";
 import { findByProps } from "@metro/filters";
 import { getAssetIDByName } from "@ui/assets";
 import { semanticColors } from "@ui/color";
-import { Forms } from "@ui/components";
 
 const { TableRow, TableRowIcon, TableSwitchRow, TableCheckboxRow, TableRowGroup } = findByProps("TableRow");
-const { FormSwitch, FormRadio } = Forms;
 const { hideActionSheet } = findByProps("openLazy", "hideActionSheet");
 const { showSimpleActionSheet } = findByProps("showSimpleActionSheet");
 

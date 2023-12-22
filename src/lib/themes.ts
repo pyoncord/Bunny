@@ -1,8 +1,8 @@
 import { Theme, ThemeData } from "@types";
 import { ReactNative as RN, chroma } from "@metro/common";
 import { findInReactTree, safeFetch } from "@lib/utils";
-import { findByName, findByProps } from "@metro/filters";
-import { instead, after } from "@lib/patcher";
+import { find, findByName, findByProps } from "@metro/filters";
+import { after, before, instead } from "@lib/patcher";
 import { createFileBackend, createMMKVBackend, createStorage, wrapSync, awaitSyncWrapper } from "@lib/storage";
 import logger from "@lib/logger";
 
@@ -34,8 +34,8 @@ async function writeTheme(theme: Theme | {}) {
 }
 
 export function patchChatBackground() {
-    const currentBackground = getCurrentTheme()?.data?.background;
-    if (!currentBackground) return;
+    // const currentBackground = getCurrentTheme()?.data?.background;
+    // if (!currentBackground) return;
 
     const MessagesWrapperConnected = findByName("MessagesWrapperConnected", false);
     if (!MessagesWrapperConnected) return;
@@ -45,13 +45,13 @@ export function patchChatBackground() {
     const patches = [
         after("default", MessagesWrapperConnected, (_, ret) => React.createElement(RN.ImageBackground, {
             style: { flex: 1, height: "100%" },
-            source: { uri: currentBackground.url },
-            blurRadius: typeof currentBackground.blur === "number" ? currentBackground.blur : 0,
+            source: currentTheme?.data?.background?.url && { uri: currentTheme.data.background.url } || 0,
+            blurRadius: typeof currentTheme?.data?.background?.blur === "number" ? currentTheme?.data?.background?.blur : 0,
             children: ret,
         })),
         after("render", MessagesWrapper.prototype, (_, ret) => {
             const Messages = findInReactTree(ret, (x) => "HACK_fixModalInteraction" in x?.props && x?.props?.style);
-            if (Messages) 
+            if (Messages)
                 Messages.props.style = Object.assign(
                     RN.StyleSheet.flatten(Messages.props.style ?? {}),
                     {
@@ -149,11 +149,12 @@ export async function installTheme(id: string) {
 }
 
 export async function selectTheme(id: string) {
-    if (id === "default") return await writeTheme({});
-    const selectedThemeId = Object.values(themes).find(i => i.selected)?.id;
+    Object.values(themes).forEach(s => s.selected = s.id === id);
 
-    if (selectedThemeId) themes[selectedThemeId].selected = false;
-    themes[id].selected = true;
+    if (id === "default") {
+        return await writeTheme({});
+    }
+
     await writeTheme(themes[id]);
 }
 
@@ -177,60 +178,80 @@ export async function updateThemes() {
     await Promise.allSettled(Object.keys(themes).map(id => fetchTheme(id, currentTheme?.id === id)));
 }
 
-export async function initThemes() {
-    //! Native code is required here!
-    // Awaiting the sync wrapper is too slow, to the point where semanticColors are not correctly overwritten.
-    // We need a workaround, and it will unfortunately have to be done on the native side.
-    // await awaitSyncWrapper(themes);
+const origRawColor = { ...color.RawColor };
+let vdKey = "vd-theme";
+let vdResort = "darker";
+let enabled = false;
+let currentTheme: Theme | null;
 
-    const selectedTheme = getCurrentTheme();
-    if (!selectedTheme) return;
+function patchColor() {
+    const isThemeModule = find(m => m.isThemeDark && Object.getOwnPropertyDescriptor(m, "isThemeDark")?.value);
+    const callback = ([theme]: any[]) => theme === vdKey ? [vdResort] : void 0;
 
-    const oldRaw = color.default.unsafe_rawColors;
+    Object.keys(color.RawColor).forEach(k => {
+        Object.defineProperty(color.RawColor, k, {
+            configurable: true,
+            enumerable: true,
+            get: () => {
+                return enabled ? currentTheme?.data?.rawColors?.[k] ?? origRawColor[k] : origRawColor[k]
+            }
+        });
+    });
 
-    color.default.unsafe_rawColors = new Proxy(oldRaw, {
-        get: (_, colorProp: string) => {
-            if (!selectedTheme) return Reflect.get(oldRaw, colorProp);
+    before("isThemeDark", isThemeModule, callback);
+    before("isThemeLight", isThemeModule, callback);
+    before("updateTheme", window.nativeModuleProxy.RTNThemeManager, callback);
 
-            return selectedTheme.data?.rawColors?.[colorProp] ?? Reflect.get(oldRaw, colorProp);
-        }
+    before("updateTheme", findByProps("updateTheme"), ([theme]) => {
+        enabled = theme === vdKey;
     });
 
     instead("resolveSemanticColor", color.default.meta ?? color.default.internal, (args, orig) => {
-        if (!selectedTheme) return orig(...args);
-
         const [theme, propIndex] = args;
         const [name, colorDef] = extractInfo(theme, propIndex);
-        
-        const themeIndex = theme === "amoled" ? 2 : theme === "light" ? 1 : 0;
-        
-        //! As of 192.7, Tabs v2 uses BG_ semantic colors instead of BACKGROUND_ ones
-        const alternativeName = semanticAlternativeMap[name] ?? name;
 
-        const semanticColorVal = (selectedTheme.data?.semanticColors?.[name] ?? selectedTheme.data?.semanticColors?.[alternativeName])?.[themeIndex];
-        if (name === "CHAT_BACKGROUND" && typeof selectedTheme.data?.background?.alpha === "number") {
-            return chroma(semanticColorVal || "black").alpha(1 - selectedTheme.data.background.alpha).hex();
-        }
-
-        if (semanticColorVal) return semanticColorVal;
-
-        const rawValue = selectedTheme.data?.rawColors?.[colorDef.raw];
-        if (rawValue) {
-            // Set opacity if needed
-            return colorDef.opacity === 1 ? rawValue : chroma(rawValue).alpha(colorDef.opacity).hex();
-        }
-
-        // Fallback to default
-        return orig(...args);
+        if (colorDef?.override) return colorDef.override;
+        else return orig(...args);
     });
+}
+
+export function applyTheme(appliedTheme: Theme | null, resortTheme: string, update = true) {
+    if (!resortTheme) return;
+
+    currentTheme = appliedTheme;
+    vdResort = resortTheme;
+    vdKey = appliedTheme?.data.name!!;
+
+    if (appliedTheme) {
+        color.Theme[vdKey.toUpperCase()] = vdKey;
+
+        Object.keys(color.Shadow).forEach(k => color.Shadow[k][vdKey] = color.Shadow[k][resortTheme!!]);
+        Object.keys(color.SemanticColor).forEach(k => {
+            color.SemanticColor[k][vdKey] = { 
+                ...color.SemanticColor[k][resortTheme!!],
+                override: appliedTheme?.data?.semanticColors?.[k]?.[0]
+            };
+        });
+    }
+
+    update && findByProps("updateTheme").updateTheme(appliedTheme ? vdKey : resortTheme);
+}
+
+
+export async function initThemes() {
+    const currentTheme = getCurrentTheme();
+    enabled = !!currentTheme;
+
+    patchColor();
+    applyTheme(currentTheme, vdResort, false);
 
     await updateThemes();
 }
 
-function extractInfo(themeMode: string, colorObj: any): [name: string, colorDef: any] {
+function extractInfo(themeName: string, colorObj: any): [name: string, colorDef: any] {
     // @ts-ignore - assigning to extractInfo._sym
     const propName = colorObj[extractInfo._sym ??= Object.getOwnPropertySymbols(colorObj)[0]];
     const colorDef = color.SemanticColor[propName];
 
-    return [propName, colorDef[themeMode.toLowerCase()]];
+    return [propName, colorDef[themeName]];
 }

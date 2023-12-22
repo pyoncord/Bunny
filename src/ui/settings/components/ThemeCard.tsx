@@ -1,6 +1,6 @@
 import { ButtonColors, Theme } from "@types";
 import { clipboard } from "@metro/common";
-import { fetchTheme, removeTheme, selectTheme } from "@lib/themes";
+import { applyTheme, fetchTheme, removeTheme, selectTheme, themes } from "@lib/themes";
 import { useProxy } from "@lib/storage";
 import { BundleUpdaterManager } from "@lib/native";
 import { getAssetIDByName } from "@ui/assets";
@@ -9,13 +9,18 @@ import { showToast } from "@ui/toasts";
 import settings from "@lib/settings";
 import Card, { CardWrapper } from "@ui/settings/components/Card";
 
-async function selectAndReload(value: boolean, id: string) {
-    await selectTheme(value ? id : "default");
-    BundleUpdaterManager.reload();
+async function selectAndApply(value: boolean, id: string) {
+    try {
+        await selectTheme(value ? id : "default");
+        value ? applyTheme(themes[id], "darker") : applyTheme(null, "darker");
+    } catch (e: any) {
+        console.error("Error while selectAndApply,", e)
+    } 
 }
 
 export default function ThemeCard({ item: theme, index }: CardWrapper<Theme>) {
-    useProxy(settings);
+    useProxy(theme);
+
     const [removed, setRemoved] = React.useState(false);
 
     // This is needed because of React™
@@ -31,7 +36,7 @@ export default function ThemeCard({ item: theme, index }: CardWrapper<Theme>) {
             toggleType={!settings.safeMode?.enabled ? "radio" : undefined}
             toggleValue={theme.selected}
             onToggleChange={(v: boolean) => {
-                selectAndReload(v, theme.id);
+                selectAndApply(v, theme.id);
             }}
             overflowTitle={theme.data.name}
             overflowActions={[
@@ -78,7 +83,7 @@ export default function ThemeCard({ item: theme, index }: CardWrapper<Theme>) {
                         onConfirm: () => {
                             removeTheme(theme.id).then((wasSelected) => {
                                 setRemoved(true);
-                                if (wasSelected) selectAndReload(false, theme.id);
+                                if (wasSelected) selectAndApply(false, theme.id);
                             }).catch((e: Error) => {
                                 showToast(e.message, getAssetIDByName("Small"));
                             });

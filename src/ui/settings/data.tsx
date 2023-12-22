@@ -28,7 +28,7 @@ interface Screen {
     render: React.ComponentType<any>;
 }
 
-const styles = stylesheet.createThemedStyleSheet({ 
+const useStyles = stylesheet.createStyles({ 
     container: { 
         flex: 1,
         backgroundColor: semanticColors.BACKGROUND_MOBILE_PRIMARY 
@@ -128,6 +128,7 @@ export const getYouData = () => {
         relationships: keyMap(screens, null),
         rendererConfigs: keyMap(screens, (s) => {
             const WrappedComponent = React.memo(({ navigation, route }: any) => {
+                const styles = useStyles();
                 const { bottom: paddingBottom } = useSafeAreaInsets();
                 navigation.addListener("focus", () => navigation.setOptions(s.options));
                 return <RN.View style={[{ paddingBottom }, styles.container]}><s.render {...route.params} /></RN.View>
