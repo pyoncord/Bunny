@@ -1,12 +1,16 @@
 > [!NOTE]
-> This fork is still progressing, own loader coming soon?
-> TODO: better name
+> - This fork is still slowly progressing, but a set of new features have been implemented.
+> - "Pyondetta" is *not* the final name of the mod.
+> - Pyon's independent loader coming soon.
 
-# Pyondetta (Vendetta's fork)
-A mod for Discord's mobile apps.
+# Pyondetta
+A mod for Discord's mobile apps, fork of Vendetta.
 
 ## Installing
 Pyondetta's codebase is platform-agnostic, but you need a platform-specific loader.
+> [!NOTE]
+> As of now, Pyoncord/Pyondetta does not have a proper independent loader.\
+> However, you may use Vendetta's loader (VendettaXposed, VendettaTweak) and override loader url to [Pyondetta](https://raw.githubusercontent.com/pyoncord/detta-builds/main/pyondetta.js) (read [#Contributing > 7](#contributing)) to try out Pyondetta
 
 ### Android
 * Root - [VendettaXposed](https://github.com/vendetta-mod/VendettaXposed/releases/latest)
