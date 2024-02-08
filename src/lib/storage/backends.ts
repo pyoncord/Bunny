@@ -32,41 +32,52 @@ export const purgeStorage = async (store: string) => {
 export const createMMKVBackend = (store: string) => {
     const mmkvPath = getMMKVPath(store);
     return createFileBackend(mmkvPath, (async () => {
+        const path = `${FileManager.getConstants().DocumentsDirPath}/${mmkvPath}`;
+        if (await FileManager.fileExists(path)) return;
+
+        let oldData = await MMKVManager.getItem(store) ?? "{}";
+
+        // From the testing on Android, it seems to return this if the data is too large
+        if (oldData === "!!LARGE_VALUE!!") {
+            const cachePath = `${FileManager.getConstants().CacheDirPath}/mmkv/${store}`;
+            if (await FileManager.fileExists(cachePath)) {
+                oldData = await FileManager.readFile(cachePath, "utf8")
+            } else {
+                console.log(`${store}: Experienced data loss :(`);
+                oldData = "{}";
+            }
+        }
+
         try {
-            const path = `${FileManager.getConstants().DocumentsDirPath}/${mmkvPath}`;
-            if (await FileManager.fileExists(path)) return;
+            JSON.parse(oldData);
+        } catch {
+            console.error(`${store} had an unparseable data while migrating`);
+            oldData = "{}";
+        }
 
-            let oldData = await MMKVManager.getItem(store) ?? "{}";
-
-            // From the testing on Android, it seems to return this if the data is too large
-            if (oldData === "!!LARGE_VALUE!!") {
-                const cachePath = `${FileManager.getConstants().CacheDirPath}/mmkv/${store}`;
-                if (await FileManager.fileExists(cachePath)) {
-                    oldData = await FileManager.readFile(cachePath, "utf8")
-                } else {
-                    console.log(`${store}: Experienced data loss :(`);
-                    oldData = "{}";
-                }
-            }
-
-            await FileManager.writeFile("documents", filePathFixer(mmkvPath), oldData, "utf8");
-            if (await MMKVManager.getItem(store) !== null) {
-                MMKVManager.removeItem(store);
-                console.log(`Successfully migrated ${store} store from MMKV storage to fs`);
-            }
-        } catch (err) {
-            console.error("Failed to migrate to fs from MMKVManager ", err)
+        await FileManager.writeFile("documents", filePathFixer(mmkvPath), oldData, "utf8");
+        if (await MMKVManager.getItem(store) !== null) {
+            MMKVManager.removeItem(store);
+            console.log(`Successfully migrated ${store} store from MMKV storage to fs`);
         }
     })());
 }
 
 export const createFileBackend = (file: string, migratePromise?: Promise<void>): StorageBackend => {
-    let created: boolean;
     return {
         get: async () => {
             await migratePromise;
             const path = `${FileManager.getConstants().DocumentsDirPath}/${file}`;
-            if (!created && !(await FileManager.fileExists(path))) return (created = true), FileManager.writeFile("documents", filePathFixer(file), "{}", "utf8");
+            if (await FileManager.fileExists(path)) {
+                const content = await FileManager.readFile(path, "utf8");
+                try {
+                    return JSON.parse(content);
+                } catch {
+                    // Corrupted content, ignore
+                }
+            }
+
+            await FileManager.writeFile("documents", filePathFixer(file), "{}", "utf8");
             return JSON.parse(await FileManager.readFile(path, "utf8"));
         },
         set: async (data) => {
