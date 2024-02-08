@@ -23,7 +23,7 @@ try {
         minify: isRelease,
         format: "iife",
         target: "esnext",
-        outfile: "dist/pyoncord.js",
+        outfile: "dist/pyondetta.js",
         keepNames: true,
         define: {
             __vendettaIsDev: `${!isRelease}`,

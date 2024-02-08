@@ -1,7 +1,7 @@
 name: Build
 on:
     push:
-          branches: [rewrite]
+          branches: [main]
 
 jobs:
     build:
@@ -12,9 +12,9 @@ jobs:
             - uses: actions/checkout@v3
             - uses: actions/checkout@v3
               with:
-                  repository: "vendetta-mod/builds"
+                  repository: "pyoncord/detta-builds"
                   path: "builds"
-                  token: ${{ secrets.BEEF_TOKEN }}
+                  token: ${{ secrets.PYLIX_TOKEN }}
             - uses: actions/setup-node@v3
               with:
                   node-version: 16
@@ -40,5 +40,5 @@ jobs:
 
             - name: Purge CDN cache
               run: |
-                  curl https://purge.jsdelivr.net/gh/vendetta-mod/builds
+                  curl https://purge.jsdelivr.net/gh/pyoncord/detta-builds
                   
