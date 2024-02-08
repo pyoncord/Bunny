@@ -1,7 +1,7 @@
 import { ClientInfoManager } from "@lib/native";
 
 // This logs in the native logging implementation, e.g. logcat
-console.log("Hello from Vendetta!");
+console.log("Hello from Pyon-ified Vendetta!");
 
 // Make 'freeze' and 'seal' do nothing
 Object.freeze = Object;

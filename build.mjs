@@ -1,34 +1,48 @@
-import { build } from "esbuild";
-import alias from "esbuild-plugin-alias";
+// eslint-disable-next-line simple-import-sort/imports
 import swc from "@swc/core";
-import { promisify } from "util";
-import { exec as _exec } from "child_process";
-import fs from "fs/promises";
-import path from "path";
+import { execSync } from "child_process";
+import esbuild from "esbuild";
+import { readFile } from "fs/promises";
+import { createServer } from "http";
 import { argv } from "process";
-const exec = promisify(_exec);
 
-const hasArg = condition => argv.some(i => condition.test(i));
-const isDev = hasArg(/-d|--dev/);
+const isFlag = (s, l) => argv.slice(2).some(c => c === `-${s}` || c === `--${l}`);
 
-const tsconfig = JSON.parse(await fs.readFile("./tsconfig.json"));
-const aliases = Object.fromEntries(Object.entries(tsconfig.compilerOptions.paths).map(([alias, [target]]) => [alias, path.resolve(target)]));
-const commit = (await exec("git rev-parse HEAD")).stdout.trim().substring(0, 7) || "custom";
+const isRelease = isFlag("r", "release");
+const shouldServe = isFlag("s", "serve");
+const shouldWatch = isFlag("w", "watch");
+
+// TODO: This does not change unless you re-execute the script
+const timeHash = Number(new Date).toString(36);
+const commitHash = execSync("git rev-parse --short HEAD").toString().trim();
 
 try {
-    await build({
-        entryPoints: ["./src/entry.ts"],
-        outfile: "./dist/vendetta.js",
-        minify: !isDev,
+    const ctx = await esbuild.context({
+        entryPoints: ["src/entry.js"],
         bundle: true,
+        minify: isRelease,
         format: "iife",
         target: "esnext",
+        outfile: "dist/pyoncord.js",
+        keepNames: true,
+        define: {
+            __vendettaIsDev: `${!isRelease}`,
+            __vendettaVersion: `"${isRelease ? commitHash : timeHash}"`,
+        },
+        footer: {
+            js: "//# sourceURL=pyondetta"
+        },
+        loader: { ".png": "dataurl" },
+        legalComments: "none",
+        alias: { 
+            "@*": "src*",
+            "@types": "src/def.d.ts"
+        },
         plugins: [
             {
                 name: "swc",
-                setup: (build) => {
-                    build.onLoad({ filter: /\.[jt]sx?/ }, async (args) => {
-                        // This actually works for dependencies as well!!
+                setup(build) {
+                    build.onLoad({ filter: /\.[jt]sx?/ }, async args => {
                         const result = await swc.transformFile(args.path, {
                             jsc: {
                                 externalHelpers: true,
@@ -38,26 +52,56 @@ try {
                                 include: [
                                     "transform-classes",
                                     "transform-arrow-functions",
-                                ],
+                                ]
                             },
                         });
+
                         return { contents: result.code };
                     });
-                },
+                }
             },
-            alias(aliases),
-        ],
-        define: {
-            __vendettaIsDev: `${isDev}`,
-            __vendettaVersion: `"${isDev ? commit : "local build"}"`,
-        },
-        footer: {
-            js: "//# sourceURL=Vendetta",
-        },
-        legalComments: "none",
+            {
+                name: "buildLog",
+                setup: async build => {
+                    build.onStart(() => console.log(`Building with commit hash "${commitHash}", isRelease="${isRelease}", timeHash="${timeHash}"`));
+                    build.onEnd(result => console.log(`Built with ${result.errors?.length} errors!`));
+                }
+            }
+        ]
     });
 
-    console.log("Build successful!", `isDev=${isDev}`);
+    if (shouldWatch) {
+        await ctx.watch();
+        console.log("Watching...");
+    }
+
+    if (shouldServe) {
+        await ctx.rebuild();
+
+        const server = createServer(async (req, res) => {
+            try {
+                if (req.url === "/vendetta.js" || req.url === "/pyoncord.js" || req.url === "/pyondetta.js") {
+                    await ctx.rebuild();
+                    res.writeHead(200);
+                    res.end(await readFile("./dist/pyoncord.js"), "utf-8");
+                } else {
+                    res.writeHead(404);
+                    res.end();
+                }
+            } catch (error) {
+                res.writeHead(500);
+                res.end();
+            }
+        }).listen(4040);
+
+        // @ts-ignore
+        console.log(`Serving on port ${server.address()?.port}, CTRL+C to stop`);
+    }
+
+    if (!shouldServe && !shouldWatch) {
+        ctx.rebuild();
+        ctx.dispose();
+    }
 } catch (e) {
     console.error("Build failed...", e);
     process.exit(1);

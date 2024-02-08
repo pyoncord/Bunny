@@ -1,9 +1,12 @@
 {
-    "name": "vendetta",
+    "name": "pyondetta",
     "version": "1.0.0",
     "description": "A mod for Discord's mobile apps.",
     "scripts": {
-        "build": "node build.mjs"
+        "dev": "node build.mjs",
+        "build": "node build.mjs --release",
+        "serve": "node build.mjs --serve",
+        "watch": "node build.mjs --watch"
     },
     "keywords": [
         "discord",
@@ -11,7 +14,7 @@
         "ios",
         "react native"
     ],
-    "author": "Beef",
+    "author": "pylixonly, Team Vendetta",
     "license": "BSD-3-Clause",
     "devDependencies": {
         "@react-native-clipboard/clipboard": "1.10.0",
