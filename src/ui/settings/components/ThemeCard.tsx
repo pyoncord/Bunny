@@ -12,7 +12,10 @@ import Card, { CardWrapper } from "@ui/settings/components/Card";
 async function selectAndApply(value: boolean, id: string) {
     try {
         await selectTheme(value ? id : "default");
-        value ? applyTheme(themes[id], "darker") : applyTheme(null, "darker");
+        value ? applyTheme(themes[id]) : applyTheme(null);
+
+        // TODO: Implement native side reload-less & check if it's applied by 100%
+        showToast("Reload the app to fully apply changes!", getAssetIDByName("yellow-alert"));
     } catch (e: any) {
         console.error("Error while selectAndApply,", e)
     } 

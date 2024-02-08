@@ -1,7 +1,7 @@
 import { Theme, ThemeData } from "@types";
 import { ReactNative as RN, chroma } from "@metro/common";
 import { findInReactTree, safeFetch } from "@lib/utils";
-import { find, findByName, findByProps } from "@metro/filters";
+import { find, findByName, findByProps, findByStoreName } from "@metro/filters";
 import { after, before, instead } from "@lib/patcher";
 import { createFileBackend, createMMKVBackend, createStorage, wrapSync, awaitSyncWrapper } from "@lib/storage";
 import logger from "@lib/logger";
@@ -9,6 +9,8 @@ import logger from "@lib/logger";
 //! As of 173.10, early-finding this does not work.
 // Somehow, this is late enough, though?
 export const color = findByProps("SemanticColor");
+
+const appearanceManager = findByProps("updateTheme");
 
 export const themes = wrapSync(createStorage<Record<string, Theme>>(createMMKVBackend("VENDETTA_THEMES")));
 
@@ -34,9 +36,6 @@ async function writeTheme(theme: Theme | {}) {
 }
 
 export function patchChatBackground() {
-    // const currentBackground = getCurrentTheme()?.data?.background;
-    // if (!currentBackground) return;
-
     const MessagesWrapperConnected = findByName("MessagesWrapperConnected", false);
     if (!MessagesWrapperConnected) return;
     const { MessagesWrapper } = findByProps("MessagesWrapper");
@@ -180,13 +179,13 @@ export async function updateThemes() {
 
 const origRawColor = { ...color.RawColor };
 let vdKey = "vd-theme";
-let vdResort = "darker";
+let vdThemeFallback = "darker";
 let enabled = false;
 let currentTheme: Theme | null;
 
 function patchColor() {
     const isThemeModule = find(m => m.isThemeDark && Object.getOwnPropertyDescriptor(m, "isThemeDark")?.value);
-    const callback = ([theme]: any[]) => theme === vdKey ? [vdResort] : void 0;
+    const callback = ([theme]: any[]) => theme === vdKey ? [vdThemeFallback] : void 0;
 
     Object.keys(color.RawColor).forEach(k => {
         Object.defineProperty(color.RawColor, k, {
@@ -202,39 +201,69 @@ function patchColor() {
     before("isThemeLight", isThemeModule, callback);
     before("updateTheme", window.nativeModuleProxy.RTNThemeManager, callback);
 
-    before("updateTheme", findByProps("updateTheme"), ([theme]) => {
+    before("updateTheme", appearanceManager, ([theme]) => {
         enabled = theme === vdKey;
     });
 
     instead("resolveSemanticColor", color.default.meta ?? color.default.internal, (args, orig) => {
-        const [theme, propIndex] = args;
-        const [name, colorDef] = extractInfo(theme, propIndex);
+        if (!enabled || !currentTheme) return orig(...args);
 
-        if (colorDef?.override) return colorDef.override;
-        else return orig(...args);
+        const [name, colorDef] = extractInfo(vdThemeFallback, args[1]);
+        
+        const themeIndex = vdThemeFallback === "midnight" ? 2 : vdThemeFallback === "light" ? 1 : 0;
+        
+        //! As of 192.7, Tabs v2 uses BG_ semantic colors instead of BACKGROUND_ ones
+        const alternativeName = semanticAlternativeMap[name] ?? name;
+
+        const semanticColorVal = (currentTheme.data?.semanticColors?.[name] ?? currentTheme.data?.semanticColors?.[alternativeName])?.[themeIndex];
+        if (name === "CHAT_BACKGROUND" && typeof currentTheme.data?.background?.alpha === "number") {
+            return chroma(semanticColorVal || "black").alpha(1 - currentTheme.data.background.alpha).hex();
+        }
+
+        if (semanticColorVal) return semanticColorVal;
+
+        const rawValue = currentTheme.data?.rawColors?.[colorDef.raw];
+        if (rawValue) {
+            // Set opacity if needed
+            return colorDef.opacity === 1 ? rawValue : chroma(rawValue).alpha(colorDef.opacity).hex();
+        }
+
+        // Fallback to default
+        return orig(...args);
     });
 }
 
-export function applyTheme(appliedTheme: Theme | null, resortTheme: string, update = true) {
-    if (!resortTheme) return;
+function getDefaultFallbackTheme(fallback: string = "darker") {
+    const ThemeStore = findByStoreName("ThemeStore");
+    const theme = ThemeStore.theme.toLowerCase() as string;
+
+    if (theme === "darker" || theme === "midnight" || theme === "dark" || theme === "light") {
+        return theme;
+    } else {
+        return fallback;
+    }
+}
+
+export function applyTheme(appliedTheme: Theme | null, fallbackTheme?: string, update = true) {
+    if (!fallbackTheme) fallbackTheme = getDefaultFallbackTheme();
 
     currentTheme = appliedTheme;
-    vdResort = resortTheme;
-    vdKey = appliedTheme?.data.name!!;
+    vdThemeFallback = fallbackTheme;
+    vdKey = appliedTheme?.data.name!! + '-' + vdThemeFallback;
 
     if (appliedTheme) {
         color.Theme[vdKey.toUpperCase()] = vdKey;
 
-        Object.keys(color.Shadow).forEach(k => color.Shadow[k][vdKey] = color.Shadow[k][resortTheme!!]);
+        Object.keys(color.Shadow).forEach(k => color.Shadow[k][vdKey] = color.Shadow[k][fallbackTheme!!]);
         Object.keys(color.SemanticColor).forEach(k => {
             color.SemanticColor[k][vdKey] = { 
-                ...color.SemanticColor[k][resortTheme!!],
+                ...color.SemanticColor[k][fallbackTheme!!],
                 override: appliedTheme?.data?.semanticColors?.[k]?.[0]
             };
         });
     }
 
-    update && findByProps("updateTheme").updateTheme(appliedTheme ? vdKey : resortTheme);
+    if (update) appearanceManager.updateTheme(appliedTheme ? vdKey : fallbackTheme);
 }
 
 
@@ -243,7 +272,7 @@ export async function initThemes() {
     enabled = !!currentTheme;
 
     patchColor();
-    applyTheme(currentTheme, vdResort, false);
+    applyTheme(currentTheme, vdThemeFallback, false);
 
     await updateThemes();
 }
