@@ -9,3 +9,4 @@ export const ClientInfoManager = nmp.InfoDictionaryManager ?? nmp.RTNClientInfoM
 //! 173.14 renamed this to RTNDeviceManager.
 export const DeviceManager = nmp.DCDDeviceManager ?? nmp.RTNDeviceManager;
 export const BundleUpdaterManager = nmp.BundleUpdaterManager;
+export const ThemeManager = nmp.RTNThemeManager ?? nmp.DCDTheme;

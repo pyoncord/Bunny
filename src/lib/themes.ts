@@ -5,6 +5,7 @@ import { find, findByName, findByProps, findByStoreName } from "@metro/filters";
 import { after, before, instead } from "@lib/patcher";
 import { createFileBackend, createMMKVBackend, createStorage, wrapSync, awaitSyncWrapper } from "@lib/storage";
 import logger from "@lib/logger";
+import { ThemeManager } from "./native";
 
 //! As of 173.10, early-finding this does not work.
 // Somehow, this is late enough, though?
@@ -199,7 +200,7 @@ function patchColor() {
 
     before("isThemeDark", isThemeModule, callback);
     before("isThemeLight", isThemeModule, callback);
-    before("updateTheme", window.nativeModuleProxy.RTNThemeManager, callback);
+    before("updateTheme", ThemeManager, callback);
 
     before("updateTheme", appearanceManager, ([theme]) => {
         enabled = theme === vdKey;
