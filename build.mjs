@@ -14,8 +14,6 @@ const isRelease = isFlag("r", "release");
 const shouldServe = isFlag("s", "serve");
 const shouldWatch = isFlag("w", "watch");
 
-// TODO: This does not change unless you re-execute the script
-const timeHash = Number(new Date).toString(36);
 const commitHash = execSync("git rev-parse --short HEAD").toString().trim();
 
 try {
@@ -32,27 +30,55 @@ try {
         },
         outfile: "dist/bunny.js",
         keepNames: true,
-        define: {
-            __vendettaIsDev: `${!isRelease}`,
-            __vendettaVersion: `"${isRelease ? commitHash : timeHash}"`,
-        },
         footer: {
             js: "//# sourceURL=bunny"
         },
         loader: { ".png": "dataurl" },
         legalComments: "none",
-        alias: { 
+        alias: {
             "@*": "src*",
             "@types": "src/def.d.ts"
         },
         plugins: [
             {
+                name: "buildLog",
+                setup: async build => {
+                    build.onStart(() => {
+                        console.clear();
+                        console.log(`Building with commit hash "${commitHash}", isRelease="${isRelease}"`)
+                    });
+
+                    build.onEnd(result => {
+                        const { outfile } = build.initialOptions;
+                        copyFileSync(outfile, path.resolve(outfile, "..", "pyondetta.js"))
+                        console.log(`Built with ${result.errors?.length} errors!`);
+                    });
+                }
+            },
+            {
                 name: "swc",
                 setup(build) {
+                    let timeString = Number(new Date).toString(36);
+                    
+                    build.onStart(() => {
+                        timeString = Number(new Date).toString(36);
+                        console.log(`swc plugin: time-string="${timeString}"`);
+                    })
+                    
                     build.onLoad({ filter: /\.[jt]sx?/ }, async args => {
                         const result = await swc.transformFile(args.path, {
                             jsc: {
                                 externalHelpers: true,
+                                transform: {
+                                    optimizer: {
+                                        globals: {
+                                            vars: {
+                                                __vendettaIsDev: `${!isRelease}`,
+                                                __vendettaVersion: `"${isRelease ? commitHash : timeString}"`,
+                                            }
+                                        }
+                                    }
+                                },
                             },
                             env: {
                                 targets: "defaults",
@@ -67,19 +93,9 @@ try {
                         return { contents: result.code };
                     });
                 }
-            },
-            {
-                name: "buildLog",
-                setup: async build => {
-                    build.onStart(() => console.log(`Building with commit hash "${commitHash}", isRelease="${isRelease}", timeHash="${timeHash}"`));
-                    build.onEnd(result => {
-                        const { outfile } = build.initialOptions; 
-                        copyFileSync(outfile, path.resolve(outfile, "..", "pyondetta.js"))
-                        console.log(`Built with ${result.errors?.length} errors!`);
-                    });
-                }
             }
-        ]
+        ],
+        external: ["commit-hash"]
     });
 
     if (shouldWatch) {
