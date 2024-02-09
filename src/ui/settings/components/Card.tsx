@@ -1,9 +1,10 @@
+import ContextMenu from "@/ui/components/ContextMenu";
 import { ReactNative as RN, stylesheet } from "@metro/common";
 import { findByProps } from "@metro/filters";
 import { getAssetIDByName } from "@ui/assets";
 import { semanticColors } from "@ui/color";
 
-const { TableRow, TableRowIcon, TableSwitchRow, TableCheckboxRow, TableRowGroup } = findByProps("TableRow");
+const { TableRow, TableRowIcon, TableSwitchRow, TableCheckboxRow, TableRowGroup, IconButton } = findByProps("TableRow");
 const { hideActionSheet } = findByProps("openLazy", "hideActionSheet");
 const { showSimpleActionSheet } = findByProps("showSimpleActionSheet");
 
@@ -53,6 +54,7 @@ interface CardProps {
     toggleValue?: boolean;
     onToggleChange?: (v: boolean) => void;
     descriptionLabel?: string | React.ComponentType;
+    /** @deprecated use overflowActions */
     actions?: Action[];
     overflowTitle?: string;
     overflowActions?: OverflowAction[];
@@ -87,26 +89,24 @@ export default function Card(props: CardProps) {
                 label={props.descriptionLabel}
                 trailing={
                     <RN.View style={styles.actions}>
-                        {props.overflowActions && <RN.TouchableOpacity
-                            onPress={() => showSimpleActionSheet({
-                                key: "CardOverflow",
-                                header: {
-                                    title: props.overflowTitle,
-                                    icon: props.headerIcon && <TableRowIcon style={{ marginRight: 8 }} source={getAssetIDByName(props.headerIcon)} />,
-                                    onClose: () => hideActionSheet(),
-                                },
-                                options: props.overflowActions?.map(i => ({ ...i, icon: getAssetIDByName(i.icon) })),
-                            })}
-                        >
-                            <RN.Image style={styles.actionIcon} source={getAssetIDByName("ic_more_24px")} />
-                        </RN.TouchableOpacity>}
-                        {props.actions?.map(({ icon, onPress }) => (
-                            <RN.TouchableOpacity
-                                onPress={onPress}
-                            >
-                                <RN.Image style={styles.actionIcon} source={getAssetIDByName(icon)} />
-                            </RN.TouchableOpacity>
-                        ))}
+                        {props.overflowActions &&
+                            <ContextMenu
+                                triggerOnLongPress={false}
+                                items={props.overflowActions.map(i => ({ 
+                                    label: i.label,
+                                    iconSource: getAssetIDByName(i.icon),
+                                    action: i.onPress
+                                }))}
+                                align="below"
+                                title={props.overflowTitle!!}
+                                children={(props) => <IconButton
+                                    {...props}
+                                    size="sm"
+                                    variant="secondary"
+                                    icon={getAssetIDByName("ic_settings_white_24px")} 
+                                />}
+                            />
+                        }
                     </RN.View>
                 }
             />

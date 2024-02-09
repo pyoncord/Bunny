@@ -42,6 +42,14 @@ export default function PluginCard({ item: plugin, index }: CardWrapper<Plugin>)
             descriptionLabel={plugin.manifest.description}
             overflowTitle={plugin.manifest.name}
             overflowActions={[
+                ...(settings ? [{
+                    label: "Plugin settings",
+                    icon: "settings",
+                    onPress: () => navigation.push("VendettaCustomPage", {
+                        title: plugin.manifest.name,
+                        render: settings,
+                    })
+                }] : []),
                 {
                     icon: "ic_sync_24px",
                     label: "Refetch",
@@ -112,16 +120,7 @@ export default function PluginCard({ item: plugin, index }: CardWrapper<Plugin>)
                             }
                         }
                     }),
-                },
-            ]}
-            actions={[
-                ...(settings ? [{
-                    icon: "settings",
-                    onPress: () => navigation.push("VendettaCustomPage", {
-                        title: plugin.manifest.name,
-                        render: settings,
-                    })
-                }] : []),
+                }
             ]}
         />
     )

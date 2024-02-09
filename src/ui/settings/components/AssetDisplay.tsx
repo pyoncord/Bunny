@@ -1,7 +1,6 @@
 import { Asset } from "@types";
 import { ReactNative as RN, clipboard } from "@metro/common";
 import { showToast } from "@ui/toasts";
-import { getAssetIDByName } from "@ui/assets";
 import { Forms } from "@ui/components";
 
 interface AssetDisplayProps { asset: Asset }
