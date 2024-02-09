@@ -23,6 +23,11 @@ try {
         minify: isRelease,
         format: "iife",
         target: "esnext",
+        supported: {
+            // Hermes does not actually supports const and let, even though it syntactically
+            // accepts it, but it's treated just like 'var' and causes issues
+            "const-and-let": false
+        },
         outfile: "dist/pyondetta.js",
         keepNames: true,
         define: {
