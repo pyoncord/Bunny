@@ -62,7 +62,7 @@ export async function evalPlugin(plugin: Plugin) {
             // Wrapping this with wrapSync is NOT an option.
             storage: await createStorage<Record<string, any>>(createMMKVBackend(plugin.id)),
         },
-        logger: new logModule(`Pyondetta » ${plugin.manifest.name}`),
+        logger: new logModule(`Bunny » ${plugin.manifest.name}`),
     };
     const pluginString = `vendetta=>{return ${plugin.js}}\n//# sourceURL=${plugin.id}`;
 

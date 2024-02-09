@@ -1,7 +1,7 @@
 {
-    "name": "pyondetta",
+    "name": "bunny",
     "version": "1.0.0",
-    "description": "A mod for Discord's mobile apps.",
+    "description": "A mod for Discord's mobile apps, fork of Vendetta.",
     "scripts": {
         "dev": "node build.mjs",
         "build": "node build.mjs --release",
@@ -12,7 +12,9 @@
         "discord",
         "android",
         "ios",
-        "react native"
+        "react native",
+        "vendetta",
+        "bunny"
     ],
     "author": "pylixonly, Team Vendetta",
     "license": "BSD-3-Clause",

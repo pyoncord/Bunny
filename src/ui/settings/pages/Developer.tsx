@@ -61,7 +61,7 @@ export default function Developer() {
                         <TableRowGroup title="Loader config">
                             <TableSwitchRow
                                 label="Load from custom url"
-                                subLabel={"Load Pyondetta from a custom endpoint."}
+                                subLabel={"Load Bunny from a custom endpoint."}
                                 icon={<TableRow.Icon source={getAssetIDByName("copy")} />}
                                 value={loaderConfig.customLoadUrl.enabled}
                                 onValueChange={(v: boolean) => {
@@ -73,7 +73,7 @@ export default function Developer() {
                                 size="md"
                                 onChange={(v: string) => loaderConfig.customLoadUrl.url = v}
                                 placeholder="http://localhost:4040/vendetta.js"
-                                label="Pyondetta URL"
+                                label="Bunny URL"
                             />} />}
                             {window.__vendetta_loader.features.devtools && <TableSwitchRow
                                 label="Load React DevTools"
@@ -111,7 +111,7 @@ export default function Developer() {
                                 options: [
                                     // @ts-expect-error 
                                     // Of course, to trigger an error, we need to do something incorrectly. The below will do!
-                                    { label: "Pyondetta", onPress: () => navigation.push("VendettaCustomPage", { render: () => <undefined /> }) },
+                                    { label: "Bunny", onPress: () => navigation.push("VendettaCustomPage", { render: () => <undefined /> }) },
                                     { label: "Discord", isDestructive: true, onPress: () => navigation.push("VendettaCustomPage", { noErrorBoundary: true }) },
                                 ],
                             })}

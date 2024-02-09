@@ -24,7 +24,7 @@ export default function General() {
 
     const versions = [
         {
-            label: "Pyondetta",
+            label: "Bunny",
             version: debugInfo.vendetta.version,
             icon: "ic_progress_wrench_24px",
         },

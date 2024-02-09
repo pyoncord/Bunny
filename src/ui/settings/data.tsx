@@ -119,8 +119,8 @@ export const getYouData = () => {
 
     return {
         getLayout: () => ({
-            title: "Pyondetta",
-            label: "Pyondetta",
+            title: "Bunny",
+            label: "Bunny",
             // We can't use our keyMap function here since `settings` is an array not an object
             settings: getRenderableScreens(true).map(s => s.key)
         }),

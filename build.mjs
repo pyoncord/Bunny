@@ -2,8 +2,10 @@
 import swc from "@swc/core";
 import { execSync } from "child_process";
 import esbuild from "esbuild";
-import { readFile } from "fs/promises";
+import { copyFile, copyFileSync } from "fs";
+import { readFile, writeFile } from "fs/promises";
 import { createServer } from "http";
+import path from "path";
 import { argv } from "process";
 
 const isFlag = (s, l) => argv.slice(2).some(c => c === `-${s}` || c === `--${l}`);
@@ -28,14 +30,14 @@ try {
             // accepts it, but it's treated just like 'var' and causes issues
             "const-and-let": false
         },
-        outfile: "dist/pyondetta.js",
+        outfile: "dist/bunny.js",
         keepNames: true,
         define: {
             __vendettaIsDev: `${!isRelease}`,
             __vendettaVersion: `"${isRelease ? commitHash : timeHash}"`,
         },
         footer: {
-            js: "//# sourceURL=pyondetta"
+            js: "//# sourceURL=bunny"
         },
         loader: { ".png": "dataurl" },
         legalComments: "none",
@@ -70,7 +72,11 @@ try {
                 name: "buildLog",
                 setup: async build => {
                     build.onStart(() => console.log(`Building with commit hash "${commitHash}", isRelease="${isRelease}", timeHash="${timeHash}"`));
-                    build.onEnd(result => console.log(`Built with ${result.errors?.length} errors!`));
+                    build.onEnd(result => {
+                        const { outfile } = build.initialOptions; 
+                        copyFileSync(outfile, path.resolve(outfile, "..", "pyondetta.js"))
+                        console.log(`Built with ${result.errors?.length} errors!`);
+                    });
                 }
             }
         ]
@@ -86,10 +92,10 @@ try {
 
         const server = createServer(async (req, res) => {
             try {
-                if (req.url === "/vendetta.js" || req.url === "/pyoncord.js" || req.url === "/pyondetta.js") {
+                if (req.url === "/vendetta.js" || req.url === "/pyoncord.js" || req.url === "/bunny.js") {
                     await ctx.rebuild();
                     res.writeHead(200);
-                    res.end(await readFile("./dist/pyondetta.js"), "utf-8");
+                    res.end(await readFile("./dist/bunny.js"), "utf-8");
                 } else {
                     res.writeHead(404);
                     res.end();
