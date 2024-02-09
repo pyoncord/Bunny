@@ -57,6 +57,7 @@ try {
                                 include: [
                                     "transform-classes",
                                     "transform-arrow-functions",
+                                    "transform-block-scoping"
                                 ]
                             },
                         });
@@ -88,7 +89,7 @@ try {
                 if (req.url === "/vendetta.js" || req.url === "/pyoncord.js" || req.url === "/pyondetta.js") {
                     await ctx.rebuild();
                     res.writeHead(200);
-                    res.end(await readFile("./dist/pyoncord.js"), "utf-8");
+                    res.end(await readFile("./dist/pyondetta.js"), "utf-8");
                 } else {
                     res.writeHead(404);
                     res.end();
