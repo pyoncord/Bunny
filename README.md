@@ -1,16 +1,18 @@
 > [!NOTE]
-> - This fork is still slowly progressing, but a set of new features have been implemented.
-> - "Pyondetta" is *not* the final name of the mod.
-> - Pyon's independent loader coming soon.
+> "Pyondetta" is not the final name of the mod.\
+> This fork has been slowly progressing **since Dec 2023**, and [a set of new features](https://github.com/pyoncord/Pyondetta/issues/1) have been implemented.
+> See [FAQs](#faqs)
 
 # Pyondetta
-A mod for Discord's mobile apps, fork of Vendetta.
+A mod for Discord's mobile apps, fork of Vendetta, *with an actual progess.*
+
 
 ## Installing
 Pyondetta's codebase is platform-agnostic, but you need a platform-specific loader.
 > [!NOTE]
-> As of now, Pyoncord/Pyondetta does not have a proper independent loader.\
-> However, you may use Vendetta's loader (VendettaXposed, VendettaTweak) and override loader url to [Pyondetta](https://raw.githubusercontent.com/pyoncord/detta-builds/main/pyondetta.js) (read [#Contributing > 7](#contributing)) to try out Pyondetta
+> - As of now, Pyoncord/Pyondetta does not have a proper independent loader.
+> - However, you may use Vendetta's loader (VendettaXposed, VendettaTweak) and override loader url to [Pyondetta](https://raw.githubusercontent.com/pyoncord/detta-builds/main/pyondetta.js) (read [#Contributing > 7](#contributing))
+> - Once our own independent loader is ready, support for Vendetta loader will cease
 
 ### Android
 * Root - [VendettaXposed](https://github.com/vendetta-mod/VendettaXposed/releases/latest)
@@ -23,6 +25,17 @@ Pyondetta's codebase is platform-agnostic, but you need a platform-specific load
     - You can get prebuilt `.deb` files from GitHub Actions - we support rootful and rootless jailbreaks!
 * Jailed - You can get IPAs from [the thread](https://discord.com/channels/1015931589865246730/1087295482667208766) in our [Discord server](https://discord.gg/n9QQ4XhhJP) or from our [host](https://discord.k6.tf/ios/).
     - These IPAs do *not* work with AltStore! You should use [Sideloadly](https://sideloadly.io).
+
+## FAQs
+
+### Why Pyondetta?
+Pyondetta is a fork from a maintainer of the good Vendetta, and is still passionate to work with Discord mods. Since Vendetta has reached EOL, Pyondetta was created to publish what I have been working behind the scenes.
+
+### Pyondetta vs Pyoncord
+Pyoncord and Pyondetta is a completely different mod. Pyoncord is my very own mod, and is in a very WIP project
+
+### Discord server?
+I'm not so much of an active Discord user myself. Since I'm ~~*a loner*~~ alone, managing a Discord server would be tough. Though, I still have created [a server for Pyoncord](https://discord.gg/97QVKX4z) for the sake of support (using GitHub issues is much preferable).
 
 ## Contributing
 1. Install a Pyondetta loader with loader config support (any mentioned in the [Installing](#installing) section).
