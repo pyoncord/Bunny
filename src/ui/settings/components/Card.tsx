@@ -103,7 +103,7 @@ export default function Card(props: CardProps) {
                                     {...props}
                                     size="sm"
                                     variant="secondary"
-                                    icon={getAssetIDByName("ic_settings_white_24px")} 
+                                    icon={getAssetIDByName("more_horizontal")} 
                                 />}
                             />
                         }
