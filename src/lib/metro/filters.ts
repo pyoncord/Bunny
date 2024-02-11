@@ -1,4 +1,5 @@
 import { MetroModules, PropsFinder, PropsFinderAll } from "@types";
+import { instead } from "@lib/patcher";
 
 // Metro require
 declare const __r: (moduleId: number) => any;
@@ -25,6 +26,22 @@ for (const key in window.modules) {
     }
 }
 
+const checked = new WeakSet();
+const onModuleCheck = (exports: any) => {
+    if (typeof exports !== "object" || checked.has(exports)) return;
+    checked.add(exports);
+
+    if (exports?.default?.name === "requireNativeComponent") {
+        instead("default", exports, (args, orig) => {
+            try {
+                return orig(...args);
+            } catch {
+                return args[0];
+            }
+        })
+    }
+}
+
 // Function to filter through modules
 const filterModules = (modules: MetroModules, single = false) => (filter: (m: any) => boolean) => {
     const found = [];
@@ -33,18 +50,18 @@ const filterModules = (modules: MetroModules, single = false) => (filter: (m: an
         const id = Number(key);
         const module = modules[id]?.publicModule?.exports;
 
-        // HACK: Override the function used to report fatal JavaScript errors (that crash the app) to prevent module-requiring side effects
-        // Credit to @pylixonly (492949202121261067) for the initial version of this fix
         if (!modules[id].isInitialized) try {
             window.ErrorUtils.setGlobalHandler(() => {});
             __r(id);
             window.ErrorUtils.setGlobalHandler(originalHandler);
-        } catch {}
+        } catch { }
 
         if (!module) {
             blacklist(id);
             continue;
         }
+
+        onModuleCheck(module);
 
         if (module.default && module.__esModule && filter(module.default)) {
             if (single) return module.default;
