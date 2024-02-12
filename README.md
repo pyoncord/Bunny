@@ -1,31 +1,34 @@
 > [!NOTE]
-> This fork has been slowly progressing **since Dec 2023**, and [new features](https://github.com/pyoncord/Bunny/issues/1) have been implemented.\
-> See [FAQs](#faqs)
+> This fork has been slowly progressing, check out [Bunny's roadmap](https://github.com/pyoncord/Bunny/issues/1)\
+> Bunny is based on the codebase where I do my prototypes, so it could be unstable and might have some issues. Sticking to Vendetta is a better option for now, unless you want to try some other forks.
 
 
 # Bunny
-A mod for Discord's mobile apps, fork of Vendetta—from its contributor, *with an actual progress*
+A mod for Discord's mobile apps, fork of Vendetta
 
 
 ## FAQs
 
 ### What's Bunny?
-Bunny is a fork from a contributor (me) of Vendetta who is still passionate about working with Discord modding. Since Vendetta has reached EOL, Bunny was created to publish what I have been working on behind the scenes.
+Bunny is a fork from a contributor of Vendetta who is still interested in modding Discord. Since Vendetta has reached EOL, Bunny was created to publish what I have been working on behind the scenes.
 
 
 ### Bunny vs. Pyoncord
-Pyoncord and Bunny are completely different mods. [Pyoncord](https://github.com/pyoncord/pyoncord) is my very own mod and is currently in a very WIP but usable state.
+Pyoncord and Bunny are completely different mods. [Pyoncord](https://github.com/pyoncord/pyoncord) is my very own WIP mod while Bunny is... simply a Vendetta fork. Bunny is put under Pyoncord branding following my initial plan which was to eventually merge these codebases into one (sounds insane I know).
 
 
 ### Discord server?
-I'm not so much of an active Discord user myself. Since I'm ~~*a loner*~~ alone at the moment, managing a Discord server would be tough. With that noted, I still have created [Pyoncord's server](https://discord.gg/XjYgWXHb9Q) for the sake of support (using GitHub issues is much preferable).
+I'm not so much of an active Discord user myself. Since I'm ~~*a loner*~~ alone at the moment, managing a Discord server would be tough. With that noted, I still have created [Pyoncord's server](https://discord.gg/XjYgWXHb9Q), but using GitHub issues for support is much preferable.
 
+
+### Progress?
+Bunny is a side project that I work on for fun. I don’t have any intention to compete with other forks/client mods *(cough Revenge cough)* especially since I receive lack of support or encouragement from others. Bunny will go at its own pace and you may not get the same level of support as other mods.
 
 
 ## Installing
-Bunny's codebase is platform-agnostic, but you need a platform-specific loader.
+Bunny's codebase is *currently* platform-agnostic, but you need a platform-specific loader.
 > [!NOTE]
-> - As of now, Pyoncord/Bunny does not have a proper independent loader.
+> - As of now, Pyoncord/Bunny does not have a proper independent loader yet.
 > - However, you may use Vendetta's loader (VendettaXposed, VendettaTweak) and override the loader url to [Bunny](https://raw.githubusercontent.com/pyoncord/detta-builds/main/bunny.js) (read [#Contributing > 7](#contributing))
 > - Once our own independent loader is ready, support for the Vendetta loader will cease.
 
@@ -45,7 +48,7 @@ Bunny's codebase is platform-agnostic, but you need a platform-specific loader.
 
 
 ## Contributing
-1. Install a Bunny loader with loader config support (any mentioned in the [Installing](#installing) section).
+1. Install a Vendetta loader with loader config support (any mentioned in the [Installing](#installing) section).
 
 
 2. Go to Settings > General and enable Developer Settings.
