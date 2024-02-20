@@ -12,6 +12,8 @@ import { ThemeManager } from "./native";
 export const color = findByProps("SemanticColor");
 
 const appearanceManager = findByProps("updateTheme");
+const mmkvStorage = findByProps("storage");
+const ThemeStore = findByStoreName("ThemeStore");
 
 export const themes = wrapSync(createStorage<Record<string, Theme>>(createMMKVBackend("VENDETTA_THEMES")));
 
@@ -179,7 +181,10 @@ export async function updateThemes() {
 }
 
 const origRawColor = { ...color.RawColor };
+
+let inc = 0;
 let vdKey = "vd-theme";
+
 let vdThemeFallback = "darker";
 let enabled = false;
 let currentTheme: Theme | null;
@@ -202,12 +207,56 @@ function patchColor() {
     before("isThemeLight", isThemeModule, callback);
     before("updateTheme", ThemeManager, callback);
 
-    before("updateTheme", appearanceManager, ([theme]) => {
-        enabled = theme === vdKey;
+    ThemeStore.addChangeListener(() => {
+        if (ThemeStore.theme) {
+            enabled = ThemeStore.theme === vdKey;
+            if (ThemeStore.theme !== vdKey) {
+                vdThemeFallback = ThemeStore.theme;
+            }
+        }
+    });
+
+    after("get", mmkvStorage, ([a], ret) => {
+        if (a === "SelectivelySyncedUserSettingsStore") {
+            if (ret?._state?.appearance?.settings?.theme) {
+                ret._state.appearance.settings.theme = enabled ? vdKey : vdThemeFallback;
+            }
+        } else if (a === "ThemeStore") {
+            if (ret?._state?.theme) {
+                ret._state.theme = enabled ? vdKey : vdThemeFallback;
+            }
+        }
+    });
+
+    // Prevent setting to real Discord settings
+    before("set", mmkvStorage, (args) => {
+        if (!args[1]) return;
+
+        const key = args[0];
+        const value = JSON.parse(JSON.stringify(args[1]));
+
+        const interceptors: Record<string, () => void> = ({
+            SelectivelySyncedUserSettingsStore: () => {
+                if (value._state?.appearance?.settings?.theme) {
+                    value._state.appearance.settings.theme = vdThemeFallback;   
+                }
+            },
+            ThemeStore: () => {
+                if (value._state?.theme) {
+                    value._state.theme = vdThemeFallback;   
+                }    
+            }
+        });
+
+        if (!(key in interceptors)) return args;
+
+        interceptors[key]();
+        return [key, value];
     });
 
     instead("resolveSemanticColor", color.default.meta ?? color.default.internal, (args, orig) => {
         if (!enabled || !currentTheme) return orig(...args);
+        if (args[1] !== vdKey) return orig(...args);
 
         const [name, colorDef] = extractInfo(vdThemeFallback, args[1]);
         
@@ -235,7 +284,6 @@ function patchColor() {
 }
 
 function getDefaultFallbackTheme(fallback: string = "darker") {
-    const ThemeStore = findByStoreName("ThemeStore");
     const theme = ThemeStore.theme.toLowerCase() as string;
 
     if (theme === "darker" || theme === "midnight" || theme === "dark" || theme === "light") {
@@ -250,7 +298,7 @@ export function applyTheme(appliedTheme: Theme | null, fallbackTheme?: string, u
 
     currentTheme = appliedTheme;
     vdThemeFallback = fallbackTheme;
-    vdKey = appliedTheme?.data.name!! + '-' + vdThemeFallback;
+    vdKey = `vd-theme-${inc++}-${fallbackTheme}`;
 
     if (appliedTheme) {
         color.Theme[vdKey.toUpperCase()] = vdKey;
@@ -264,9 +312,11 @@ export function applyTheme(appliedTheme: Theme | null, fallbackTheme?: string, u
         });
     }
 
-    if (update) appearanceManager.updateTheme(appliedTheme ? vdKey : fallbackTheme);
+    if (update) {
+        appearanceManager.setShouldSyncAppearanceSettings(false);
+        appearanceManager.updateTheme(appliedTheme ? vdKey : fallbackTheme);
+    }
 }
-
 
 export async function initThemes() {
     const currentTheme = getCurrentTheme();
