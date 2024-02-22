@@ -78,7 +78,7 @@ export default function Developer() {
                             />} />}
                             {isReactDevToolsPreloaded() && <TableSwitchRow
                                 label="Load React DevTools"
-                                subLabel={`Version: ${getReactDevToolsVersion}`}
+                                subLabel={`Version: ${getReactDevToolsVersion()}`}
                                 icon={<TableRow.Icon source={getAssetIDByName("ic_badge_staff")} />}
                                 value={loaderConfig.loadReactDevTools}
                                 onValueChange={(v: boolean) => {
