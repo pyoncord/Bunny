@@ -7,6 +7,7 @@ import { installTheme } from "@lib/themes";
 import { showConfirmationAlert } from "@ui/alerts";
 import { getAssetIDByName } from "@ui/assets";
 import { showToast } from "@ui/toasts";
+import { isThemeSupported } from "@/lib/loader";
 
 const showSimpleActionSheet = find((m) => m?.showSimpleActionSheet && !Object.getOwnPropertyDescriptor(m, "showSimpleActionSheet")?.get);
 const handleClick = findByProps("handleClick");
@@ -19,7 +20,7 @@ const { TextStyleSheet } = findByProps("TextStyleSheet");
 function typeFromUrl(url: string) {
     if (url.startsWith(PROXY_PREFIX)) {
         return "Plugin";
-    } else if (url.endsWith(".json") && window.__vendetta_loader?.features.themes) {
+    } else if (url.endsWith(".json") && isThemeSupported()) {
         return "Theme";
     } else return;
 }

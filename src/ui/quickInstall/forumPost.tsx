@@ -7,6 +7,7 @@ import { findInReactTree } from "@lib/utils";
 import { getAssetIDByName } from "@ui/assets";
 import { showToast } from "@ui/toasts";
 import { useProxy } from "@/lib/storage";
+import { isThemeSupported } from "@/lib/loader";
 
 type PostType = "Plugin" | "Theme";
 
@@ -42,7 +43,7 @@ function useExtractThreadContent(thread: any, _firstMessage = null, actionSheet 
     let postType: PostType;
     if (thread.parent_id === PLUGINS_CHANNEL_ID) {
         postType = "Plugin";
-    } else if (thread.parent_id === THEMES_CHANNEL_ID && window.__vendetta_loader?.features.themes) {
+    } else if (thread.parent_id === THEMES_CHANNEL_ID && isThemeSupported()) {
         postType = "Theme";
     } else return;
 

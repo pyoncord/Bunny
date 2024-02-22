@@ -518,6 +518,5 @@ declare global {
         modules: MetroModules;
         vendetta: VendettaObject;
         React: typeof _React;
-        __vendetta_loader?: LoaderIdentity;
     }
 }

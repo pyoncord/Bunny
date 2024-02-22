@@ -7,6 +7,7 @@ import { ErrorBoundary, Forms } from "@ui/components";
 import settings, { loaderConfig } from "@lib/settings";
 import AssetBrowser from "@ui/settings/pages/AssetBrowser";
 import { semanticColors } from "@ui/color";
+import { getReactDevToolsProp, getReactDevToolsVersion, isLoaderConfigSupported, isReactDevToolsPreloaded } from "@/lib/loader";
 
 const { Stack, TableRow, TableSwitchRow, TableRowGroup, TextInput } = findByProps("TableRow");
 const { FormText } = Forms;
@@ -46,18 +47,18 @@ export default function Developer() {
                             icon={<TableRow.Icon source={getAssetIDByName("copy")} />}
                             onPress={() => connectToDebugger(settings.debuggerUrl)}
                         />
-                        {window.__vendetta_rdc && <>
+                        {isReactDevToolsPreloaded() && <>
                             <TableRow
                                 label="Connect to React DevTools"
                                 icon={<TableRow.Icon source={getAssetIDByName("ic_badge_staff")} />}
-                                onPress={() => window.__vendetta_rdc?.connectToDevTools({
+                                onPress={() => window[getReactDevToolsProp() || "__vendetta_rdc"]?.connectToDevTools({
                                     host: settings.debuggerUrl.split(":")?.[0],
                                     resolveRNStyle: RN.StyleSheet.flatten,
                                 })}
                             />
                         </>}
                     </TableRowGroup>
-                    {window.__vendetta_loader?.features.loaderConfig && <>
+                    {isLoaderConfigSupported() && <>
                         <TableRowGroup title="Loader config">
                             <TableSwitchRow
                                 label="Load from custom url"
@@ -75,9 +76,9 @@ export default function Developer() {
                                 placeholder="http://localhost:4040/vendetta.js"
                                 label="Bunny URL"
                             />} />}
-                            {window.__vendetta_loader.features.devtools && <TableSwitchRow
+                            {isReactDevToolsPreloaded() && <TableSwitchRow
                                 label="Load React DevTools"
-                                subLabel={`Version: ${window.__vendetta_loader.features.devtools.version}`}
+                                subLabel={`Version: ${getReactDevToolsVersion}`}
                                 icon={<TableRow.Icon source={getAssetIDByName("ic_badge_staff")} />}
                                 value={loaderConfig.loadReactDevTools}
                                 onValueChange={(v: boolean) => {

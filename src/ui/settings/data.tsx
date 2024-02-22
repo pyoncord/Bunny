@@ -15,6 +15,7 @@ import Themes from "@ui/settings/pages/Themes";
 import Developer from "@ui/settings/pages/Developer";
 import { PROXY_PREFIX } from "@/lib/constants";
 import { findByProps } from "@/lib/metro/filters";
+import { isThemeSupported } from "@/lib/loader";
 
 const { useSafeAreaInsets } = findByProps("useSafeAreaInsets");
 
@@ -80,7 +81,7 @@ export const getScreens = (youKeys = false): Screen[] => [
         title: "Themes",
         icon: "ic_theme_24px",
         // TODO: bad
-        shouldRender: () => window.__vendetta_loader?.features.hasOwnProperty("themes") ?? false,
+        shouldRender: () => isThemeSupported(),
         options: {
             headerRight: () => !settings.safeMode?.enabled && <InstallButton alertTitle="Install Theme" installFunction={installTheme} />,
         },

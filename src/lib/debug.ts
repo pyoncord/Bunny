@@ -1,18 +1,19 @@
 import { RNConstants } from "@types";
 import { ReactNative as RN } from "@metro/common";
 import { after } from "@lib/patcher";
-import { getCurrentTheme, selectTheme } from "@lib/themes";
+import { getThemeFromLoader, selectTheme } from "@lib/themes";
 import { ClientInfoManager, DeviceManager, BundleUpdaterManager } from "@lib/native";
 import { getAssetIDByName } from "@ui/assets";
 import { showToast } from "@ui/toasts";
 import settings from "@lib/settings";
 import logger from "@lib/logger";
+import { isThemeSupported } from "./loader";
 export let socket: WebSocket;
 
 export async function toggleSafeMode() {
     settings.safeMode = { ...settings.safeMode, enabled: !settings.safeMode?.enabled }
-    if (window.__vendetta_loader?.features.themes) {
-        if (getCurrentTheme()?.id) settings.safeMode!.currentThemeId = getCurrentTheme()!.id;
+    if (isThemeSupported()) {
+        if (getThemeFromLoader()?.id) settings.safeMode!.currentThemeId = getThemeFromLoader()!.id;
         if (settings.safeMode?.enabled) {
             await selectTheme("default");
         } else if (settings.safeMode?.currentThemeId) {
@@ -74,7 +75,7 @@ export function getDebugInfo() {
     return {
         vendetta: {
             version: versionHash,
-            loader: window.__vendetta_loader?.name ?? "Unknown",
+            loader: isThemeSupported(),
         },
         discord: {
             version: ClientInfoManager.Version,

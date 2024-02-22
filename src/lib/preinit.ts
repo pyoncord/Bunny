@@ -1,4 +1,7 @@
 // Hoist required modules
+
+import { isThemeSupported } from "./loader";
+
 // This used to be in filters.ts, but things became convoluted
 const basicFind = (filter: (m: any) => any | string) => {
     for (const key in window.modules) {
@@ -17,7 +20,7 @@ export const ReactNative = basicFind(m => m.AppRegistry) as typeof import("react
 export const chroma = basicFind(m => m.brewer) as typeof import("chroma-js");
 
 // Themes
-if (window.__vendetta_loader?.features.themes) {
+if (isThemeSupported()) {
     try {
         require("@lib/themes").initThemes();
     } catch (e) {

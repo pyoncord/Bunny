@@ -6,6 +6,7 @@ import { after, before, instead } from "@lib/patcher";
 import { createFileBackend, createMMKVBackend, createStorage, wrapSync, awaitSyncWrapper } from "@lib/storage";
 import logger from "@lib/logger";
 import { ThemeManager } from "./native";
+import { getStoredTheme, getThemeFilePath } from "./loader";
 
 //! As of 173.10, early-finding this does not work.
 // Somehow, this is late enough, though?
@@ -34,8 +35,8 @@ async function writeTheme(theme: Theme | {}) {
     if (typeof theme !== "object") throw new Error("Theme must be an object");
 
     // Save the current theme as vendetta_theme.json. When supported by loader,
-    // this json will be written to window.__vendetta_theme and be used to theme the native side.
-    await createFileBackend("vendetta_theme.json").set(theme);
+    // this json will be written to appropriate path and be used to theme the native side.
+    await createFileBackend(getThemeFilePath() || "theme.json").set(theme);
 }
 
 export function patchChatBackground() {
@@ -168,15 +169,13 @@ export async function removeTheme(id: string) {
     return theme.selected;
 }
 
-export function getCurrentTheme(): Theme | null {
-    const themeProp = window.__vendetta_loader?.features?.themes?.prop;
-    if (!themeProp) return null;
-    return window[themeProp] || null;
+export function getThemeFromLoader(): Theme | null {
+    return getStoredTheme();
 }
 
 export async function updateThemes() {
     await awaitSyncWrapper(themes);
-    const currentTheme = getCurrentTheme();
+    const currentTheme = getThemeFromLoader();
     await Promise.allSettled(Object.keys(themes).map(id => fetchTheme(id, currentTheme?.id === id)));
 }
 
@@ -319,7 +318,7 @@ export function applyTheme(appliedTheme: Theme | null, fallbackTheme?: string, u
 }
 
 export async function initThemes() {
-    const currentTheme = getCurrentTheme();
+    const currentTheme = getThemeFromLoader();
     enabled = !!currentTheme;
 
     patchColor();
