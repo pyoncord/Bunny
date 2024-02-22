@@ -29,6 +29,12 @@ const styles = stylesheet.createThemedStyleSheet({
         marginLeft: 5,
         tintColor: semanticColors?.INTERACTIVE_NORMAL,
     },
+    icon: {
+        width: 22,
+        height: 22,
+        marginLeft: 5,
+        tintColor: semanticColors?.INTERACTIVE_NORMAL,
+    }
 })
 
 interface Action {
@@ -58,6 +64,7 @@ interface CardProps {
     actions?: Action[];
     overflowTitle?: string;
     overflowActions?: OverflowAction[];
+    overflowIcon?: string;
 }
 
 export default function Card(props: CardProps) {
@@ -77,14 +84,15 @@ export default function Card(props: CardProps) {
                     {...headerProps}
                     value={props.toggleValue}
                     onValueChange={props.onToggleChange}
-                /> : <TableCheckboxRow
+                /> : props.toggleType === "radio" ?
+                <TableCheckboxRow
                     {...headerProps}
                     onPress={() => {
                         pressableState = !pressableState;
                         props.onToggleChange?.(pressableState)
                     }}
                     checked={props.toggleValue}
-                />)}
+                /> : undefined) || <TableRow {...headerProps} />}
             <TableRow
                 label={props.descriptionLabel}
                 trailing={
@@ -97,14 +105,11 @@ export default function Card(props: CardProps) {
                                     iconSource: getAssetIDByName(i.icon),
                                     action: i.onPress
                                 }))}
-                                align="below"
+                                align="auto"
                                 title={props.overflowTitle!!}
-                                children={(props) => <IconButton
-                                    {...props}
-                                    size="sm"
-                                    variant="secondary"
-                                    icon={getAssetIDByName("more_horizontal")} 
-                                />}
+                                children={(props) => <RN.TouchableOpacity {...props}>
+                                    <RN.Image style={styles.icon} source={getAssetIDByName("ic_more_24px")} />
+                                </RN.TouchableOpacity>}
                             />
                         }
                     </RN.View>
