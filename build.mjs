@@ -84,7 +84,8 @@ try {
                                 include: [
                                     "transform-classes",
                                     "transform-arrow-functions",
-                                    "transform-block-scoping"
+                                    "transform-block-scoping",
+                                    "transform-class-properties"
                                 ],
                                 exclude: [
                                     "transform-parameters"
