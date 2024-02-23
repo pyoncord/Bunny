@@ -24,8 +24,8 @@ export const createVendettaObject = (unloads: any[]): any => ({
     metro: { 
         find: (filter: (m: any) => boolean) => metro.find(filter),
         findAll: (filter: (m: any) => boolean) => metro.findAll(filter),
-        findByProps: (filter: any) => metro.findByProps(filter),
-        findByPropsAll: (filter: any) => metro.findByPropsAll(filter),
+        findByProps: (...props: any) => metro.findByProps(...props),
+        findByPropsAll: (...props: any) => metro.findByPropsAll(...props),
         findByName: (name: string, defaultExp?: boolean | undefined) => metro.findByName(name, defaultExp),
         findByNameAll: (name: string, defaultExp?: boolean | undefined) => metro.findByNameAll(name, defaultExp),
         findByDisplayName: (displayName: string, defaultExp?: boolean | undefined) => metro.findByDisplayName(displayName, defaultExp),
