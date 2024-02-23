@@ -1,0 +1,24 @@
+\source ../../src/lib/windowObject.ts
+\import ./src/lib/windowObject
+
+@bunny from BunnyObject {
+	patcher
+	metro {
+		common
+	}
+	constants
+	utils
+	debug
+	ui {
+		components
+		toasts
+		alerts
+		assets
+	}
+	plugins
+	themes
+	commands
+	storage
+	settings
+	loader
+}

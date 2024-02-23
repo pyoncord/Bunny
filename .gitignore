@@ -3,3 +3,4 @@ dist/
 package-lock.json
 yarn.lock
 .DS_Store
+lib-dist/

@@ -1,0 +1,19 @@
+{
+  "name": "bunny-types",
+  "version": "0.0.1",
+  "description": "Types for Bunny, a mod for Discord's mobile apps",
+  "author": "pylixonly",
+  "publishConfig": {
+    "directory": "dist",
+    "typings": "treetype.d.ts"
+  },
+  "scripts": {
+    "prepublishOnly": "if [ -d dist ]; then rm -r dist; fi && tsc --project ../../tsconfig.json --outDir ./dist/src && cp package.json ./dist && cp LICENSE dist && pnpm treetype def.tt dist/treetype.d.ts"
+  },
+  "keywords": ["bunny-mod", "discord"],
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "@uwu/treetype": "^1.1.0",
+    "typescript": "^5.3.3"
+  }
+}
