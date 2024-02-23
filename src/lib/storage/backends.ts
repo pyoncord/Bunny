@@ -33,13 +33,15 @@ export const purgeStorage = async (store: string) => {
     }
 }
 
-export const createMMKVBackend = (store: string) => {
+export const createMMKVBackend = (store: string, defaultData = {}) => {
     const mmkvPath = getMMKVPath(store);
-    return createFileBackend(mmkvPath, (async () => {
+    const defaultStr = JSON.stringify(defaultData);
+
+    return createFileBackend(mmkvPath, defaultData, (async () => {
         const path = `${FileManager.getConstants().DocumentsDirPath}/${mmkvPath}`;
         if (await FileManager.fileExists(path)) return;
 
-        let oldData = await MMKVManager.getItem(store) ?? "{}";
+        let oldData = await MMKVManager.getItem(store) ?? defaultStr;
 
         // From the testing on Android, it seems to return this if the data is too large
         if (oldData === "!!LARGE_VALUE!!") {
@@ -48,7 +50,7 @@ export const createMMKVBackend = (store: string) => {
                 oldData = await FileManager.readFile(cachePath, "utf8")
             } else {
                 console.log(`${store}: Experienced data loss :(`);
-                oldData = "{}";
+                oldData = defaultStr;
             }
         }
 
@@ -56,7 +58,7 @@ export const createMMKVBackend = (store: string) => {
             JSON.parse(oldData);
         } catch {
             console.error(`${store} had an unparseable data while migrating`);
-            oldData = "{}";
+            oldData = defaultStr;
         }
 
         await FileManager.writeFile("documents", filePathFixer(mmkvPath), oldData, "utf8");
@@ -67,7 +69,7 @@ export const createMMKVBackend = (store: string) => {
     })());
 }
 
-export const createFileBackend = (file: string, migratePromise?: Promise<void>): StorageBackend => {
+export const createFileBackend = (file: string, defaultData = {}, migratePromise?: Promise<void>): StorageBackend => {
     return {
         get: async () => {
             await migratePromise;
@@ -81,7 +83,7 @@ export const createFileBackend = (file: string, migratePromise?: Promise<void>):
                 }
             }
 
-            await FileManager.writeFile("documents", filePathFixer(file), "{}", "utf8");
+            await FileManager.writeFile("documents", filePathFixer(file), JSON.stringify(defaultData), "utf8");
             return JSON.parse(await FileManager.readFile(path, "utf8"));
         },
         set: async (data) => {
