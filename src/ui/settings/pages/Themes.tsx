@@ -1,10 +1,10 @@
-import { Theme, ButtonColors } from "@types";
 import { useProxy } from "@lib/storage";
-import { installTheme, themes } from "@lib/themes";
+import { Theme, installTheme, themes } from "@lib/themes";
 import { Button } from "@ui/components";
 import settings from "@lib/settings";
 import AddonPage from "@ui/settings/components/AddonPage";
 import ThemeCard from "@ui/settings/components/ThemeCard";
+import { ButtonColors } from "@/lib/types";
 
 export default function Themes() {
     useProxy(settings);

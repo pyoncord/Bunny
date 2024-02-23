@@ -1,4 +1,3 @@
-import { Theme, ThemeData } from "@types";
 import { ReactNative as RN, chroma } from "@metro/common";
 import { findInReactTree, safeFetch } from "@lib/utils";
 import { find, findByName, findByProps, findByStoreName } from "@metro/filters";
@@ -7,6 +6,31 @@ import { createFileBackend, createMMKVBackend, createStorage, wrapSync, awaitSyn
 import logger from "@lib/logger";
 import { ThemeManager } from "./native";
 import { getStoredTheme, getThemeFilePath } from "./loader";
+import { Author } from "./types";
+
+export interface ThemeData {
+    name: string;
+    description?: string;
+    authors?: Author[];
+    spec: number;
+    semanticColors?: Record<string, (string | false)[]>;
+    rawColors?: Record<string, string>;
+    background?: {
+        url: string;
+        blur?: number;
+        /**
+         * The alpha value of the background.
+         * `CHAT_BACKGROUND` of semanticColors alpha value will be ignored when this is specified
+        */
+        alpha?: number;
+    }
+}
+
+export interface Theme {
+    id: string;
+    selected: boolean;
+    data: ThemeData;
+}
 
 //! As of 173.10, early-finding this does not work.
 // Somehow, this is late enough, though?

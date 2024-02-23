@@ -1,7 +1,13 @@
 // This has been completely reimplemented at this point, but the disclaimer at the end of disclaimers still counts.
 // https://github.com/Cordwood/Cordwood/blob/91c0b971bbf05e112927df75415df99fa105e1e7/src/lib/utils/findInTree.ts
 
-import { FindInTreeOptions, SearchTree, SearchFilter } from "@types";
+export type SearchTree = Record<string, any>;
+export type SearchFilter = (tree: SearchTree) => boolean;
+export interface FindInTreeOptions {
+    walkable?: string[];
+    ignore?: string[];
+    maxDepth?: number;
+}
 
 function treeSearch(tree: SearchTree, filter: SearchFilter, opts: Required<FindInTreeOptions>, depth: number): any {
     if (depth > opts.maxDepth) return;

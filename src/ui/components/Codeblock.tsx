@@ -1,6 +1,11 @@
-import { CodeblockProps } from "@types";
 import { ReactNative as RN, stylesheet, constants } from "@metro/common";
 import { semanticColors } from "@ui/color";
+
+export interface CodeblockProps {
+    selectable?: boolean;
+    style?: import("react-native").TextStyle;
+    children?: string;
+}
 
 const styles = stylesheet.createThemedStyleSheet({
     codeBlock: {

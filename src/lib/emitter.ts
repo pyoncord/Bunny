@@ -1,10 +1,31 @@
-import { Emitter, EmitterEvent, EmitterListener, EmitterListenerData, EmitterListeners } from "@types";
-
 export enum Events {
     GET = "GET",
     SET = "SET",
     DEL = "DEL",
 };
+
+export type EmitterEvent = "SET" | "GET" | "DEL";
+
+export interface EmitterListenerData {
+    path: string[];
+    value?: any;
+}
+
+export type EmitterListener = (
+    event: EmitterEvent,
+    data: EmitterListenerData | any
+) => any;
+
+export type EmitterListeners = Record<string, Set<EmitterListener>>
+
+export interface Emitter {
+    listeners: EmitterListeners;
+    on: (event: EmitterEvent, listener: EmitterListener) => void;
+    off: (event: EmitterEvent, listener: EmitterListener) => void;
+    once: (event: EmitterEvent, listener: EmitterListener) => void;
+    emit: (event: EmitterEvent, data: EmitterListenerData) => void;
+}
+
 
 export default function createEmitter(): Emitter {
     return {

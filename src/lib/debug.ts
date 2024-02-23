@@ -1,4 +1,3 @@
-import { RNConstants } from "@types";
 import { ReactNative as RN } from "@metro/common";
 import { after } from "@lib/patcher";
 import { getThemeFromLoader, selectTheme } from "@lib/themes";
@@ -8,7 +7,26 @@ import { showToast } from "@ui/toasts";
 import settings from "@lib/settings";
 import logger from "@lib/logger";
 import { getLoaderName, isThemeSupported } from "./loader";
+import type { PlatformConstants } from "react-native";
 export let socket: WebSocket;
+
+export interface RNConstants extends PlatformConstants {
+    // Android
+    Version: number;
+    Release: string;
+    Serial: string;
+    Fingerprint: string;
+    Model: string;
+    Brand: string;
+    Manufacturer: string;
+    ServerHost?: string;
+
+    // iOS
+    forceTouchAvailable: boolean;
+    interfaceIdiom: string;
+    osVersion: string;
+    systemName: string;
+}
 
 export async function toggleSafeMode() {
     settings.safeMode = { ...settings.safeMode, enabled: !settings.safeMode?.enabled }

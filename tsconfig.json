@@ -13,8 +13,7 @@
         "forceConsistentCasingInFileNames": true,
         "resolveJsonModule": true,
         "paths": {
-            "@/*": ["src/*"],
-            "@types": ["src/def.d.ts"],
+            "@*": ["src*"],
             "@lib/*": ["src/lib/*"],
             "@metro/*": ["src/lib/metro/*"],
             "@ui/*": ["src/ui/*"]

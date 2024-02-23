@@ -1,7 +1,12 @@
 import { find, findByProps, findByStoreName } from "@metro/filters";
-import { DiscordStyleSheet } from "@types";
 import { ReactNative as RN } from "@lib/preinit";
 import type { StyleSheet } from "react-native";
+
+export interface DiscordStyleSheet {
+    [index: string]: any,
+    createStyles: <T extends import("react-native").StyleSheet.NamedStyles<T>>(sheet: T | (() => T)) => () => T;
+    createThemedStyleSheet: typeof import("react-native").StyleSheet.create;
+}
 
 const ThemeStore = findByStoreName("ThemeStore");
 const colorModule = findByProps("colors", "unsafe_rawColors");

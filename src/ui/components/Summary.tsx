@@ -1,10 +1,16 @@
-import { SummaryProps } from "@types";
 import { ReactNative as RN } from "@metro/common";
 import { getAssetIDByName } from "@ui/assets";
 import { findByProps } from "@/lib/metro/filters";
 
 const { FormRow } = findByProps("FormRow");
 const { TableRow } = findByProps("TableRow");
+export interface SummaryProps {
+    label: string;
+    icon?: string;
+    noPadding?: boolean;
+    noAnimation?: boolean;
+    children: JSX.Element | JSX.Element[];
+}
 
 export default function Summary({ label, icon, noPadding = false, noAnimation = false, children }: SummaryProps) {
     const [hidden, setHidden] = React.useState(true);

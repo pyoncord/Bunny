@@ -1,15 +1,36 @@
-import { PluginManifest, Plugin } from "@types";
 import { safeFetch } from "@lib/utils";
 import { awaitSyncWrapper, createMMKVBackend, createStorage, purgeStorage, wrapSync } from "@lib/storage";
 import { allSettled } from "@lib/polyfills";
 import logger, { logModule } from "@lib/logger";
 import settings from "@lib/settings";
+import { Author } from "./types";
 
 type EvaledPlugin = {
     onLoad?(): void;
     onUnload(): void;
     settings: JSX.Element;
 };
+
+// See https://github.com/vendetta-mod/polymanifest
+export interface PluginManifest {
+    name: string;
+    description: string;
+    authors: Author[];
+    main: string;
+    hash: string;
+    // Vendor-specific field, contains our own data
+    vendetta?: {
+        icon?: string;
+    };
+}
+
+export interface Plugin {
+    id: string;
+    manifest: PluginManifest;
+    enabled: boolean;
+    update: boolean;
+    js: string;
+}
 
 export const plugins = wrapSync(createStorage<Record<string, Plugin>>(createMMKVBackend("VENDETTA_PLUGINS")));
 const loadedPlugins: Record<string, EvaledPlugin> = {};

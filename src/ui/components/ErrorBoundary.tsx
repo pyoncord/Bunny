@@ -1,10 +1,13 @@
-import { ErrorBoundaryProps } from "@types";
 import { React, ReactNative as RN, stylesheet } from "@metro/common";
 import { Forms, Button, Codeblock } from "@ui/components";
 
 interface ErrorBoundaryState {
     hasErr: boolean;
     errText?: string;
+}
+
+export interface ErrorBoundaryProps {
+    children: JSX.Element | JSX.Element[];
 }
 
 const styles = stylesheet.createThemedStyleSheet({

@@ -1,6 +1,10 @@
-import { StorageBackend } from "@types";
 import { MMKVManager, FileManager } from "@lib/native";
 import { ReactNative as RN } from "@metro/common";
+
+export interface StorageBackend {
+    get: () => unknown | Promise<unknown>;
+    set: (data: unknown) => void | Promise<void>;
+}
 
 const ILLEGAL_CHARS_REGEX = /[<>:"\/\\|?*]/g;
 

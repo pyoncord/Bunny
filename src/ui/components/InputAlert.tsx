@@ -1,9 +1,20 @@
-import { InputAlertProps } from "@types";
+import { ButtonColors } from "@/lib/types";
 import { findByProps } from "@metro/filters";
 import { Forms, Alert } from "@ui/components";
 
 const { FormInput } = Forms;
 const Alerts = findByProps("openLazy", "close");
+
+export interface InputAlertProps {
+    title?: string;
+    confirmText?: string;
+    confirmColor?: ButtonColors;
+    onConfirm: (input: string) => (void | Promise<void>);
+    cancelText?: string;
+    placeholder?: string;
+    initialValue?: string;
+    secureTextEntry?: boolean;
+}
 
 export default function InputAlert({ title, confirmText, confirmColor, onConfirm, cancelText, placeholder, initialValue = "", secureTextEntry }: InputAlertProps) {
     const [value, setValue] = React.useState(initialValue);

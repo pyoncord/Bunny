@@ -1,8 +1,12 @@
-import { Asset } from "@types";
 import { assets } from "@metro/common";
 import { after } from "@lib/patcher";
 
 export const all: Record<string, Asset> = {};
+
+export interface Asset {
+    name: string;
+    id: number;
+}
 
 export function patchAssets() {
     const unpatch = after("registerAsset", assets, (args: Asset[], id: number) => {

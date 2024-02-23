@@ -1,4 +1,3 @@
-import { ButtonColors } from "@types";
 import { ReactNative as RN, stylesheet } from "@metro/common";
 import { findByName, findByProps, findByStoreName } from "@metro/filters";
 import { after } from "@lib/patcher";
@@ -7,6 +6,7 @@ import { DeviceManager } from "@lib/native";
 import { semanticColors } from "@ui/color";
 import { Button, Codeblock, ErrorBoundary as _ErrorBoundary, SafeAreaView } from "@ui/components";
 import settings from "@lib/settings";
+import { ButtonColors } from "@/lib/types";
 
 const ErrorBoundary = findByName("ErrorBoundary");
 

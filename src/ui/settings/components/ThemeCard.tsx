@@ -1,6 +1,5 @@
-import { ButtonColors, Theme } from "@types";
 import { clipboard } from "@metro/common";
-import { applyTheme, fetchTheme, removeTheme, selectTheme, themes } from "@lib/themes";
+import { Theme, applyTheme, fetchTheme, removeTheme, selectTheme, themes } from "@lib/themes";
 import { useProxy } from "@lib/storage";
 import { BundleUpdaterManager } from "@lib/native";
 import { getAssetIDByName } from "@ui/assets";
@@ -8,6 +7,7 @@ import { showConfirmationAlert } from "@ui/alerts";
 import { showToast } from "@ui/toasts";
 import settings from "@lib/settings";
 import Card, { CardWrapper } from "@ui/settings/components/Card";
+import { ButtonColors } from "@/lib/types";
 
 async function selectAndApply(value: boolean, id: string) {
     try {

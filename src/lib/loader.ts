@@ -1,9 +1,23 @@
-import type { LoaderConfig, LoaderIdentity, Theme } from "@types";
+import { Theme } from "./themes";
 
 // @ts-ignore
 const pyonLoaderIdentity = globalThis.__PYON_LOADER__;
 // @ts-ignore
 const vendettaLoaderIdentity = globalThis.__vendetta_loader;
+
+export interface VendettaLoaderIdentity {
+    name: string;
+    features: {
+        loaderConfig?: boolean;
+        devtools?: {
+            prop: string;
+            version: string;
+        },
+        themes?: {
+            prop: string;
+        }
+    }
+}
 
 export function isVendettaLoader() {
     return vendettaLoaderIdentity != null;
@@ -48,10 +62,10 @@ function polyfillVendettaLoaderIdentity() {
         configurable: true
     });
 
-    return loader as LoaderIdentity;
+    return loader as VendettaLoaderIdentity;
 }
 
-export function getVendettaLoaderIdentity(): LoaderIdentity | null {
+export function getVendettaLoaderIdentity(): VendettaLoaderIdentity | null {
     // @ts-ignore
     if (globalThis.__vendetta_loader) return globalThis.__vendetta_loader;
     return polyfillVendettaLoaderIdentity();

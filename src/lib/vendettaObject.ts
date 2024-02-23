@@ -1,4 +1,3 @@
-import { VendettaObject } from "@types";
 import patcher from "@lib/patcher";
 import { getVendettaLoaderIdentity } from "@lib/loader";
 import settings, { loaderConfig } from "@lib/settings";
@@ -16,23 +15,23 @@ import * as assets from "@ui/assets";
 import * as color from "@ui/color";
 import * as utils from "@lib/utils";
 
-export const createVendettaObject = (unloads: any[]): VendettaObject => ({
+export const createVendettaObject = (unloads: any[]): any => ({
     patcher: {
         before: patcher.before,
         after: patcher.after,
         instead: patcher.instead
     },
     metro: { 
-        find: (filter) => metro.find(filter),
-        findAll: (filter) => metro.findAll(filter),
-        findByProps: (filter) => metro.findByProps(filter),
-        findByPropsAll: (filter) => metro.findByPropsAll(filter),
-        findByName: (name, defaultExp?) => metro.findByName(name, defaultExp),
-        findByNameAll: (name, defaultExp?) => metro.findByNameAll(name, defaultExp),
-        findByDisplayName: (displayName, defaultExp?) => metro.findByDisplayName(displayName, defaultExp),
-        findByDisplayNameAll: (displayName, defaultExp?) => metro.findByDisplayNameAll(displayName, defaultExp),
-        findByTypeName: (typeName, defaultExp?) => metro.findByTypeName(typeName, defaultExp),
-        findByTypeNameAll: (typeName, defaultExp?) => metro.findByTypeNameAll(typeName, defaultExp),
+        find: (filter: (m: any) => boolean) => metro.find(filter),
+        findAll: (filter: (m: any) => boolean) => metro.findAll(filter),
+        findByProps: (filter: any) => metro.findByProps(filter),
+        findByPropsAll: (filter: any) => metro.findByPropsAll(filter),
+        findByName: (name: string, defaultExp?: boolean | undefined) => metro.findByName(name, defaultExp),
+        findByNameAll: (name: string, defaultExp?: boolean | undefined) => metro.findByNameAll(name, defaultExp),
+        findByDisplayName: (displayName: string, defaultExp?: boolean | undefined) => metro.findByDisplayName(displayName, defaultExp),
+        findByDisplayNameAll: (displayName: string, defaultExp?: boolean | undefined) => metro.findByDisplayNameAll(displayName, defaultExp),
+        findByTypeName: (typeName: string, defaultExp?: boolean | undefined) => metro.findByTypeName(typeName, defaultExp),
+        findByTypeNameAll: (typeName: string, defaultExp?: boolean | undefined) => metro.findByTypeNameAll(typeName, defaultExp),
         findByStoreName: (name: string) => metro.findByStoreName(name),
         common: {
             constants: common.constants,
@@ -69,11 +68,11 @@ export const createVendettaObject = (unloads: any[]): VendettaObject => ({
         THEMES_CHANNEL_ID: "1091880434939482202",
     },
     utils: {
-        findInReactTree: (tree, filter) => utils.findInReactTree(tree, filter),
-        findInTree: (tree, filter, options) => utils.findInTree(tree, filter, options),
-        safeFetch: (input, options?, timeout?) => utils.safeFetch(input, options, timeout),
+        findInReactTree: (tree: { [key: string]: any; }, filter: any) => utils.findInReactTree(tree, filter),
+        findInTree: (tree: any, filter: any, options: any) => utils.findInTree(tree, filter, options),
+        safeFetch: (input: RequestInfo | URL, options?: RequestInit | undefined, timeout?: number | undefined) => utils.safeFetch(input, options, timeout),
         unfreeze: (obj: object) => utils.unfreeze(obj),
-        without: (object, ...keys) => utils.without(object, ...keys)
+        without: (object: any, ...keys: any) => utils.without(object, ...keys)
     },
     debug: {
         connectToDebugger: (url: string) => debug.connectToDebugger(url),
@@ -96,9 +95,9 @@ export const createVendettaObject = (unloads: any[]): VendettaObject => ({
             showToast: (content: string, asset?: number) => toasts.showToast(content, asset)
         },
         alerts: {
-            showConfirmationAlert: (options) => alerts.showConfirmationAlert(options),
-            showCustomAlert: (component, props: any) => alerts.showCustomAlert(component, props),
-            showInputAlert: (options) => alerts.showInputAlert(options)
+            showConfirmationAlert: (options: any) => alerts.showConfirmationAlert(options),
+            showCustomAlert: (component: React.ComponentType<any>, props: any) => alerts.showCustomAlert(component, props),
+            showInputAlert: (options: any) => alerts.showInputAlert(options)
         },
         assets: {
             all: assets.all,
@@ -132,7 +131,7 @@ export const createVendettaObject = (unloads: any[]): VendettaObject => ({
         registerCommand: commands.registerCommand
     },
     storage: {
-        createProxy: (target) => storage.createProxy(target),
+        createProxy: (target: any) => storage.createProxy(target),
         useProxy: <T>(_storage: T) => storage.useProxy(_storage),
         createStorage: (backend: any) => storage.createStorage(backend),
         wrapSync: (store: any) => storage.wrapSync(store),
@@ -146,18 +145,17 @@ export const createVendettaObject = (unloads: any[]): VendettaObject => ({
         config: loaderConfig,
     },
     logger: {
-        log: (...message) => console.log(...message),
-        info: (...message) => console.info(...message),
-        warn: (...message) => console.warn(...message),
-        error: (...message) => console.error(...message),
-        time: (...message) => console.time(...message),
-        trace: (...message) => console.trace(...message),
-        verbose: (...message) => console.log(...message)
+        log: (...message: any) => console.log(...message),
+        info: (...message: any) => console.info(...message),
+        warn: (...message: any) => console.warn(...message),
+        error: (...message: any) => console.error(...message),
+        time: (...message: any) => console.time(...message),
+        trace: (...message: any) => console.trace(...message),
+        verbose: (...message: any) => console.log(...message)
     },
     version: debug.versionHash,
     unload: () => {
         unloads.filter(i => typeof i === "function").forEach(p => p());
-        // @ts-expect-error explode
         delete window.vendetta;
     },
 });

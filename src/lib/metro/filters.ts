@@ -1,5 +1,9 @@
-import { MetroModules, PropsFinder, PropsFinderAll } from "@types";
 import { instead } from "@lib/patcher";
+
+export type MetroModules = { [id: number]: any };
+export type PropIntellisense<P extends string | symbol> = Record<P, any> & Record<PropertyKey, any>;
+export type PropsFinder = <T extends string | symbol>(...props: T[]) => PropIntellisense<T>;
+export type PropsFinderAll = <T extends string | symbol>(...props: T[]) => PropIntellisense<T>[];
 
 // Metro require
 declare const __r: (moduleId: number) => any;
