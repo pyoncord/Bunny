@@ -42,7 +42,7 @@ function createBunnyObject(unloads: any[]) {
         storage: { ...storage },
         settings: settings,
         loader: {
-            identity: window.__vendetta_loader,
+            identity: null,
             config: loaderConfig,
         },
         logger: { ...logger },

@@ -1,18 +1,20 @@
 import { instead } from "@lib/patcher";
 
-export type MetroModules = { [id: number]: any };
+type MetroModulesIndex = `${number}` | number;
+
+export type MetroModules = { [id: MetroModulesIndex]: any };
 export type PropIntellisense<P extends string | symbol> = Record<P, any> & Record<PropertyKey, any>;
 export type PropsFinder = <T extends string | symbol>(...props: T[]) => PropIntellisense<T>;
 export type PropsFinderAll = <T extends string | symbol>(...props: T[]) => PropIntellisense<T>[];
 
 // Metro require
-declare const __r: (moduleId: number) => any;
+declare const __r: (moduleId: MetroModulesIndex) => any;
 
 // Internal Metro error reporting logic
 const originalHandler = window.ErrorUtils.getGlobalHandler();
 
 // Function to blacklist a module, preventing it from being searched again
-const blacklist = (id: number) => Object.defineProperty(window.modules, id, {
+const blacklist = (id: MetroModulesIndex) => Object.defineProperty(window.modules, id, {
     value: window.modules[id],
     enumerable: false,
     configurable: true,
@@ -21,7 +23,7 @@ const blacklist = (id: number) => Object.defineProperty(window.modules, id, {
 
 // Blacklist any "bad-actor" modules, e.g. the dreaded null proxy, the window itself, or undefined modules
 for (const key in window.modules) {
-    const id = Number(key);
+    const id = key as MetroModulesIndex;
     const module = window.modules[id]?.publicModule?.exports;
 
     if (!module || module === window || module["proxygone"] === null) {
@@ -51,7 +53,7 @@ const filterModules = (modules: MetroModules, single = false) => (filter: (m: an
     const found = [];
 
     for (const key in modules) {
-        const id = Number(key);
+        const id = key as MetroModulesIndex;
         const module = modules[id]?.publicModule?.exports;
 
         if (!modules[id].isInitialized) try {

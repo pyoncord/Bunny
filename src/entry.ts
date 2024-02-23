@@ -1,4 +1,5 @@
 import { instead } from "spitroast";
+import { version } from "bunny-build";
 
 // @ts-ignore - shut up fr
 globalThis.window = globalThis;
@@ -18,9 +19,9 @@ const init = (async () => {
 
         console.log(stack ?? e?.toString?.() ?? e);
         alert([
-            "Failed to load Vendetta!\n",
+            "Failed to load Bunny!\n",
             `Build Number: ${ClientInfoManager.Build}`,
-            `Vendetta: ${__vendettaVersion}`,
+            `Bunny: ${version}`,
             stack || e?.toString?.(),
         ].join("\n"));
     }

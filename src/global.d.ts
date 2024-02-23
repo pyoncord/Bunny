@@ -3,7 +3,6 @@ import { BunnyObject } from "@lib/windowObject";
 
 declare global {
     type React = typeof import("react");
-    const __vendettaVersion: string;
 
     interface Window {
         [key: string]: any;

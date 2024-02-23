@@ -8,6 +8,7 @@ import settings from "@lib/settings";
 import logger from "@lib/logger";
 import { getLoaderName, isThemeSupported } from "./loader";
 import type { PlatformConstants } from "react-native";
+import { version } from "bunny-build";
 export let socket: WebSocket;
 
 export interface RNConstants extends PlatformConstants {
@@ -78,7 +79,7 @@ export function patchLogHook() {
     }
 }
 
-export const versionHash: string = __vendettaVersion;
+export const versionHash: string = version;
 
 export function getDebugInfo() {
     // Hermes

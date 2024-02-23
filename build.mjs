@@ -70,11 +70,10 @@ try {
                             jsc: {
                                 externalHelpers: true,
                                 transform: {
-                                    optimizer: {
+                                    constModules: {
                                         globals: {
-                                            vars: {
-                                                __vendettaIsDev: `${!isRelease}`,
-                                                __vendettaVersion: `"${isRelease ? commitHash : timeString}"`,
+                                            "bunny-build": {
+                                                version: `"${isRelease ? commitHash : timeString}"`
                                             }
                                         }
                                     }
@@ -86,6 +85,9 @@ try {
                                     "transform-classes",
                                     "transform-arrow-functions",
                                     "transform-block-scoping"
+                                ],
+                                exclude: [
+                                    "transform-parameters"
                                 ]
                             },
                         });
