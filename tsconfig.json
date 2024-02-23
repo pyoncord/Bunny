@@ -19,7 +19,8 @@
             "@*": ["src*"],
             "@lib/*": ["src/lib/*"],
             "@metro/*": ["src/lib/metro/*"],
-            "@ui/*": ["src/ui/*"]
+            "@ui/*": ["src/ui/*"],
+            "bunny-build": ["src/modules.d.ts"]
         },
         "plugins": [
             { "transform": "typescript-transform-paths", "afterDeclarations": true }

@@ -5,7 +5,7 @@ import { isThemeSupported } from "./loader";
 // This used to be in filters.ts, but things became convoluted
 const basicFind = (filter: (m: any) => any | string) => {
     for (const key in window.modules) {
-        const exp = window.modules[key]?.publicModule.exports;
+        const exp = window.modules[key as unknown as number]?.publicModule.exports;
         if (exp && filter(exp)) return exp;
     }
 }
