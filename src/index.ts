@@ -8,7 +8,7 @@ import initSafeMode from "@ui/safeMode";
 import initSettings from "@ui/settings";
 import initFixes from "@lib/fixes";
 import logger from "@lib/logger";
-import windowObject from "@lib/windowObject";
+import initWindowObject from "@lib/windowObject";
 
 export default async () => {
     // Load everything in parallel
@@ -24,7 +24,7 @@ export default async () => {
     ]);
 
     // Assign window object
-    window.vendetta = await windowObject(unloads);
+    initWindowObject(unloads);
 
     // Once done, load plugins
     unloads.push(await initPlugins());

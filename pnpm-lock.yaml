@@ -41,7 +41,7 @@ devDependencies:
     specifier: 2.22.2
     version: 2.22.2
   typescript:
-    specifier: ^5.0.4
+    specifier: ^5.2.2
     version: 5.2.2
 
 packages:
