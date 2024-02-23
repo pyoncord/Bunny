@@ -7,7 +7,7 @@ import { getAssetIDByName } from "@ui/assets";
 import { showToast } from "@ui/toasts";
 import settings from "@lib/settings";
 import logger from "@lib/logger";
-import { isThemeSupported } from "./loader";
+import { getLoaderName, isThemeSupported } from "./loader";
 export let socket: WebSocket;
 
 export async function toggleSafeMode() {
@@ -75,7 +75,7 @@ export function getDebugInfo() {
     return {
         vendetta: {
             version: versionHash,
-            loader: isThemeSupported(),
+            loader: getLoaderName(),
         },
         discord: {
             version: ClientInfoManager.Version,
