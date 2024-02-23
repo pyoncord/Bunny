@@ -1,24 +1,26 @@
 > [!NOTE]
 > This fork has been slowly progressing, check out [Bunny's roadmap](https://github.com/pyoncord/Bunny/issues/1)\
-> Bunny is based on the codebase where I do my prototypes, so it could be unstable and might have some issues. Sticking to Vendetta is a better option for now, unless you want to try some other forks.
+> I might be a bit inactive to maintain Bunny until March '24.
 
 
 # Bunny
-A mod for Discord's mobile apps, fork of Vendetta
+A mod for Discord's mobile apps, a fork of Vendetta
 
 
 ## FAQs
 
 ### What's Bunny?
-Bunny is a fork from a contributor of Vendetta who is still interested in modding Discord. Since Vendetta has reached EOL, Bunny was created to publish what I have been working on behind the scenes.
+Bunny is a fork from someone from the Vendetta team who is still interested in modding Discord. Since Vendetta has reached EOL, Bunny was created to publish what I have been working on behind the scenes.
 
 
 ### Bunny vs. Pyoncord
-Pyoncord and Bunny are completely different mods. [Pyoncord](https://github.com/pyoncord/pyoncord) is my very own WIP mod while Bunny is... simply a Vendetta fork. Bunny is put under Pyoncord branding following my initial plan which was to eventually merge these codebases into one (sounds insane I know).
+Pyoncord and Bunny are completely different mods. [Pyoncord](https://github.com/pyoncord/pyoncord) is my very own WIP mod, while Bunny is... simply a Vendetta fork. Bunny is put under Pyoncord branding following my initial plan, which was to eventually merge these codebases into one (sounds insane, I know).
 
 
 ### Discord server?
-I'm not so much of an active Discord user myself. Since I'm ~~*a loner*~~ alone at the moment, managing a Discord server would be tough. With that noted, I still have created [Pyoncord's server](https://discord.gg/XjYgWXHb9Q), but using GitHub issues for support is much preferable.
+I have created [Pyoncord's server](https://discord.gg/XjYgWXHb9Q) for support and announcements, but getting support through GitHub issues is much preferable.
+> [!NOTE]
+> It's worth noting that I'm not so much of an active Discord user myself. With me being a loner, even managing a dead Discord server would be tough. 
 
 
 ### Progress?
@@ -26,62 +28,15 @@ Bunny is a side project that I work on for fun. I don’t have any intention to 
 
 
 ## Installing
-Bunny's codebase is *currently* platform-agnostic, but you need a platform-specific loader.
-> [!NOTE]
-> - As of now, Pyoncord/Bunny does not have a proper independent loader yet.
-> - However, you may use Vendetta's loader (VendettaXposed, VendettaTweak) and override the loader url to [Bunny](https://raw.githubusercontent.com/pyoncord/detta-builds/main/bunny.js) (read [#Contributing > 7](#contributing))
-> - Once our own independent loader is ready, support for the Vendetta loader will cease.
+There's currently no proper way to install Bunny, *yet*. I am currently working on an Xposed module for Android and will think about iOS later, when most of what I planned for Bunny is finished.
 
+### HOWEVER
 
-### Android
-* Root - [VendettaXposed](https://github.com/vendetta-mod/VendettaXposed/releases/latest)
-* Non-root - [VendettaManager](https://github.com/vendetta-mod/VendettaManager/releases/latest)
-    - Manager not working? No problem! Pre-built APKs are provided [here](https://discord.k6.tf/).
-    - The minimum Android version required is 9. It will not work any lower.
+For now, you can opt-in Bunny directly from Vendetta's loader (like VendettaXposed or VendettaTweak)! If you wish to opt-in, simply:
+1. Go to Settings > Developer (under the Vendetta section) > Enable 'Load from custom url'
+2. Insert [Pyoncord's bundle URL](https://raw.githubusercontent.com/pyoncord/detta-builds/main/bunny.js) > Restart.
 
+It's worth noting that this method may not last long and eventually cease in the future, but that's the least thing to worry about!... probably.
 
-### iOS
-* Jailbroken - [VendettaTweak](https://github.com/vendetta-mod/VendettaTweak)
-    - You can get prebuilt `.deb` files from GitHub Actions - we support rootful and rootless jailbreaks!
-* Jailed - You can get IPAs from [the thread](https://discord.com/channels/1015931589865246730/1087295482667208766) in our [Discord server](https://discord.gg/n9QQ4XhhJP) or from our [host](https://discord.k6.tf/ios/).
-    - These IPAs do *not* work with AltStore! You should use [Sideloadly](https://sideloadly.io).
-
-
-## Contributing
-1. Install a Vendetta loader with loader config support (any mentioned in the [Installing](#installing) section).
-
-
-2. Go to Settings > General and enable Developer Settings.
-
-
-3. Clone the repo:
-    ```
-    git clone https://github.com/pyoncord/bunny
-    ```
-
-
-4. Install dependencies:
-    ```
-    pnpm i
-    ```
-    <sup>`npm` or `yarn` should also work.</sup>
-
-
-5. Build Bunny's code:
-    ```
-    pnpm build
-    ```
-    <sup>`npm` or `yarn` should also work.</sup>
-
-
-6. In the newly created `dist` directory, run a HTTP server. I recommend [http-server](https://www.npmjs.com/package/http-server).
-
-
-7. Go to Settings > Developer enabled earlier). Enable `Load from custom url` and input the IP address and port of the server (e.g. `http://192.168.1.236:4040`) in the new input box labelled `VENDETTA URL`.
-
-
-8. Restart Discord. Upon reload, you should notice that your device will download Bunny's bundled code from your server, rather than GitHub.
-
-
-9. Make your changes, rebuild, reload, go wild!
-
+## Contributing <!-- do better tbh -->
+Setting up Bunny is quite simple if you're already familiar with developing with Node.js. Simply `git clone`, `pnpm install`, `pnpm dev` and locally host the `<project-dir>/dist/bunny.js` bundle generated by the script. Once you've got the local URL (something like `http://192.168.1.236:4040/bunny.js`), insert the URL under Settings > Developer (enabled in General beforehand) > Load custom URL and restart
