@@ -24,7 +24,7 @@ export interface PluginManifest {
     };
 }
 
-export interface Plugin {
+export interface BunnyPlugin {
     id: string;
     manifest: PluginManifest;
     enabled: boolean;
@@ -32,7 +32,7 @@ export interface Plugin {
     js: string;
 }
 
-export const plugins = wrapSync(createStorage<Record<string, Plugin>>(createMMKVBackend("VENDETTA_PLUGINS")));
+export const plugins = wrapSync(createStorage<Record<string, BunnyPlugin>>(createMMKVBackend("VENDETTA_PLUGINS")));
 const loadedPlugins: Record<string, EvaledPlugin> = {};
 
 export async function fetchPlugin(id: string) {
@@ -74,7 +74,7 @@ export async function installPlugin(id: string, enabled = true) {
     if (enabled) await startPlugin(id);
 }
 
-export async function evalPlugin(plugin: Plugin) {
+export async function evalPlugin(plugin: BunnyPlugin) {
     const vendettaForPlugins = {
         ...window.vendetta,
         plugin: {

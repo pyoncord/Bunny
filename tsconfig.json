@@ -1,5 +1,5 @@
 {
-    "include": ["src"],
+    "include": ["src/**/*.ts"],
     "exclude": ["node_modules"],
     "compilerOptions": {
         "baseUrl": ".",
@@ -20,6 +20,9 @@
             "@lib/*": ["src/lib/*"],
             "@metro/*": ["src/lib/metro/*"],
             "@ui/*": ["src/ui/*"]
-        }
+        },
+        "plugins": [
+            { "transform": "typescript-transform-paths", "afterDeclarations": true }
+        ]
     }
 }

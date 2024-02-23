@@ -1,19 +1,33 @@
 {
   "name": "bunny-types",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Types for Bunny, a mod for Discord's mobile apps",
   "author": "pylixonly",
   "publishConfig": {
     "directory": "dist",
-    "typings": "treetype.d.ts"
+    "typings": "index.d.ts"
   },
   "scripts": {
-    "prepublishOnly": "if [ -d dist ]; then rm -r dist; fi && tsc --project ../../tsconfig.json --outDir ./dist/src && cp package.json ./dist && cp LICENSE dist && pnpm treetype def.tt dist/treetype.d.ts"
+    "prepublishOnly": "node prepare.mjs"
   },
-  "keywords": ["bunny-mod", "discord"],
+  "keywords": [
+    "bunny-mod",
+    "discord"
+  ],
   "license": "BSD-3-Clause",
   "dependencies": {
+    "@types/chroma-js": "^2.4.0",
+    "@types/lodash": "^4.14.191",
+    "@types/react": "18.0.26",
+    "@types/react-native": "0.68.1",
+    "@react-native-clipboard/clipboard": "1.10.0",
+    "moment": "2.22.2",
+    "spitroast": "^1.4.2"
+  },
+  "devDependencies": {
     "@uwu/treetype": "^1.1.0",
+    "dts-bundle-generator": "^9.3.1",
+    "ts-patch": "^3.1.2",
     "typescript": "^5.3.3"
   }
 }

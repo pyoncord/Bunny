@@ -1,5 +1,5 @@
 import { useProxy } from "@lib/storage";
-import { Plugin, installPlugin, plugins } from "@lib/plugins";
+import { BunnyPlugin, installPlugin, plugins } from "@lib/plugins";
 import settings from "@lib/settings";
 import AddonPage from "@ui/settings/components/AddonPage";
 import PluginCard from "@ui/settings/components/PluginCard";
@@ -8,7 +8,7 @@ export default function Plugins() {
     useProxy(settings)
 
     return (
-        <AddonPage<Plugin>
+        <AddonPage<BunnyPlugin>
             title="Plugin"
             fetchFunction={installPlugin}
             items={plugins}

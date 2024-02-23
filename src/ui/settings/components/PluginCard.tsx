@@ -1,5 +1,5 @@
 import { NavigationNative, clipboard } from "@metro/common";
-import { removePlugin, startPlugin, stopPlugin, getSettings, fetchPlugin, Plugin } from "@lib/plugins";
+import { removePlugin, startPlugin, stopPlugin, getSettings, fetchPlugin, BunnyPlugin } from "@lib/plugins";
 import { MMKVManager } from "@lib/native";
 import { getAssetIDByName } from "@ui/assets";
 import { showToast } from "@ui/toasts";
@@ -8,13 +8,13 @@ import Card, { CardWrapper } from "@ui/settings/components/Card";
 import { useProxy } from "@/lib/storage";
 import { ButtonColors } from "@/lib/types";
 
-async function stopThenStart(plugin: Plugin, callback: Function) {
+async function stopThenStart(plugin: BunnyPlugin, callback: Function) {
     if (plugin.enabled) stopPlugin(plugin.id, false);
     callback();
     if (plugin.enabled) await startPlugin(plugin.id);
 }
 
-export default function PluginCard({ item: plugin, index }: CardWrapper<Plugin>) {
+export default function PluginCard({ item: plugin, index }: CardWrapper<BunnyPlugin>) {
     useProxy(plugin);
 
     const settings = getSettings(plugin.id);

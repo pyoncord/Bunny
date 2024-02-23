@@ -28,7 +28,8 @@
         "esbuild": "^0.17.16",
         "esbuild-plugin-alias": "^0.2.1",
         "moment": "2.22.2",
-        "typescript": "^5.2.2"
+        "typescript": "^5.2.2",
+        "typescript-transform-paths": "^3.4.7"
     },
     "dependencies": {
         "@swc/helpers": "0.5.0",

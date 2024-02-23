@@ -1,5 +1,5 @@
-\source ../../src/lib/windowObject.ts
-\import ./src/lib/windowObject
+\source ./dist/index.d.ts
+\import ./index
 
 @bunny from BunnyObject {
 	patcher
