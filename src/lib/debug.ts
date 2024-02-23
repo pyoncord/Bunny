@@ -79,7 +79,7 @@ export function patchLogHook() {
     }
 }
 
-export const versionHash: string = version;
+export const versionHash: string = "ffffff";//version;
 
 export function getDebugInfo() {
     // Hermes
