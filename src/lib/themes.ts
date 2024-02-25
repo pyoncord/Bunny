@@ -1,3 +1,4 @@
+// TODO: rewrite most of this
 import { ReactNative as RN, chroma } from "@metro/common";
 import { findInReactTree, safeFetch } from "@lib/utils";
 import { find, findByName, findByProps, findByStoreName } from "@metro/filters";
@@ -212,6 +213,11 @@ let vdThemeFallback = "darker";
 let enabled = false;
 let currentTheme: Theme | null;
 
+const discordThemes = new Set(["darker", "midnight", "dark", "light"]);
+function isDiscordTheme(name: string) {
+    return discordThemes.has(name);
+}
+
 function patchColor() {
     const isThemeModule = find(m => m.isThemeDark && Object.getOwnPropertyDescriptor(m, "isThemeDark")?.value);
     const callback = ([theme]: any[]) => theme === vdKey ? [vdThemeFallback] : void 0;
@@ -241,12 +247,12 @@ function patchColor() {
 
     after("get", mmkvStorage, ([a], ret) => {
         if (a === "SelectivelySyncedUserSettingsStore") {
-            if (ret?._state?.appearance?.settings?.theme) {
-                ret._state.appearance.settings.theme = enabled ? vdKey : vdThemeFallback;
+            if (ret?._state?.appearance?.settings?.theme && enabled) {
+                ret._state.appearance.settings.theme = vdKey;
             }
         } else if (a === "ThemeStore") {
-            if (ret?._state?.theme) {
-                ret._state.theme = enabled ? vdKey : vdThemeFallback;
+            if (ret?._state?.theme && enabled) {
+                ret._state.theme = vdKey;
             }
         }
     });
@@ -261,13 +267,24 @@ function patchColor() {
         const interceptors: Record<string, () => void> = ({
             SelectivelySyncedUserSettingsStore: () => {
                 if (value._state?.appearance?.settings?.theme) {
-                    value._state.appearance.settings.theme = vdThemeFallback;   
+                    const { theme } = value._state?.appearance?.settings;
+                    if (isDiscordTheme(theme)) {
+                        vdThemeFallback = theme;
+                    } else {
+                        value._state.appearance.settings.theme = vdThemeFallback;   
+                    }
                 }
             },
             ThemeStore: () => {
                 if (value._state?.theme) {
-                    value._state.theme = vdThemeFallback;   
-                }    
+                    const { theme } = value._state;
+                    if (isDiscordTheme(theme)) {
+                        selectTheme("default");
+                        vdThemeFallback = theme;
+                    } else {
+                        value._state.theme = vdThemeFallback;   
+                    }  
+                }
             }
         });
 
@@ -306,7 +323,7 @@ function patchColor() {
     });
 }
 
-function getDefaultFallbackTheme(fallback: string = "darker") {
+function getDefaultFallbackTheme(fallback: string = vdThemeFallback) {
     const theme = ThemeStore.theme.toLowerCase() as string;
 
     if (theme === "darker" || theme === "midnight" || theme === "dark" || theme === "light") {
