@@ -1,4 +1,4 @@
-import { MMKVManager, FileManager } from "@lib/native";
+import { MMKVManager, FileManager } from "@lib/native/modules";
 import { ReactNative as RN } from "@metro/common";
 
 export interface StorageBackend {

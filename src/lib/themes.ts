@@ -4,7 +4,7 @@ import { find, findByName, findByProps, findByStoreName } from "@metro/filters";
 import { after, before, instead } from "@lib/patcher";
 import { createFileBackend, createMMKVBackend, createStorage, wrapSync, awaitSyncWrapper } from "@lib/storage";
 import logger from "@lib/logger";
-import { ThemeManager } from "./native";
+import { ThemeManager } from "@lib/native/modules";
 import { getStoredTheme, getThemeFilePath } from "./loader";
 import { Author } from "./types";
 

@@ -1,6 +1,7 @@
 import { createVendettaObject } from "./vendettaObject";
 import * as constants from "@lib/constants";
 import * as debug from "@lib/debug";
+import * as native from "@lib/native";
 import * as plugins from "@lib/plugins";
 import * as themes from "@lib/themes";
 import * as commands from "@lib/commands";
@@ -36,6 +37,7 @@ function createBunnyObject(unloads: any[]) {
             assets: { ...assets },
             ...color,
         },
+        native: { ...native },
         plugins: utils.without({ ...plugins }, "initPlugins", "evalPlugin"),
         themes: utils.without({ ...themes }, "initThemes"),
         commands: utils.without({ ...commands }, "patchCommands"),

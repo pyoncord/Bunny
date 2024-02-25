@@ -15,6 +15,7 @@
 		alerts
 		assets
 	}
+	native
 	plugins
 	themes
 	commands

@@ -23,6 +23,7 @@
         "@swc/core": "^1.4.2",
         "@types/chroma-js": "^2.4.0",
         "@types/lodash": "^4.14.194",
+        "@types/node": "^20.11.20",
         "@types/react": "18.0.35",
         "@types/react-native": "0.70.6",
         "esbuild": "^0.17.16",

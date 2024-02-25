@@ -1,7 +1,7 @@
 import { clipboard } from "@metro/common";
 import { Theme, applyTheme, fetchTheme, removeTheme, selectTheme, themes } from "@lib/themes";
 import { useProxy } from "@lib/storage";
-import { BundleUpdaterManager } from "@lib/native";
+import { BundleUpdaterManager } from "@lib/native/modules";
 import { getAssetIDByName } from "@ui/assets";
 import { showConfirmationAlert } from "@ui/alerts";
 import { showToast } from "@ui/toasts";

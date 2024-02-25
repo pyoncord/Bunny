@@ -1,6 +1,6 @@
 import { NavigationNative, clipboard } from "@metro/common";
 import { removePlugin, startPlugin, stopPlugin, getSettings, fetchPlugin, BunnyPlugin } from "@lib/plugins";
-import { MMKVManager } from "@lib/native";
+import { MMKVManager } from "@lib/native/modules";
 import { getAssetIDByName } from "@ui/assets";
 import { showToast } from "@ui/toasts";
 import { showConfirmationAlert } from "@ui/alerts";

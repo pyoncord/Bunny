@@ -1,7 +1,7 @@
 import { ReactNative as RN } from "@metro/common";
 import { after } from "@lib/patcher";
 import { getThemeFromLoader, selectTheme } from "@lib/themes";
-import { ClientInfoManager, DeviceManager, BundleUpdaterManager } from "@lib/native";
+import { ClientInfoManager, DeviceManager, BundleUpdaterManager } from "@lib/native/modules";
 import { getAssetIDByName } from "@ui/assets";
 import { showToast } from "@ui/toasts";
 import settings from "@lib/settings";
