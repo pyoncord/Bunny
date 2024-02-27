@@ -8,6 +8,7 @@ import settings, { loaderConfig } from "@lib/settings";
 import AssetBrowser from "@ui/settings/pages/AssetBrowser";
 import { semanticColors } from "@ui/color";
 import { getReactDevToolsProp, getReactDevToolsVersion, isLoaderConfigSupported, isReactDevToolsPreloaded } from "@/lib/loader";
+import { Strings } from "@/lib/i18n";
 
 const { Stack, TableRow, TableSwitchRow, TableRowGroup, TextInput } = findByProps("TableRow");
 const { FormText } = Forms;
@@ -74,7 +75,7 @@ export default function Developer() {
                                 size="md"
                                 onChange={(v: string) => loaderConfig.customLoadUrl.url = v}
                                 placeholder="http://localhost:4040/vendetta.js"
-                                label="Bunny URL"
+                                label={Strings.BUNNY_URL}
                             />} />}
                             {isReactDevToolsPreloaded() && <TableSwitchRow
                                 label="Load React DevTools"
@@ -112,7 +113,7 @@ export default function Developer() {
                                 options: [
                                     // @ts-expect-error 
                                     // Of course, to trigger an error, we need to do something incorrectly. The below will do!
-                                    { label: "Bunny", onPress: () => navigation.push("VendettaCustomPage", { render: () => <undefined /> }) },
+                                    { label: Strings.BUNNY, onPress: () => navigation.push("VendettaCustomPage", { render: () => <undefined /> }) },
                                     { label: "Discord", isDestructive: true, onPress: () => navigation.push("VendettaCustomPage", { noErrorBoundary: true }) },
                                 ],
                             })}

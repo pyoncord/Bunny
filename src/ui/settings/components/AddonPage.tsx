@@ -7,6 +7,7 @@ import { findByProps } from "@/lib/metro/filters";
 import { HTTP_REGEX_MULTI } from "@/lib/constants";
 import { showInputAlert } from "@/ui/alerts";
 import { getAssetIDByName } from "@/ui/assets";
+import { Strings, formatString } from "@/lib/i18n";
 
 interface AddonPageProps<T> {
     title: string;
@@ -40,7 +41,7 @@ export default function AddonPage<T>({ title, fetchFunction, items, safeModeMess
                     <Search
                         style={{ marginBottom: 15 }}
                         onChangeText={(v: string) => setSearch(v.toLowerCase())}
-                        placeholder="Search"
+                        placeholder={Strings.SEARCH}
                     />
                 </>}
                 onScroll={e => {
@@ -55,19 +56,19 @@ export default function AddonPage<T>({ title, fetchFunction, items, safeModeMess
                 renderItem={({ item, index }) => <CardComponent item={item} index={index} />}
             />
             <FloatingActionButton 
-                text={`Install ${title}`}
+                text={formatString("INSTALL_TITLE", { title })}
                 icon={getAssetIDByName("DownloadIcon")}
                 state={{ collapseText }}
                 onPress={() => {
                     // from ./InstallButton.tsx
                     clipboard.getString().then((content) =>
                         showInputAlert({
-                            title: `Install ${title}`,
+                            title: formatString("INSTALL_TITLE", { title }),
                             initialValue: content.match(HTTP_REGEX_MULTI)?.[0] ?? "",
                             placeholder: "https://example.com/",
                             onConfirm: (input: string) => fetchFunction(input),
-                            confirmText: "Install",
-                            cancelText: "Cancel",
+                            confirmText: Strings.INSTALL,
+                            cancelText: Strings.CANCEL,
                         })
                     )
                 }} 

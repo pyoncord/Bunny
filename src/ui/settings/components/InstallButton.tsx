@@ -3,6 +3,7 @@ import { HTTP_REGEX_MULTI } from "@lib/constants";
 import { showInputAlert } from "@ui/alerts";
 import { getAssetIDByName } from "@ui/assets";
 import { semanticColors } from "@ui/color";
+import { Strings } from "@/lib/i18n";
 
 const styles = stylesheet.createThemedStyleSheet({
     icon: {
@@ -25,8 +26,8 @@ export default function InstallButton({ alertTitle, installFunction: fetchFuncti
                     initialValue: content.match(HTTP_REGEX_MULTI)?.[0] ?? "",
                     placeholder: "https://example.com/",
                     onConfirm: (input: string) => fetchFunction(input),
-                    confirmText: "Install",
-                    cancelText: "Cancel",
+                    confirmText: Strings.INSTALL,
+                    cancelText: Strings.CANCEL,
                 })
             )
         }>

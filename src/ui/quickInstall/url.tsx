@@ -8,6 +8,7 @@ import { showConfirmationAlert } from "@ui/alerts";
 import { getAssetIDByName } from "@ui/assets";
 import { showToast } from "@ui/toasts";
 import { isThemeSupported } from "@/lib/loader";
+import { Strings, formatString, formatStringSplit } from "@lib/i18n";
 
 const showSimpleActionSheet = find((m) => m?.showSimpleActionSheet && !Object.getOwnPropertyDescriptor(m, "showSimpleActionSheet")?.get);
 const handleClick = findByProps("handleClick");
@@ -28,7 +29,7 @@ function typeFromUrl(url: string) {
 function installWithToast(type: "Plugin" | "Theme", url: string) {
     (type === "Plugin" ? installPlugin : installTheme)(url)
         .then(() => {
-            showToast("Successfully installed", getAssetIDByName("Check"));
+            showToast(Strings.TOASTS_SUCCESSFULLY_INSTALLED, getAssetIDByName("Check"));
         })
         .catch((e: Error) => {
             showToast(e.message, getAssetIDByName("Small"));
@@ -50,7 +51,7 @@ export default () => {
             if (!urlType) return;
 
             options.push({
-                label: `Install ${urlType}`,
+                label: formatString("INSTALL_TITLE", { urlType }),
                 onPress: () => installWithToast(urlType, url),
             });
         })
@@ -67,12 +68,12 @@ export default () => {
             if (urlType === "Theme" && getChannel(getChannelId())?.parent_id !== THEMES_CHANNEL_ID) return orig.apply(this, args);
 
             showConfirmationAlert({
-                title: "Hold Up",
-                content: ["This link is a ", <RN.Text style={TextStyleSheet["text-md/semibold"]}>{urlType}</RN.Text>, ", would you like to install it?"],
+                title: Strings.HOLD_UP,
+                content: formatStringSplit("CONFIRMATION_LINK_IS_A_TYPE", { urlType: <RN.Text style={TextStyleSheet["text-md/semibold"]}>{urlType}</RN.Text> }),
                 onConfirm: () => installWithToast(urlType, url),
-                confirmText: "Install",
-                cancelText: "Cancel",
-                secondaryConfirmText: "Open in Browser",
+                confirmText: Strings.INSTALL,
+                cancelText: Strings.CANCEL,
+                secondaryConfirmText: Strings.OPEN_IN_BROWSER,
                 onConfirmSecondary: () => openURL(url),
             });
         })

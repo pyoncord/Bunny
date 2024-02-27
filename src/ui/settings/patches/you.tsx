@@ -2,6 +2,7 @@ import { findByProps } from "@metro/filters";
 import { after, before } from "@lib/patcher";
 import { getRenderableScreens, getScreens, getYouData } from "@ui/settings/data";
 import { i18n } from "@lib/metro/common";
+import { Strings } from "@/lib/i18n";
 
 export default function patchYou() {
     const patches = new Array<Function>;
@@ -44,7 +45,7 @@ function oldYouPatch(patches: Function[]) {
             ancestorRendererData: data.rendererConfigs[s.key],
             setting: s.key,
             title: data.titleConfig[s.key],
-            breadcrumbs: ["Bunny"],
+            breadcrumbs: [Strings.BUNNY],
             icon: data.rendererConfigs[s.key].icon,
         })),
         // .filter can be removed when dropping support for 189.3 and below (unless Discord changes things again)
@@ -78,7 +79,7 @@ function newYouPatch(patches: Function[]) {
     patches.push(before("type", settingsListComponents.SearchableSettingsList, ([{ sections }]) => manipulateSections(sections, data.getLayout())));
 
     patches.push(after("getSettingListSearchResultItems", gettersModule, (_, ret) => {
-        ret.forEach((s: any) => screens.some(b => b.key === s.setting) && (s.breadcrumbs = ["Bunny"]))
+        ret.forEach((s: any) => screens.some(b => b.key === s.setting) && (s.breadcrumbs = [Strings.BUNNY]))
     }));
 
     const oldRendererConfig = settingConstantsModule.SETTING_RENDERER_CONFIG;
@@ -94,7 +95,7 @@ function newYouPatch(patches: Function[]) {
 const isLabel = (i: any, name: string) => i?.label === name || i?.title === name;
 
 function manipulateSections(sections: any[], layout: any) {
-    if (!Array.isArray(sections) || sections.find((i: any) => isLabel(i, "Bunny"))) return;
+    if (!Array.isArray(sections) || sections.find((i: any) => isLabel(i, Strings.BUNNY))) return;
 
     // Add our settings
     const accountSettingsIndex = sections.findIndex((i: any) => isLabel(i, i18n.Messages.ACCOUNT_SETTINGS));

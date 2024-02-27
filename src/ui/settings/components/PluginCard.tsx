@@ -7,6 +7,7 @@ import { showConfirmationAlert } from "@ui/alerts";
 import Card, { CardWrapper } from "@ui/settings/components/Card";
 import { useProxy } from "@/lib/storage";
 import { ButtonColors } from "@/lib/types";
+import { Strings, formatString } from "@/lib/i18n";
 
 async function stopThenStart(plugin: BunnyPlugin, callback: Function) {
     if (plugin.enabled) stopPlugin(plugin.id, false);
@@ -43,7 +44,7 @@ export default function PluginCard({ item: plugin, index }: CardWrapper<BunnyPlu
             overflowTitle={plugin.manifest.name}
             overflowActions={[
                 ...(settings ? [{
-                    label: "Plugin settings",
+                    label: Strings.OVERFLOW_PLUGIN_SETTINGS,
                     icon: "settings",
                     onPress: () => navigation.push("VendettaCustomPage", {
                         title: plugin.manifest.name,
@@ -52,7 +53,7 @@ export default function PluginCard({ item: plugin, index }: CardWrapper<BunnyPlu
                 }] : []),
                 {
                     icon: "ic_sync_24px",
-                    label: "Refetch",
+                    label: Strings.REFETCH,
                     onPress: async () => {
                         stopThenStart(plugin, () => {
                             fetchPlugin(plugin.id).then(async () => {
@@ -65,7 +66,7 @@ export default function PluginCard({ item: plugin, index }: CardWrapper<BunnyPlu
                 },
                 {
                     icon: "copy",
-                    label: "Copy URL",
+                    label: Strings.COPY_URL,
                     onPress: () => {
                         clipboard.setString(plugin.id);
                         showToast.showCopyToClipboard();
@@ -73,7 +74,7 @@ export default function PluginCard({ item: plugin, index }: CardWrapper<BunnyPlu
                 },
                 {   
                     icon: "ic_download_24px",
-                    label: plugin.update ? "Disable updates" : "Enable updates",
+                    label: plugin.update ? Strings.DISABLE_UPDATES : Strings.ENABLE_UPDATES,
                     onPress: () => {
                         plugin.update = !plugin.update;
                         showToast(`${plugin.update ? "Enabled" : "Disabled"} updates for ${plugin.manifest.name}.`, getAssetIDByName("toast_image_saved"));
@@ -81,21 +82,21 @@ export default function PluginCard({ item: plugin, index }: CardWrapper<BunnyPlu
                 },
                 {
                     icon: "ic_duplicate",
-                    label: "Clear data",
+                    label: Strings.CLEAR_DATA,
                     isDestructive: true,
                     onPress: () => showConfirmationAlert({
-                        title: "Wait!",
-                        content: `Are you sure you wish to clear the data of ${plugin.manifest.name}?`,
-                        confirmText: "Clear",
-                        cancelText: "Cancel",
+                        title: Strings.HOLD_UP,
+                        content: formatString("ARE_YOU_SURE_TO_CLEAR_DATA", { name: plugin.manifest.name }),
+                        confirmText: Strings.CLEAR,
+                        cancelText: Strings.CANCEL,
                         confirmColor: ButtonColors.RED,
                         onConfirm: () => {
                             stopThenStart(plugin, () => {
                                 try {
                                     MMKVManager.removeItem(plugin.id);
-                                    showToast(`Cleared data for ${plugin.manifest.name}.`, getAssetIDByName("trash"));
+                                    showToast(formatString("CLEAR_DATA_SUCCESSFUL", { name: plugin.manifest.name }), getAssetIDByName("trash"));
                                 } catch {
-                                    showToast(`Failed to clear data for ${plugin.manifest.name}!`, getAssetIDByName("Small"));
+                                    showToast(formatString("CLEAR_DATA_FAILED", { name: plugin.manifest.name }), getAssetIDByName("Small"));
                                 }
                             });
                         }
@@ -103,13 +104,13 @@ export default function PluginCard({ item: plugin, index }: CardWrapper<BunnyPlu
                 },
                 {
                     icon: "ic_message_delete",
-                    label: "Delete",
+                    label: Strings.DELETE,
                     isDestructive: true,
                     onPress: () => showConfirmationAlert({
-                        title: "Wait!",
-                        content: `Are you sure you wish to delete ${plugin.manifest.name}? This will clear all of the plugin's data.`,
-                        confirmText: "Delete",
-                        cancelText: "Cancel",
+                        title: Strings.HOLD_UP,
+                        content: formatString("ARE_YOU_SURE_TO_DELETE_PLUGIN", {name: plugin.manifest.name}),
+                        confirmText: Strings.DELETE,
+                        cancelText: Strings.CANCEL,
                         confirmColor: ButtonColors.RED,
                         onConfirm: () => {
                             try {

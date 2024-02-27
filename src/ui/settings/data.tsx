@@ -16,6 +16,7 @@ import Developer from "@ui/settings/pages/Developer";
 import { PROXY_PREFIX } from "@/lib/constants";
 import { findByProps } from "@/lib/metro/filters";
 import { isThemeSupported } from "@/lib/loader";
+import { Strings } from "@/lib/i18n";
 
 const { useSafeAreaInsets } = findByProps("useSafeAreaInsets");
 
@@ -45,29 +46,29 @@ const keyMap = (screens: Screen[], data: string | ((s: Screen) => any) | null) =
 export const getScreens = (youKeys = false): Screen[] => [
     {
         key: formatKey("VendettaSettings", youKeys),
-        title: "General",
+        title: Strings.GENERAL,
         icon: "settings",
         render: General,
     },
     {
         key: formatKey("VendettaPlugins", youKeys),
-        title: "Plugins",
+        title: Strings.PLUGINS,
         icon: "debug",
         options: {
             headerRight: () => (
                 <InstallButton
-                    alertTitle="Install Plugin"
+                    alertTitle={Strings.INSTALL_PLUGIN}
                     installFunction={async (input) => {
                         if (!input.startsWith(PROXY_PREFIX) && !settings.developerSettings)
                             setImmediate(() => showConfirmationAlert({
-                                title: "Unproxied Plugin",
-                                content: "The plugin you are trying to install has not been proxied/verified by Vendetta staff. Are you sure you want to continue?",
-                                confirmText: "Install",
+                                title: Strings.MODAL_UNPROXIED_PLUGIN_HEADER,
+                                content: Strings.MODAL_UNPROXIED_PLUGIN_DESC,
+                                confirmText: Strings.INSTALL,
                                 onConfirm: () =>
                                     installPlugin(input)
-                                        .then(() => showToast("Installed plugin", getAssetIDByName("Check")))
+                                        .then(() => showToast(Strings.TOASTS_INSTALLED_PLUGIN, getAssetIDByName("Check")))
                                         .catch((x) => showToast(x?.message ?? `${x}`, getAssetIDByName("Small"))),
-                                cancelText: "Cancel",
+                                cancelText: Strings.CANCEL,
                             }));
                         else return await installPlugin(input);
                     }}
@@ -78,18 +79,18 @@ export const getScreens = (youKeys = false): Screen[] => [
     },
     {
         key: formatKey("VendettaThemes", youKeys),
-        title: "Themes",
+        title: Strings.THEMES,
         icon: "ic_theme_24px",
         // TODO: bad
         shouldRender: () => isThemeSupported(),
         options: {
-            headerRight: () => !settings.safeMode?.enabled && <InstallButton alertTitle="Install Theme" installFunction={installTheme} />,
+            headerRight: () => !settings.safeMode?.enabled && <InstallButton alertTitle={Strings.INSTALL_THEME} installFunction={installTheme} />,
         },
         render: Themes,
     },
     {
         key: formatKey("VendettaDeveloper", youKeys),
-        title: "Developer",
+        title: Strings.DEVELOPER,
         icon: "ic_progress_wrench_24px",
         shouldRender: () => settings.developerSettings ?? false,
         render: Developer,
@@ -120,8 +121,8 @@ export const getYouData = () => {
 
     return {
         getLayout: () => ({
-            title: "Bunny",
-            label: "Bunny",
+            title: "Vendetta",
+            label: Strings.BUNNY,
             // We can't use our keyMap function here since `settings` is an array not an object
             settings: getRenderableScreens(true).map(s => s.key)
         }),

@@ -4,6 +4,7 @@ import { getAssetIDByName } from "@ui/assets";
 import { getRenderableScreens } from "@ui/settings/data";
 import { ErrorBoundary, Forms } from "@ui/components";
 import settings from "@lib/settings";
+import { Strings } from "@/lib/i18n";
 
 const { FormRow, FormSection, FormDivider } = Forms;
 
@@ -15,7 +16,7 @@ export default function SettingsSection() {
 
     return (
         <ErrorBoundary>
-            <FormSection key="Vendetta" title={`Bunny${settings.safeMode?.enabled ? " (Safe Mode)" : ""}`}>
+            <FormSection key="Vendetta" title={`${Strings.BUNNY}${settings.safeMode?.enabled ? ` (${Strings.SAFE_MODE})` : ""}`}>
                 {screens.map((s, i) => (
                     <>
                         <FormRow

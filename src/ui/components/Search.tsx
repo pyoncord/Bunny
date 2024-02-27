@@ -2,6 +2,7 @@ import { ReactNative as RN } from "@metro/common";
 import { findByProps } from "@metro/filters";
 import ErrorBoundary from "@ui/components/ErrorBoundary";
 import { getAssetIDByName } from "@ui/assets";
+import { Strings } from "@/lib/i18n";
 
 const { TextInput } = findByProps("TableRow");
 
@@ -28,7 +29,7 @@ export default ({ onChangeText, placeholder, style }: SearchProps) => {
         <RN.View style={style}>
             <TextInput isClearable grow
                 leadingIcon={SearchIcon}
-                placeholder={placeholder ?? "Search"}
+                placeholder={placeholder ?? Strings.SEARCH}
                 onChange={onChange}
                 returnKeyType={"search"}
                 size="md"

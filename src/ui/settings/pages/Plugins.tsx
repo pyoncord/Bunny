@@ -3,16 +3,17 @@ import { BunnyPlugin, installPlugin, plugins } from "@lib/plugins";
 import settings from "@lib/settings";
 import AddonPage from "@ui/settings/components/AddonPage";
 import PluginCard from "@ui/settings/components/PluginCard";
+import { Strings } from "@/lib/i18n";
 
 export default function Plugins() {
     useProxy(settings)
 
     return (
         <AddonPage<BunnyPlugin>
-            title="Plugin"
+            title={Strings.PLUGINS}
             fetchFunction={installPlugin}
             items={plugins}
-            safeModeMessage="You are in Safe Mode, so plugins cannot be loaded. Disable any misbehaving plugins, then return to Normal Mode from the General settings page."
+            safeModeMessage={Strings.SAFE_MODE_NOTICE_PLUGINS}
             card={PluginCard}
         />
     )

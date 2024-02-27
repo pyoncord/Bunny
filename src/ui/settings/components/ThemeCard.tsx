@@ -8,6 +8,7 @@ import { showToast } from "@ui/toasts";
 import settings from "@lib/settings";
 import Card, { CardWrapper } from "@ui/settings/components/Card";
 import { ButtonColors } from "@/lib/types";
+import { Strings, formatString } from "@/lib/i18n";
 
 async function selectAndApply(value: boolean, id: string) {
     try {
@@ -15,7 +16,7 @@ async function selectAndApply(value: boolean, id: string) {
         value ? applyTheme(themes[id]) : applyTheme(null);
 
         // TODO: Implement native side reload-less & check if it's applied by 100%
-        showToast("Reload the app to fully apply changes!", getAssetIDByName("yellow-alert"));
+        showToast(Strings.THEMES_RELOAD_FOR_CHANGES, getAssetIDByName("yellow-alert"));
     } catch (e: any) {
         console.error("Error while selectAndApply,", e)
     } 
@@ -45,29 +46,29 @@ export default function ThemeCard({ item: theme, index }: CardWrapper<Theme>) {
             overflowActions={[
                 {
                     icon: "ic_sync_24px",
-                    label: "Refetch",
+                    label: Strings.REFETCH,
                     onPress: () => {
                         fetchTheme(theme.id, theme.selected).then(() => {
                             if (theme.selected) {
                                 showConfirmationAlert({
-                                    title: "Theme refetched",
-                                    content: "A reload is required to see the changes. Do you want to reload now?",
-                                    confirmText: "Reload",
-                                    cancelText: "Cancel",
+                                    title: Strings.MODAL_THEME_REFETCHED,
+                                    content: Strings.MODAL_THEME_REFETCHED_DESC,
+                                    confirmText: Strings.RELOAD,
+                                    cancelText: Strings.CANCEL,
                                     confirmColor: ButtonColors.RED,
                                     onConfirm: () => BundleUpdaterManager.reload(),
                                 })
                             } else {
-                                showToast("Successfully refetched theme.", getAssetIDByName("toast_image_saved"));
+                                showToast(Strings.THEME_REFETCH_SUCCESSFUL, getAssetIDByName("toast_image_saved"));
                             }
                         }).catch(() => {
-                            showToast("Failed to refetch theme!", getAssetIDByName("Small"));
+                            showToast(Strings.THEME_REFETCH_FAILED, getAssetIDByName("Small"));
                         });
                     },
                 },
                 {
                     icon: "copy",
-                    label: "Copy URL",
+                    label: Strings.COPY_URL,
                     onPress: () => {
                         clipboard.setString(theme.id);
                         showToast.showCopyToClipboard();
@@ -75,13 +76,13 @@ export default function ThemeCard({ item: theme, index }: CardWrapper<Theme>) {
                 },
                 {
                     icon: "ic_message_delete",
-                    label: "Delete",
+                    label: Strings.DELETE,
                     isDestructive: true,
                     onPress: () => showConfirmationAlert({
-                        title: "Wait!",
-                        content: `Are you sure you wish to delete ${theme.data.name}?`,
-                        confirmText: "Delete",
-                        cancelText: "Cancel",
+                        title: Strings.HOLD_UP,
+                        content: formatString("ARE_YOU_SURE_TO_DELETE_THEME", { name: theme.data.name }),
+                        confirmText: Strings.DELETE,
+                        cancelText: Strings.CANCEL,
                         confirmColor: ButtonColors.RED,
                         onConfirm: () => {
                             removeTheme(theme.id).then((wasSelected) => {

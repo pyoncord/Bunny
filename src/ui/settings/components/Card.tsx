@@ -4,9 +4,7 @@ import { findByProps } from "@metro/filters";
 import { getAssetIDByName } from "@ui/assets";
 import { semanticColors } from "@ui/color";
 
-const { TableRow, TableRowIcon, TableSwitchRow, TableCheckboxRow, TableRowGroup, IconButton } = findByProps("TableRow");
-const { hideActionSheet } = findByProps("openLazy", "hideActionSheet");
-const { showSimpleActionSheet } = findByProps("showSimpleActionSheet");
+const { TableRow, TableRowIcon, TableSwitchRow, TableCheckboxRow, TableRowGroup } = findByProps("TableRow");
 
 // TODO: These styles work weirdly. iOS has cramped text, Android with low DPI probably does too. Fix?
 const styles = stylesheet.createThemedStyleSheet({
