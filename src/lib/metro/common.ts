@@ -50,6 +50,7 @@ export const assets = findByProps("registerAsset");
 export const invites = findByProps("acceptInviteAndTransitionToInviteChannel");
 export const commands = findByProps("getBuiltInCommands");
 export const navigation = findByProps("pushLazy");
+export const messageUtil = findByProps("sendBotMessage");
 export const navigationStack = findByProps("createStackNavigator");
 export const NavigationNative = findByProps("NavigationContainer");
 

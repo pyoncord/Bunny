@@ -66,5 +66,12 @@
     "UH_OH": "Uh oh.",
     "UNINSTALL": "Uninstall",
     "UNINSTALL_TITLE": "Uninstall {title}",
-    "VERSIONS": "Versions"
+    "VERSIONS": "Versions",
+    "COMMAND_DEBUG_DESC": "Send Vendetta debug info.",
+    "COMMAND_DEBUG_OPT_EPHEMERALLY": "Send debug info ephemerally.",
+    "COMMAND_EVAL_DESC": "Evaluate JavaScript code.",
+    "COMMAND_EVAL_OPT_CODE": "The code to evaluate.",
+    "COMMAND_EVAL_OPT_ASYNC": "Whether to support 'await' in code. Must explicitly return for result (default: false)",
+    "COMMAND_PLUGINS_DESC": "Send list of installed plugins.",
+    "COMMAND_PLUGINS_OPT_EPHEMERALLY": "Send plugins list ephemerally."
 }
