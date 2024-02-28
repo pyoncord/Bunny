@@ -2,24 +2,32 @@
 \import ./index
 
 @bunny from BunnyObject {
-	patcher
+	api {
+		commands
+		native
+		storage
+		assets
+		patcher
+	}
+	managers {
+		plugins
+		themes
+	}
 	metro {
+		filters
 		common
 	}
-	constants
-	utils
-	debug
 	ui {
 		components
-		toasts
 		alerts
-		assets
+		color
+		toasts
 	}
-	native
-	plugins
-	themes
-	commands
-	storage
+	utils {
+		constants
+		types
+		logger
+	}
+	debug
 	settings
-	loader
 }

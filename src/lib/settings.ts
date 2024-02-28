@@ -1,5 +1,5 @@
-import { createFileBackend, createMMKVBackend, createStorage, wrapSync } from "@lib/storage";
-import { getLoaderConfigPath } from "./loader";
+import { createFileBackend, createMMKVBackend, createStorage, wrapSync } from "@/lib/api/storage";
+import { getLoaderConfigPath } from "./api/native/loader";
 
 export interface Settings {
     debuggerUrl: string;
@@ -18,7 +18,7 @@ export interface LoaderConfig {
     loadReactDevTools: boolean;
 }
 
-export default wrapSync(createStorage<Settings>(createMMKVBackend("VENDETTA_SETTINGS")));
+export const settings = wrapSync(createStorage<Settings>(createMMKVBackend("VENDETTA_SETTINGS")));
 
 export const loaderConfig = wrapSync(createStorage<LoaderConfig>(
     createFileBackend(getLoaderConfigPath(), {

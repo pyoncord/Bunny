@@ -1,4 +1,4 @@
-import { instead } from "@lib/patcher";
+import { instead } from "@lib/api/patcher";
 
 type MetroModulesIndex = `${number}` | number;
 

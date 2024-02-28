@@ -19,7 +19,8 @@
             "@*": ["src*"],
             "@lib/*": ["src/lib/*"],
             "@metro/*": ["src/lib/metro/*"],
-            "@ui/*": ["src/ui/*"],
+            "@ui/*": ["src/lib/ui/*"],
+            "@types": ["src/utils/types.ts"],
             "bunny-build": ["src/modules.d.ts"]
         },
         "plugins": [

@@ -40,7 +40,7 @@ function treeSearch(tree: SearchTree, filter: SearchFilter, opts: Required<FindI
     }
 }
 
-export default (
+export const findInTree = (
     tree: SearchTree,
     filter: SearchFilter,
     {

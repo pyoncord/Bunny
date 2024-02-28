@@ -14,7 +14,7 @@ const init = (async () => {
 
         await import(".").then((m) => m.default());
     } catch (e) {
-        const { ClientInfoManager } = require("@lib/native/modules");
+        const { ClientInfoManager } = require("@lib/api/native/modules");
         const stack = e instanceof Error ? e.stack : undefined;
 
         console.log(stack ?? e?.toString?.() ?? e);

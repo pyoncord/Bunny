@@ -1,5 +1,5 @@
 import { find, findByProps, findByStoreName } from "@metro/filters";
-import { ReactNative as RN } from "@lib/preinit";
+import { ReactNative as RN } from "@/core/preinit";
 import type { StyleSheet } from "react-native";
 
 export interface DiscordStyleSheet {
@@ -60,13 +60,13 @@ export const FluxDispatcher = findByProps("_currentDispatchActionType");
 
 // React
 export const React = window.React as typeof import("react");
-export { ReactNative } from "@lib/preinit";
+export { ReactNative } from "@/core/preinit";
 
 // Moment
 export const moment = findByProps("isMoment") as typeof import("moment");
 
 // chroma.js
-export { chroma } from "@lib/preinit";
+export { chroma } from "@/core/preinit";
 
 // Lodash
 export const lodash = findByProps("forEachRight") as typeof import("lodash");

@@ -37,7 +37,7 @@ try {
         legalComments: "none",
         alias: {
             "@*": "src*",
-            "@types": "src/def.d.ts"
+            "@types": "src/utils/types.ts"
         },
         plugins: [
             {

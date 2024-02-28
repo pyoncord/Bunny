@@ -1,59 +1,56 @@
-import { createVendettaObject } from "./vendettaObject";
-import * as constants from "@lib/constants";
-import * as debug from "@lib/debug";
-import * as native from "@lib/native";
-import * as plugins from "@lib/plugins";
-import * as themes from "@lib/themes";
-import * as commands from "@lib/commands";
-import * as storage from "@lib/storage";
-import * as metro from "@metro/filters";
+import { createVendettaObject } from "../core/vendettaObject";
+import * as constants from "@lib/utils/constants";
+import * as native from "@lib/api/native";
+import * as plugins from "@lib/managers/plugins";
+import * as themes from "@lib/managers/themes";
+import * as commands from "@/lib/api/commands";
+import * as storage from "@/lib/api/storage";
 import * as common from "@metro/common";
 import * as components from "@ui/components";
 import * as toasts from "@ui/toasts";
 import * as alerts from "@ui/alerts";
-import * as assets from "@ui/assets";
+import * as assets from "@/lib/api/assets";
 import * as color from "@ui/color";
+import logger from "./utils/logger";
+import patcher from "./api/patcher";
+
+import * as api from "@lib/api";
+import * as managers from "@lib/api";
+import * as metro from "@lib/metro";
+import * as ui from "@lib/ui";
 import * as utils from "@lib/utils";
-import logger from "./logger";
-import patcher from "./patcher";
-import settings, { loaderConfig } from "./settings";
+import * as debug from "@lib/debug";
+import * as settings from "@lib/settings";
+
+function createBunnyObject(unloads: any[]) { 
+    return {
+        api: {
+            commands: { ...commands },
+            native: { ...native },
+            storage: { ...storage },
+            assets: { ...assets },
+            patcher: { ...patcher }
+        },
+        managers: { ...managers },
+        metro: { ...metro },
+        ui: { ...ui },
+        utils: { ...utils },
+        settings,
+        version: debug.versionHash,
+        unload: () => {
+            unloads.filter(i => typeof i === "function").forEach(p => p());
+            // @ts-expect-error
+            delete window.bunny;
+        },
+    }
+}
+
+const dest = { ...api };
+type Y = typeof dest;
+
+export type BunnyObject = ReturnType<typeof createBunnyObject>;
 
 export default function initWindowObject(unloads: any[]) {
     window.vendetta = createVendettaObject(unloads);
     window.bunny = createBunnyObject(unloads);
 }
-
-function createBunnyObject(unloads: any[]) { 
-    return {
-        patcher: utils.without(patcher, "unpatchAll"),
-        metro: { ...metro, common: { ...common } },
-        constants: { ...constants },
-        utils: { ...utils },
-        debug: utils.without({ ...debug }, "versionHash", "patchLogHook", "toggleSafeMode"),
-        ui: {
-            components: { ...components },
-            toasts: { ...toasts },
-            alerts: { ...alerts },
-            assets: { ...assets },
-            ...color,
-        },
-        native: { ...native },
-        plugins: utils.without({ ...plugins }, "initPlugins", "evalPlugin"),
-        themes: utils.without({ ...themes }, "initThemes"),
-        commands: utils.without({ ...commands }, "patchCommands"),
-        storage: { ...storage },
-        settings: settings,
-        loader: {
-            identity: null,
-            config: loaderConfig,
-        },
-        logger: { ...logger },
-        version: debug.versionHash,
-        unload: () => {
-            unloads.filter(i => typeof i === "function").forEach(p => p());
-            delete window.vendetta;
-        },
-    }
-}
-
-export type BunnyObject = ReturnType<typeof createBunnyObject>;
