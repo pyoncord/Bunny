@@ -1,7 +1,7 @@
-import patchForumPost from "@ui/quickInstall/forumPost";
-import patchUrl from "@ui/quickInstall/url";
+import patchForumPost from "./forumPost";
+import patchUrl from "./url";
 
-export default function initQuickInstall() {
+export default function onLoad() {
     const patches = new Array<Function>;
 
     patches.push(patchForumPost());

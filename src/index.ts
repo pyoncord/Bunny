@@ -3,12 +3,12 @@ import { patchCommands } from "@/lib/api/commands";
 import { initPlugins } from "@lib/managers/plugins";
 import { patchChatBackground } from "@lib/managers/themes";
 import { patchAssets } from "@/lib/api/assets";
-import initQuickInstall from "@ui/quickInstall";
 import initSafeMode from "@ui/safeMode";
 import initSettings from "@ui/settings";
 import initFixes from "@/core/fixes";
 import logger from "@lib/utils/logger";
 import initWindowObject from "@lib/windowObject";
+import { initCorePlugins } from "./core/plugins";
 
 export default async () => {
     // Load everything in parallel
@@ -20,7 +20,7 @@ export default async () => {
         initFixes(),
         initSafeMode(),
         initSettings(),
-        initQuickInstall(),
+        initCorePlugins(),
     ]);
 
     // Assign window object
