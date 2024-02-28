@@ -5,7 +5,7 @@ import { useProxy } from "@/lib/api/storage";
 import { getAssetIDByName } from "@/lib/api/assets";
 import { Summary } from "@ui/components";
 import { settings } from "@lib/settings";
-import Version from "@ui/settings/components/Version";
+import Version from "@/core/ui/components/Version";
 import { findByProps } from "@lib/metro/filters";
 import { semanticColors } from "@ui/color";
 import { Strings } from "@/core/i18n";

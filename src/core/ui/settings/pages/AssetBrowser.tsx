@@ -1,7 +1,7 @@
 import { ReactNative as RN } from "@metro/common";
 import { all } from "@/lib/api/assets";
 import { Forms, Search, ErrorBoundary } from "@ui/components";
-import AssetDisplay from "@ui/settings/components/AssetDisplay";
+import AssetDisplay from "@/core/ui/components/AssetDisplay";
 
 const { FormDivider } = Forms;
 

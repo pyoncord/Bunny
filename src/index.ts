@@ -4,7 +4,7 @@ import { initPlugins } from "@lib/managers/plugins";
 import { patchChatBackground } from "@lib/managers/themes";
 import { patchAssets } from "@/lib/api/assets";
 import initSafeMode from "@ui/safeMode";
-import initSettings from "@ui/settings";
+import initSettings from "@/core/ui/settings";
 import initFixes from "@/core/fixes";
 import logger from "@lib/utils/logger";
 import initWindowObject from "@lib/windowObject";

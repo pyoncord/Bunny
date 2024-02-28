@@ -1,6 +1,6 @@
 import { findByProps } from "@metro/filters";
 import { after, before } from "@lib/api/patcher";
-import { getScreens, getYouData } from "@ui/settings/data";
+import { getScreens, getYouData } from "@/core/ui/settings/data";
 import { i18n } from "@lib/metro/common";
 import { Strings } from "@/core/i18n";
 

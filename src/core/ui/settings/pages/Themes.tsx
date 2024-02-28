@@ -2,8 +2,8 @@ import { useProxy } from "@/lib/api/storage";
 import { Theme, installTheme, themes } from "@lib/managers/themes";
 import { Button } from "@ui/components";
 import { settings } from "@lib/settings";
-import AddonPage from "@ui/settings/components/AddonPage";
-import ThemeCard from "@ui/settings/components/ThemeCard";
+import AddonPage from "@/core/ui/components/AddonPage";
+import ThemeCard from "@/core/ui/components/ThemeCard";
 import { ButtonColors } from "@/lib/utils/types";
 import { Strings } from "@/core/i18n";
 

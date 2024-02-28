@@ -1,7 +1,7 @@
 import { NavigationNative, ReactNative as RN, clipboard } from "@metro/common";
 import { useProxy } from "@/lib/api/storage";
 import { HelpMessage, ErrorBoundary, Search } from "@ui/components";
-import { CardWrapper } from "@ui/settings/components/Card";
+import { CardWrapper } from "@/core/ui/components/Card";
 import { settings } from "@lib/settings";
 import { findByProps } from "@/lib/metro/filters";
 import { HTTP_REGEX_MULTI } from "@/lib/utils/constants";

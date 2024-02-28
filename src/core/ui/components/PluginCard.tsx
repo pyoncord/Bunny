@@ -4,7 +4,7 @@ import { MMKVManager } from "@lib/api/native/modules";
 import { getAssetIDByName } from "@/lib/api/assets";
 import { showToast } from "@ui/toasts";
 import { showConfirmationAlert } from "@ui/alerts";
-import Card, { CardWrapper } from "@ui/settings/components/Card";
+import Card, { CardWrapper } from "@/core/ui/components/Card";
 import { useProxy } from "@/lib/api/storage";
 import { ButtonColors } from "@/lib/utils/types";
 import { Strings, formatString } from "@/core/i18n";

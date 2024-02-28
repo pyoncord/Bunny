@@ -5,7 +5,7 @@ import { useProxy } from "@/lib/api/storage";
 import { getAssetIDByName } from "@/lib/api/assets";
 import { ErrorBoundary, Forms } from "@ui/components";
 import { settings, loaderConfig } from "@lib/settings";
-import AssetBrowser from "@ui/settings/pages/AssetBrowser";
+import AssetBrowser from "@/core/ui/settings/pages/AssetBrowser";
 import { semanticColors } from "@ui/color";
 import { getReactDevToolsProp, getReactDevToolsVersion, isLoaderConfigSupported, isReactDevToolsPreloaded } from "@/lib/api/native/loader";
 import { Strings } from "@/core/i18n";

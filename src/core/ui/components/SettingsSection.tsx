@@ -1,7 +1,7 @@
 import { NavigationNative } from "@metro/common";
 import { useProxy } from "@/lib/api/storage";
 import { getAssetIDByName } from "@/lib/api/assets";
-import { getScreens } from "@ui/settings/data";
+import { getScreens } from "@/core/ui/settings/data";
 import { ErrorBoundary, Forms } from "@ui/components";
 import { settings } from "@lib/settings";
 import { Strings } from "@/core/i18n";

@@ -2,8 +2,8 @@ import { i18n } from "@metro/common";
 import { findByName } from "@metro/filters";
 import { after } from "@lib/api/patcher";
 import { findInReactTree } from "@lib/utils";
-import { getPanelsScreens } from "@ui/settings/data";
-import SettingsSection from "@ui/settings/components/SettingsSection";
+import { getPanelsScreens } from "@/core/ui/settings/data";
+import SettingsSection from "@/core/ui/components/SettingsSection";
 
 const screensModule = findByName("getScreens", false);
 const settingsModule = findByName("UserSettingsOverviewWrapper", false);

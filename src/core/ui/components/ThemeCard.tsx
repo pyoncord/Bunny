@@ -6,7 +6,7 @@ import { getAssetIDByName } from "@/lib/api/assets";
 import { showConfirmationAlert } from "@ui/alerts";
 import { showToast } from "@ui/toasts";
 import { settings } from "@lib/settings";
-import Card, { CardWrapper } from "@ui/settings/components/Card";
+import Card, { CardWrapper } from "@/core/ui/components/Card";
 import { ButtonColors } from "@/lib/utils/types";
 import { Strings, formatString } from "@/core/i18n";
 
