@@ -8,6 +8,7 @@ import { HTTP_REGEX_MULTI } from "@/lib/utils/constants";
 import { showInputAlert } from "@ui/alerts";
 import { getAssetIDByName } from "@/lib/api/assets";
 import { Strings, formatString } from "@/core/i18n";
+import fuzzysort from "fuzzysort";
 
 interface AddonPageProps<T> {
     title: string;
@@ -16,6 +17,18 @@ interface AddonPageProps<T> {
     safeModeMessage: string;
     safeModeExtras?: JSX.Element | JSX.Element[];
     card: React.ComponentType<CardWrapper<T>>;
+}
+
+function getItemsByQuery<T extends { id?: string }>(items: T[], query: string): T[] {
+    if (!query) return items;
+
+    return fuzzysort.go(query, items, { keys: [
+        "id",
+        "manifest.name",
+        "manifest.description",
+        "manifest.authors.0.name", 
+        "manifest.authors.1.name"
+    ]}).map(r => r.obj);
 }
 
 const reanimated = findByProps("useSharedValue");
@@ -52,7 +65,7 @@ export default function AddonPage<T>({ title, fetchFunction, items, safeModeMess
                 onMomentumScrollEnd={() => collapseText.value = 0}
                 style={{ paddingHorizontal: 10, paddingTop: 10 }}
                 contentContainerStyle={{ paddingBottom: 70 }}
-                data={Object.values(items).filter(i => i.id?.toLowerCase().includes(search))}
+                data={getItemsByQuery(Object.values(items), search)}
                 renderItem={({ item, index }) => <CardComponent item={item} index={index} />}
             />
             <FloatingActionButton 

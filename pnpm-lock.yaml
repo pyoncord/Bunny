@@ -8,6 +8,9 @@ dependencies:
   '@swc/helpers':
     specifier: 0.5.0
     version: 0.5.0
+  fuzzysort:
+    specifier: ^2.0.4
+    version: 2.0.4
   spitroast:
     specifier: ^1.4.3
     version: 1.4.3
@@ -487,6 +490,10 @@ packages:
       '@esbuild/win32-ia32': 0.17.19
       '@esbuild/win32-x64': 0.17.19
     dev: true
+
+  /fuzzysort@2.0.4:
+    resolution: {integrity: sha512-Api1mJL+Ad7W7vnDZnWq5pGaXJjyencT+iKGia2PlHUcSsSzWwIQ3S1isiMpwpavjYtGd2FzhUIhnnhOULZgDw==}
+    dev: false
 
   /invariant@2.2.4:
     resolution: {integrity: sha512-phJfQVBuaJM5raOpJjSfkiD6BpbCE4Ns//LaXl6wGYtUBY83nWS6Rf9tXm2e8VaK60JEjYldbPif/A2B1C2gNA==}
