@@ -52,6 +52,7 @@ function createBunnyObject(unloads: any[]) {
             settings: settings.settings,
             loaderConfig: { ...settings.loaderConfig }
         },
+        debug: { ...debug },
         version: debug.versionHash,
         unload: () => {
             unloads.filter(i => typeof i === "function").forEach(p => p());
