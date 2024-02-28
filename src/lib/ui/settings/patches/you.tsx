@@ -1,6 +1,6 @@
 import { findByProps } from "@metro/filters";
 import { after, before } from "@lib/api/patcher";
-import { getRenderableScreens, getScreens, getYouData } from "@ui/settings/data";
+import { getScreens, getYouData } from "@ui/settings/data";
 import { i18n } from "@lib/metro/common";
 import { Strings } from "@/core/i18n";
 
@@ -28,8 +28,7 @@ function oldYouPatch(patches: Function[]) {
 
     if (!gettersModule || !layoutModule) return;
 
-    const screens = getScreens(true);
-    const renderableScreens = getRenderableScreens(true);
+    const screens = getScreens();
     const data = getYouData();
 
     patches.push(after("useOverviewSettings", layoutModule, (_, ret) => manipulateSections(ret, data.getLayout())));
@@ -40,7 +39,7 @@ function oldYouPatch(patches: Function[]) {
     })));
 
     patches.push(after(getterFunctionName, gettersModule, ([settings], ret) => [
-        ...(renderableScreens.filter(s => settings.includes(s.key))).map(s => ({
+        ...(screens.filter(s => settings.includes(s.key) && (s.shouldRender?.() ?? true))).map(s => ({
             type: "setting_search_result",
             ancestorRendererData: data.rendererConfigs[s.key],
             setting: s.key,
@@ -73,7 +72,7 @@ function newYouPatch(patches: Function[]) {
 
     if (!gettersModule || !settingsListComponents || !settingConstantsModule) return false;
 
-    const screens = getScreens(true);
+    const screens = getScreens();
     const data = getYouData();
 
     patches.push(before("type", settingsListComponents.SearchableSettingsList, ([{ sections }]) => manipulateSections(sections, data.getLayout())));
