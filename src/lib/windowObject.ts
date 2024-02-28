@@ -1,41 +1,57 @@
 import { createVendettaObject } from "../core/vendettaObject";
-import * as constants from "@lib/utils/constants";
-import * as native from "@lib/api/native";
-import * as plugins from "@lib/managers/plugins";
-import * as themes from "@lib/managers/themes";
-import * as commands from "@/lib/api/commands";
-import * as storage from "@/lib/api/storage";
-import * as common from "@metro/common";
-import * as components from "@ui/components";
-import * as toasts from "@ui/toasts";
-import * as alerts from "@ui/alerts";
-import * as assets from "@/lib/api/assets";
-import * as color from "@ui/color";
-import logger from "./utils/logger";
-import patcher from "./api/patcher";
 
 import * as api from "@lib/api";
-import * as managers from "@lib/api";
+import * as debug from "@lib/debug";
+import * as managers from "@lib/managers";
 import * as metro from "@lib/metro";
+import * as settings from "@lib/settings";
 import * as ui from "@lib/ui";
 import * as utils from "@lib/utils";
-import * as debug from "@lib/debug";
-import * as settings from "@lib/settings";
 
-function createBunnyObject(unloads: any[]) { 
+import patcher from "@lib/api/patcher";
+
+// You may now worry about my mental state.
+function createBunnyObject(unloads: any[]) {
     return {
         api: {
-            commands: { ...commands },
-            native: { ...native },
-            storage: { ...storage },
-            assets: { ...assets },
-            patcher: { ...patcher }
+            commands: { ...api.commands },
+            native: {
+                fs: { ...api.native.fs },
+                modules: { ...api.native.modules },
+                loader: { ...api.native.loader }
+            },
+            storage: { ...api.storage },
+            assets: { ...api.assets },
+            patcher: {
+                before: patcher.before,
+                instead: patcher.instead,
+                after: patcher.after
+            }
         },
-        managers: { ...managers },
-        metro: { ...metro },
-        ui: { ...ui },
-        utils: { ...utils },
-        settings,
+        managers: {
+            plugins: { ...managers.plugins },
+            themes: { ...managers.themes }
+        },
+        metro: {
+            common: { ...metro.common },
+            filters: { ...metro.filters },
+            ...metro.filters
+        },
+        ui: {
+            components: { ...ui.components },
+            alerts: { ...ui.alerts },
+            color: { ...ui.color },
+            toasts: { ...ui.toasts },
+        },
+        utils: {
+            constants: { ...utils.constants },
+            types: { ...utils.types },
+            logger: { ...utils.logger }
+        },
+        settings: {
+            settings: settings.settings,
+            loaderConfig: { ...settings.loaderConfig }
+        },
         version: debug.versionHash,
         unload: () => {
             unloads.filter(i => typeof i === "function").forEach(p => p());
@@ -44,9 +60,6 @@ function createBunnyObject(unloads: any[]) {
         },
     }
 }
-
-const dest = { ...api };
-type Y = typeof dest;
 
 export type BunnyObject = ReturnType<typeof createBunnyObject>;
 

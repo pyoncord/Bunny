@@ -4,7 +4,11 @@
 @bunny from BunnyObject {
 	api {
 		commands
-		native
+		native {
+			fs
+			modules
+			loader
+		}
 		storage
 		assets
 		patcher
