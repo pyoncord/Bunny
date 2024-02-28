@@ -21,15 +21,14 @@
     "devDependencies": {
         "@react-native-clipboard/clipboard": "1.10.0",
         "@swc/core": "^1.4.2",
-        "@types/chroma-js": "^2.4.0",
-        "@types/lodash": "^4.14.194",
-        "@types/node": "^20.11.20",
-        "@types/react": "18.0.35",
-        "@types/react-native": "0.70.6",
-        "esbuild": "^0.17.16",
-        "esbuild-plugin-alias": "^0.2.1",
+        "@types/chroma-js": "^2.4.4",
+        "@types/lodash": "^4.14.202",
+        "@types/node": "^20.11.21",
+        "@types/react": "18.2.60",
+        "@types/react-native": "0.72.3",
+        "esbuild": "^0.17.19",
         "moment": "2.22.2",
-        "typescript": "^5.2.2",
+        "typescript": "^5.3.3",
         "typescript-transform-paths": "^3.4.7"
     },
     "dependencies": {
