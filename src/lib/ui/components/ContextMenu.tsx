@@ -1,9 +1,9 @@
 import { findByProps } from "@lib/metro/filters";
-import { ReactNative } from "@/core/preinit";
 import { instead } from "@lib/api/patcher";
+import { ReactNative } from "@/lib/metro/common";
 
 const { ContextMenu: _ContextMenu } = findByProps("ContextMenu");
-const { AccessibilityInfo } = ReactNative
+const { AccessibilityInfo } = ReactNative;
 
 type ContextMenuItem = {
     label: string,
@@ -47,11 +47,6 @@ export default function ContextMenu(props: ContextMenuProps) {
     return <ReactNative.View ref={ref}>
         <_ContextMenu
             {...props}
-            title={props.title}
-            children={props.children}
-            triggerOnLongPress={props.triggerOnLongPress}
-            items={props.items}
-            align={props.align}
         />
     </ReactNative.View>
 }

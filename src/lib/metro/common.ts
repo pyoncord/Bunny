@@ -1,5 +1,4 @@
 import { find, findByProps, findByStoreName } from "@metro/filters";
-import { ReactNative as RN } from "@/core/preinit";
 import type { StyleSheet } from "react-native";
 
 export interface DiscordStyleSheet {
@@ -10,7 +9,7 @@ export interface DiscordStyleSheet {
 
 const ThemeStore = findByStoreName("ThemeStore");
 const colorModule = findByProps("colors", "unsafe_rawColors");
-const colorResolver = colorModule.internal ?? colorModule.meta;
+const colorResolver = colorModule.internal ??= colorModule.meta;
 
 // Reimplementation of Discord's createThemedStyleSheet, which was removed since 204201
 // Not exactly a 1:1 reimplementation, but sufficient to keep compatibility with existing plugins
@@ -18,7 +17,7 @@ function createThemedStyleSheet<T extends StyleSheet.NamedStyles<T>>(sheet: T) {
     if (!colorModule) return;
     for (const key in sheet) {
         // @ts-ignore
-        sheet[key] = new Proxy(RN.StyleSheet.flatten(sheet[key]), {
+        sheet[key] = new Proxy(ReactNative.StyleSheet.flatten(sheet[key]), {
             get(target, prop, receiver) { 
                 const res = Reflect.get(target, prop, receiver);
                 return colorResolver.isSemanticColor(res) 
@@ -59,14 +58,14 @@ export const Flux = findByProps("connectStores");
 export const FluxDispatcher = findByProps("_currentDispatchActionType");
 
 // React
-export const React = window.React as typeof import("react");
-export { ReactNative } from "@/core/preinit";
+export const React = window.React = findByProps("createElement") as typeof import("react");
+export const ReactNative = findByProps("AppRegistry") as typeof import("react-native");
 
 // Moment
 export const moment = findByProps("isMoment") as typeof import("moment");
 
 // chroma.js
-export { chroma } from "@/core/preinit";
+export const chroma = findByProps("brewer") as typeof import("chroma-js");
 
 // Lodash
 export const lodash = findByProps("forEachRight") as typeof import("lodash");

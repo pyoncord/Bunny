@@ -59,7 +59,7 @@ const semanticAlternativeMap: Record<string, string> = {
 async function writeTheme(theme: Theme | {}) {
     if (typeof theme !== "object") throw new Error("Theme must be an object");
 
-    // Save the current theme as vendetta_theme.json. When supported by loader,
+    // Save the current theme as current-theme.json. When supported by loader,
     // this json will be written to appropriate path and be used to theme the native side.
     await createFileBackend(getThemeFilePath() || "theme.json").set(theme);
 }
@@ -365,7 +365,7 @@ export async function initThemes() {
     patchColor();
     applyTheme(currentTheme, vdThemeFallback, false);
 
-    await updateThemes();
+    updateThemes().catch(e => console.error("Failed to update themes", e));
 }
 
 function extractInfo(themeName: string, colorObj: any): [name: string, colorDef: any] {
