@@ -17,7 +17,7 @@ export default () => <ApplicationCommand>{
         const info = getDebugInfo();
         const content = [
             "**Bunny Debug Info**",
-            `> Bunny: ${info.vendetta.version} (${info.vendetta.loader})`,
+            `> Bunny: ${info.bunny.version} (${info.bunny.loader})`,
             `> Discord: ${info.discord.version} (${info.discord.build})`,
             `> React: ${info.react.version} (RN ${info.react.nativeVersion})`,
             `> Hermes: ${info.hermes.version} (bcv${info.hermes.bytecodeVersion})`,

@@ -17,7 +17,7 @@ export default async () => {
         try {
             initThemes();
         } catch (e) {
-            console.error("[Vendetta] Failed to initialize themes...", e);
+            console.error("[Bunny] Failed to initialize themes...", e);
         }
     }
 
@@ -40,5 +40,5 @@ export default async () => {
     unloads.push(await initPlugins());
 
     // We good :)
-    logger.log("Vendetta is ready!");
+    logger.log("Bunny is ready!");
 }

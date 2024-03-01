@@ -11,7 +11,7 @@ import { semanticColors } from "@ui/color";
 import { Strings } from "@/core/i18n";
 
 const { Stack, TableRow, TableSwitchRow, TableRowGroup } = findByProps("TableRow");
-const debugInfo = getDebugInfo() as any;
+const debugInfo = getDebugInfo();
 
 const styles = stylesheet.createThemedStyleSheet({
     container: {
@@ -26,7 +26,7 @@ export default function General() {
     const versions = [
         {
             label: Strings.BUNNY,
-            version: debugInfo.vendetta.version,
+            version: debugInfo.bunny.version,
             icon: "ic_progress_wrench_24px",
         },
         {
@@ -54,7 +54,7 @@ export default function General() {
     const platformInfo = [
         {
             label: Strings.LOADER,
-            version: debugInfo.vendetta.loader,
+            version: debugInfo.bunny.loader,
             icon: "ic_download_24px",
         },
         {

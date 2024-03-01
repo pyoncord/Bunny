@@ -92,7 +92,12 @@ export function getDebugInfo() {
     const rnVer = PlatformConstants.reactNativeVersion;
 
     return {
+        /** @deprecated */
         vendetta: {
+            version: versionHash,
+            loader: getLoaderName(),
+        },
+        bunny: {
             version: versionHash,
             loader: getLoaderName(),
         },
