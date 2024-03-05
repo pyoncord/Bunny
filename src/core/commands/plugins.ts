@@ -5,7 +5,7 @@ import { ApplicationCommand, ApplicationCommandOptionType } from "@/lib/api/comm
 
 export default () => <ApplicationCommand>{
     name: "plugins",
-    description: Strings.COMMAND_DEBUG_DESC,
+    description: Strings.COMMAND_PLUGINS_DESC,
     options: [
         {
             name: "ephemeral",

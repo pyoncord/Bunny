@@ -8,7 +8,7 @@ import { getAssetIDByName } from "@/lib/api/assets";
 import { showToast } from "@ui/toasts";
 import { useProxy } from "@/lib/api/storage";
 import { isThemeSupported } from "@/lib/api/native/loader";
-import { Strings, formatStringSplit } from "@/core/i18n";
+import { Strings, formatString } from "@/core/i18n";
 
 type PostType = "Plugin" | "Theme";
 
@@ -95,7 +95,7 @@ const actionSheetPatch = () => after("default", ForumPostLongPressActionSheet, (
     actions.unshift(<ActionsSection key="install">
         <ActionSheetRow
             icon={<ActionSheetRow.Icon source={getAssetIDByName(installed ? "ic_message_delete" : "DownloadIcon")} />}
-            label={formatStringSplit(installed ? "UNINSTALL_TITLE" : "INSTALL_TITLE", { title: postType })}
+            label={formatString(installed ? "UNINSTALL_TITLE" : "INSTALL_TITLE", { title: postType })}
             disabled={loading}
             onPress={installOrRemove}
         />

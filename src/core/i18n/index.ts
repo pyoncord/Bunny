@@ -1,4 +1,7 @@
+import { findByName } from "@/lib/metro/filters";
 import langDefault from "./default.json";
+
+const IntlMessageFormat = findByName("MessageFormat") as typeof import("intl-messageformat").default;
 
 type I18nKey = keyof typeof langDefault;
 
@@ -8,26 +11,7 @@ export const Strings = new Proxy({}, {
     }
 }) as Record<I18nKey, string>;
 
-export function formatString(key: I18nKey, val: Record<string, any>) {
+export function formatString<T = void>(key: I18nKey, val: Record<string, T>) {
     const str = Strings[key];
-
-    return str.replaceAll(/{(.*)}/g, (_, cap) => {
-        return val[cap] ?? cap;
-    });
-}
-
-export function formatStringSplit(key: I18nKey, val: Record<string, any>) {
-    const str = Strings[key];
-
-    const splitted = str.split(/({[^}]+})/);
-
-    for (const inp in val) {
-        for (let i = 0; i < splitted.length; i++) {
-            if (splitted[i] === `{${inp}}`) {
-                splitted[i] = val[inp];
-            }
-        }
-    }
-
-    return splitted;
+    return new IntlMessageFormat(str).format(val);
 }

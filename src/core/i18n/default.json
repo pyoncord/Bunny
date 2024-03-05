@@ -20,7 +20,7 @@
     "COMMAND_EVAL_OPT_CODE": "The code to evaluate.",
     "COMMAND_PLUGINS_DESC": "Send list of installed plugins.",
     "COMMAND_PLUGINS_OPT_EPHEMERALLY": "Send plugins list ephemerally.",
-    "CONFIRMATION_LINK_IS_A_TYPE": "This link is a {urlType}, would you like to install it?",
+    "CONFIRMATION_LINK_IS_A_TYPE": "This link is a **{urlType, select, plugin {Plugin} theme {Theme} other {Add-on}}**, would you like to install it?",
     "CONNECT_TO_DEBUG_WEBSOCKET": "Connect to debug websocket",
     "CONNECT_TO_REACT_DEVTOOLS": "Connect to React DevTools",
     "COPY_URL": "Copy URL",

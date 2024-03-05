@@ -8,7 +8,7 @@ import { showConfirmationAlert } from "@ui/alerts";
 import { getAssetIDByName } from "@/lib/api/assets";
 import { showToast } from "@ui/toasts";
 import { isThemeSupported } from "@/lib/api/native/loader";
-import { Strings, formatString, formatStringSplit } from "@/core/i18n";
+import { Strings, formatString } from "@/core/i18n";
 
 const showSimpleActionSheet = find((m) => m?.showSimpleActionSheet && !Object.getOwnPropertyDescriptor(m, "showSimpleActionSheet")?.get);
 const handleClick = findByProps("handleClick");
@@ -16,18 +16,16 @@ const { openURL } = url;
 const { getChannelId } = channels;
 const { getChannel } = findByProps("getChannel");
 
-const { TextStyleSheet } = findByProps("TextStyleSheet");
-
 function typeFromUrl(url: string) {
     if (url.startsWith(PROXY_PREFIX)) {
-        return "Plugin";
+        return "plugin";
     } else if (url.endsWith(".json") && isThemeSupported()) {
-        return "Theme";
-    } else return;
+        return "theme";
+    }
 }
 
-function installWithToast(type: "Plugin" | "Theme", url: string) {
-    (type === "Plugin" ? installPlugin : installTheme)(url)
+function installWithToast(type: "plugin" | "theme", url: string) {
+    (type === "plugin" ? installPlugin : installTheme)(url)
         .then(() => {
             showToast(Strings.TOASTS_SUCCESSFULLY_INSTALLED, getAssetIDByName("Check"));
         })
@@ -65,11 +63,11 @@ export default () => {
             if (!urlType) return orig.apply(this, args);
 
             // Make clicking on theme links only work in #themes, should there be a theme proxy in the future, this can be removed.
-            if (urlType === "Theme" && getChannel(getChannelId())?.parent_id !== THEMES_CHANNEL_ID) return orig.apply(this, args);
+            if (urlType === "theme" && getChannel(getChannelId())?.parent_id !== THEMES_CHANNEL_ID) return orig.apply(this, args);
 
             showConfirmationAlert({
                 title: Strings.HOLD_UP,
-                content: formatStringSplit("CONFIRMATION_LINK_IS_A_TYPE", { urlType: <RN.Text style={TextStyleSheet["text-md/semibold"]}>{urlType}</RN.Text> }),
+                content: formatString("CONFIRMATION_LINK_IS_A_TYPE", { urlType }),
                 onConfirm: () => installWithToast(urlType, url),
                 confirmText: Strings.INSTALL,
                 cancelText: Strings.CANCEL,
