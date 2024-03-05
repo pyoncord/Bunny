@@ -50,7 +50,7 @@ export default function Developer() {
                         />
                         {isReactDevToolsPreloaded() && <>
                             <TableRow
-                                label="Connect to React DevTools"
+                                label={Strings.CONNECT_TO_REACT_DEVTOOLS}
                                 icon={<TableRow.Icon source={getAssetIDByName("ic_badge_staff")} />}
                                 onPress={() => window[getReactDevToolsProp() || "__vendetta_rdc"]?.connectToDevTools({
                                     host: settings.debuggerUrl.split(":")?.[0],
