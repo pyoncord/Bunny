@@ -44,7 +44,7 @@ export default function Developer() {
                     />
                     <TableRowGroup title="Debug">
                         <TableRow
-                            label="Connect to debug websocket"
+                            label={Strings.CONNECT_TO_DEBUG_WEBSOCKET}
                             icon={<TableRow.Icon source={getAssetIDByName("copy")} />}
                             onPress={() => connectToDebugger(settings.debuggerUrl)}
                         />
