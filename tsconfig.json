@@ -16,8 +16,8 @@
         "resolveJsonModule": true,
         "skipLibCheck": true,
         "paths": {
-            "@*": ["src*"],
             "@lib/*": ["src/lib/*"],
+            "@core/*": ["src/core/*"],
             "@metro/*": ["src/lib/metro/*"],
             "@ui/*": ["src/lib/ui/*"],
             "@types": ["src/utils/types.ts"],

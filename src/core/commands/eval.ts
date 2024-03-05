@@ -1,7 +1,7 @@
-import { findByProps } from "@metro/filters";
+import { Strings } from "@core/i18n";
+import { ApplicationCommand, ApplicationCommandOptionType } from "@lib/api/commands/types";
 import { messageUtil } from "@metro/common";
-import { Strings } from "@/core/i18n";
-import { ApplicationCommand, ApplicationCommandOptionType } from "@/lib/api/commands/types";
+import { findByProps } from "@metro/filters";
 
 const util = findByProps("inspect");
 const AsyncFunction = (async () => void 0).constructor;
@@ -38,4 +38,4 @@ export default () => <ApplicationCommand>{
             messageUtil.sendBotMessage(ctx.channel.id, wrapInJSCodeblock(err?.stack ?? err));
         }
     }
-}
+};

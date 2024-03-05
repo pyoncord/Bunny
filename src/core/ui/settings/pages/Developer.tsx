@@ -1,14 +1,14 @@
-import { ReactNative as RN, NavigationNative, stylesheet } from "@metro/common";
-import { findByProps } from "@metro/filters";
+import { Strings } from "@core/i18n";
+import AssetBrowser from "@core/ui/settings/pages/AssetBrowser";
+import { getAssetIDByName } from "@lib/api/assets";
+import { getReactDevToolsProp, getReactDevToolsVersion, isLoaderConfigSupported, isReactDevToolsPreloaded } from "@lib/api/native/loader";
+import { useProxy } from "@lib/api/storage";
 import { connectToDebugger } from "@lib/debug";
-import { useProxy } from "@/lib/api/storage";
-import { getAssetIDByName } from "@/lib/api/assets";
-import { ErrorBoundary, Forms } from "@ui/components";
-import { settings, loaderConfig } from "@lib/settings";
-import AssetBrowser from "@/core/ui/settings/pages/AssetBrowser";
+import { loaderConfig, settings } from "@lib/settings";
+import { NavigationNative, ReactNative as RN, stylesheet } from "@metro/common";
+import { findByProps } from "@metro/filters";
 import { semanticColors } from "@ui/color";
-import { getReactDevToolsProp, getReactDevToolsVersion, isLoaderConfigSupported, isReactDevToolsPreloaded } from "@/lib/api/native/loader";
-import { Strings } from "@/core/i18n";
+import { ErrorBoundary, Forms } from "@ui/components";
 
 const { Stack, TableRow, TableSwitchRow, TableRowGroup, TextInput } = findByProps("TableRow");
 const { FormText } = Forms;
@@ -99,7 +99,7 @@ export default function Developer() {
                                 render: AssetBrowser,
                             })}
                         />
-                        <TableRow 
+                        <TableRow
                             arrow
                             label="ErrorBoundary Tools"
                             icon={<TableRow.Icon source={getAssetIDByName("ic_warning_24px")} />}
@@ -111,7 +111,7 @@ export default function Developer() {
                                     onClose: () => hideActionSheet(),
                                 },
                                 options: [
-                                    // @ts-expect-error 
+                                    // @ts-expect-error
                                     // Of course, to trigger an error, we need to do something incorrectly. The below will do!
                                     { label: Strings.BUNNY, onPress: () => navigation.push("VendettaCustomPage", { render: () => <undefined /> }) },
                                     { label: "Discord", isDestructive: true, onPress: () => navigation.push("VendettaCustomPage", { noErrorBoundary: true }) },
@@ -122,5 +122,5 @@ export default function Developer() {
                 </Stack>
             </RN.ScrollView>
         </ErrorBoundary>
-    )
+    );
 }

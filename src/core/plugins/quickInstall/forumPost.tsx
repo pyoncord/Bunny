@@ -1,14 +1,14 @@
-import { findByName, findByProps } from "@metro/filters";
-import { DISCORD_SERVER_ID, PLUGINS_CHANNEL_ID, THEMES_CHANNEL_ID, HTTP_REGEX_MULTI, PROXY_PREFIX } from "@lib/utils/constants";
+import { formatString, Strings } from "@core/i18n";
+import { getAssetIDByName } from "@lib/api/assets";
+import { isThemeSupported } from "@lib/api/native/loader";
 import { after } from "@lib/api/patcher";
+import { useProxy } from "@lib/api/storage";
 import { installPlugin, plugins, removePlugin } from "@lib/managers/plugins";
 import { installTheme, removeTheme, themes } from "@lib/managers/themes";
 import { findInReactTree } from "@lib/utils";
-import { getAssetIDByName } from "@/lib/api/assets";
+import { DISCORD_SERVER_ID, HTTP_REGEX_MULTI, PLUGINS_CHANNEL_ID, PROXY_PREFIX, THEMES_CHANNEL_ID } from "@lib/utils/constants";
+import { findByName, findByProps } from "@metro/filters";
 import { showToast } from "@ui/toasts";
-import { useProxy } from "@/lib/api/storage";
-import { isThemeSupported } from "@/lib/api/native/loader";
-import { Strings, formatString } from "@/core/i18n";
 
 type PostType = "Plugin" | "Theme";
 
@@ -35,7 +35,7 @@ const postMap = {
             return isInstalled ? removeTheme(url) : installTheme(url);
         },
     }
-}
+};
 
 function useExtractThreadContent(thread: any, _firstMessage = null, actionSheet = false): ([PostType, string]) | void {
     if (thread.guild_id !== DISCORD_SERVER_ID) return;
@@ -50,7 +50,7 @@ function useExtractThreadContent(thread: any, _firstMessage = null, actionSheet 
 
     const { firstMessage } = actionSheet ? useFirstForumPostMessage(thread) : { firstMessage: _firstMessage };
 
-    let urls = firstMessage?.content?.match(HTTP_REGEX_MULTI)?.filter(postMap[postType].urlsFilter);
+    const urls = firstMessage?.content?.match(HTTP_REGEX_MULTI)?.filter(postMap[postType].urlsFilter);
     if (!urls || !urls[0]) return;
 
     // Sync with lib/managers/plugins
@@ -82,14 +82,14 @@ function useInstaller(thread: any, firstMessage = null, actionSheet = false): [t
         }
     };
 
-    return [false, postType, isInstalled, isInstalling, installOrRemove]
+    return [false, postType, isInstalled, isInstalling, installOrRemove];
 }
 
 const actionSheetPatch = () => after("default", ForumPostLongPressActionSheet, ([{ thread }], res) => {
     const [shouldReturn, postType, installed, loading, installOrRemove] = useInstaller(thread);
     if (shouldReturn) return;
 
-    const actions = findInReactTree(res, (t) => t?.[0]?.key);
+    const actions = findInReactTree(res, t => t?.[0]?.key);
     const ActionsSection = actions[0].type;
 
     actions.unshift(<ActionsSection key="install">
@@ -118,14 +118,14 @@ const installButtonPatch = () => after("MostCommonForumPostReaction", forumReact
             icon={getAssetIDByName(installed ? "ic_message_delete" : "DownloadIcon")}
             style={{ marginLeft: 8 }}
         />
-    </>
+    </>;
 });
 
 export default () => {
     const patches = [
         actionSheetPatch(),
         installButtonPatch()
-    ]
+    ];
 
     return () => patches.map(p => p());
-}
+};

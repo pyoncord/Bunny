@@ -1,13 +1,13 @@
 // TODO: rewrite most of this
-import { ReactNative as RN, chroma } from "@metro/common";
-import { findInReactTree, safeFetch } from "@lib/utils";
-import { find, findByName, findByProps, findByStoreName } from "@metro/filters";
-import { after, before, instead } from "@lib/api/patcher";
-import { createFileBackend, createMMKVBackend, createStorage, wrapSync, awaitSyncWrapper } from "@/lib/api/storage";
-import logger from "@lib/utils/logger";
+import { getStoredTheme, getThemeFilePath } from "@lib/api/native/loader";
 import { ThemeManager } from "@lib/api/native/modules";
-import { getStoredTheme, getThemeFilePath } from "../api/native/loader";
-import { Author } from "../utils/types";
+import { after, before, instead } from "@lib/api/patcher";
+import { awaitSyncWrapper, createFileBackend, createMMKVBackend, createStorage, wrapSync } from "@lib/api/storage";
+import { findInReactTree, safeFetch } from "@lib/utils";
+import logger from "@lib/utils/logger";
+import { Author } from "@lib/utils/types";
+import { chroma, ReactNative as RN } from "@metro/common";
+import { find, findByName, findByProps, findByStoreName } from "@metro/filters";
 
 export interface ThemeData {
     name: string;
@@ -24,7 +24,7 @@ export interface ThemeData {
          * `CHAT_BACKGROUND` of semanticColors alpha value will be ignored when this is specified
         */
         alpha?: number;
-    }
+    };
 }
 
 export interface Theme {
@@ -54,7 +54,7 @@ const semanticAlternativeMap: Record<string, string> = {
     "BG_SURFACE_OVERLAY": "BACKGROUND_FLOATING",
     "BG_SURFACE_OVERLAY_TMP": "BACKGROUND_FLOATING",
     "BG_SURFACE_RAISED": "BACKGROUND_MOBILE_PRIMARY"
-}
+};
 
 async function writeTheme(theme: Theme | {}) {
     if (typeof theme !== "object") throw new Error("Theme must be an object");
@@ -78,7 +78,7 @@ export function patchChatBackground() {
             children: ret,
         })),
         after("render", MessagesWrapper.prototype, (_, ret) => {
-            const Messages = findInReactTree(ret, (x) => "HACK_fixModalInteraction" in x?.props && x?.props?.style);
+            const Messages = findInReactTree(ret, x => x && "HACK_fixModalInteraction" in x.props && x?.props?.style);
             if (Messages)
                 Messages.props.style = Object.assign(
                     RN.StyleSheet.flatten(Messages.props.style ?? {}),
@@ -100,7 +100,7 @@ function normalizeToHex(colorString: string): string {
     const color = Number(RN.processColor(colorString));
 
     return chroma.rgb(
-        color >> 16 & 0xff, // red 
+        color >> 16 & 0xff, // red
         color >> 8 & 0xff, // green
         color & 0xff, // blue
         color >> 24 & 0xff // alpha
@@ -110,7 +110,7 @@ function normalizeToHex(colorString: string): string {
 // Process data for some compatiblity with native side
 function processData(data: ThemeData) {
     if (data.semanticColors) {
-        const semanticColors = data.semanticColors;
+        const { semanticColors } = data;
 
         for (const key in semanticColors) {
             for (const index in semanticColors[key]) {
@@ -120,7 +120,7 @@ function processData(data: ThemeData) {
     }
 
     if (data.rawColors) {
-        const rawColors = data.rawColors;
+        const { rawColors } = data;
 
         for (const key in rawColors) {
             data.rawColors[key] = normalizeToHex(rawColors[key]);
@@ -227,7 +227,7 @@ function patchColor() {
             configurable: true,
             enumerable: true,
             get: () => {
-                return enabled ? currentTheme?.data?.rawColors?.[k] ?? origRawColor[k] : origRawColor[k]
+                return enabled ? currentTheme?.data?.rawColors?.[k] ?? origRawColor[k] : origRawColor[k];
             }
         });
     });
@@ -258,7 +258,7 @@ function patchColor() {
     });
 
     // Prevent setting to real Discord settings
-    before("set", mmkvStorage, (args) => {
+    before("set", mmkvStorage, args => {
         if (!args[1]) return;
 
         const key = args[0];
@@ -267,11 +267,11 @@ function patchColor() {
         const interceptors: Record<string, () => void> = ({
             SelectivelySyncedUserSettingsStore: () => {
                 if (value._state?.appearance?.settings?.theme) {
-                    const { theme } = value._state?.appearance?.settings;
+                    const { theme } = value._state?.appearance?.settings ?? {};
                     if (isDiscordTheme(theme)) {
                         vdThemeFallback = theme;
                     } else {
-                        value._state.appearance.settings.theme = vdThemeFallback;   
+                        value._state.appearance.settings.theme = vdThemeFallback;
                     }
                 }
             },
@@ -282,8 +282,8 @@ function patchColor() {
                         selectTheme("default");
                         vdThemeFallback = theme;
                     } else {
-                        value._state.theme = vdThemeFallback;   
-                    }  
+                        value._state.theme = vdThemeFallback;
+                    }
                 }
             }
         });
@@ -299,9 +299,9 @@ function patchColor() {
         if (args[1] !== vdKey) return orig(...args);
 
         const [name, colorDef] = extractInfo(vdThemeFallback, args[1]);
-        
+
         const themeIndex = vdThemeFallback === "midnight" ? 2 : vdThemeFallback === "light" ? 1 : 0;
-        
+
         //! As of 192.7, Tabs v2 uses BG_ semantic colors instead of BACKGROUND_ ones
         const alternativeName = semanticAlternativeMap[name] ?? name;
 
@@ -345,7 +345,7 @@ export function applyTheme(appliedTheme: Theme | null, fallbackTheme?: string, u
 
         Object.keys(color.Shadow).forEach(k => color.Shadow[k][vdKey] = color.Shadow[k][fallbackTheme!!]);
         Object.keys(color.SemanticColor).forEach(k => {
-            color.SemanticColor[k][vdKey] = { 
+            color.SemanticColor[k][vdKey] = {
                 ...color.SemanticColor[k][fallbackTheme!!],
                 override: appliedTheme?.data?.semanticColors?.[k]?.[0]
             };

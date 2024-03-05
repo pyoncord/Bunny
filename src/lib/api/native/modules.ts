@@ -80,5 +80,5 @@ export const FileManager = (nmp.DCDFileManager ?? nmp.RTNFileManager) as FileMan
 export const ClientInfoManager = nmp.InfoDictionaryManager ?? nmp.RTNClientInfoManager;
 //! 173.14 renamed this to RTNDeviceManager.
 export const DeviceManager = nmp.DCDDeviceManager ?? nmp.RTNDeviceManager;
-export const BundleUpdaterManager = nmp.BundleUpdaterManager;
+export const { BundleUpdaterManager } = nmp;
 export const ThemeManager = nmp.RTNThemeManager ?? nmp.DCDTheme;

@@ -1,6 +1,6 @@
-import { ButtonColors } from "@/lib/utils/types";
+import { ButtonColors } from "@lib/utils/types";
 import { findByProps } from "@metro/filters";
-import { Forms, Alert } from "@ui/components";
+import { Alert, Forms } from "@ui/components";
 
 const { FormInput } = Forms;
 const Alerts = findByProps("openLazy", "close");
@@ -21,14 +21,14 @@ export default function InputAlert({ title, confirmText, confirmColor, onConfirm
     const [error, setError] = React.useState("");
 
     function onConfirmWrapper() {
-        const asyncOnConfirm = Promise.resolve(onConfirm(value))
+        const asyncOnConfirm = Promise.resolve(onConfirm(value));
 
         asyncOnConfirm.then(() => {
             Alerts.close();
         }).catch((e: Error) => {
             setError(e.message);
         });
-    };
+    }
 
     return (
         <Alert
@@ -43,7 +43,7 @@ export default function InputAlert({ title, confirmText, confirmColor, onConfirm
             <FormInput
                 placeholder={placeholder}
                 value={value}
-                onChange={(v: string | { text: string }) => {
+                onChange={(v: string | { text: string; }) => {
                     setValue(typeof v === "string" ? v : v.text);
                     if (error) setError("");
                 }}
@@ -57,4 +57,4 @@ export default function InputAlert({ title, confirmText, confirmColor, onConfirm
             />
         </Alert>
     );
-};
+}

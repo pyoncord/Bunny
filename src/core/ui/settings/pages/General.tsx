@@ -1,14 +1,14 @@
-import { ReactNative as RN, stylesheet, url } from "@metro/common";
-import { DISCORD_SERVER, GITHUB } from "@lib/utils/constants";
+import { Strings } from "@core/i18n";
+import Version from "@core/ui/components/Version";
+import { getAssetIDByName } from "@lib/api/assets";
+import { useProxy } from "@lib/api/storage";
 import { getDebugInfo, toggleSafeMode } from "@lib/debug";
-import { useProxy } from "@/lib/api/storage";
-import { getAssetIDByName } from "@/lib/api/assets";
-import { Summary } from "@ui/components";
-import { settings } from "@lib/settings";
-import Version from "@/core/ui/components/Version";
 import { findByProps } from "@lib/metro/filters";
+import { settings } from "@lib/settings";
+import { DISCORD_SERVER, GITHUB } from "@lib/utils/constants";
+import { ReactNative as RN, stylesheet, url } from "@metro/common";
 import { semanticColors } from "@ui/color";
-import { Strings } from "@/core/i18n";
+import { Summary } from "@ui/components";
 
 const { Stack, TableRow, TableSwitchRow, TableRowGroup } = findByProps("TableRow");
 const debugInfo = getDebugInfo();
@@ -18,7 +18,7 @@ const styles = stylesheet.createThemedStyleSheet({
         flex: 1,
         backgroundColor: semanticColors.BACKGROUND_MOBILE_SECONDARY,
     }
-})
+});
 
 export default function General() {
     useProxy(settings);
@@ -137,5 +137,5 @@ export default function General() {
                 </TableRowGroup>
             </Stack>
         </RN.ScrollView>
-    )
+    );
 }

@@ -1,9 +1,9 @@
-import { i18n } from "@metro/common";
-import { findByName } from "@metro/filters";
+import SettingsSection from "@core/ui/components/SettingsSection";
+import { getPanelsScreens } from "@core/ui/settings/data";
 import { after } from "@lib/api/patcher";
 import { findInReactTree } from "@lib/utils";
-import { getPanelsScreens } from "@/core/ui/settings/data";
-import SettingsSection from "@/core/ui/components/SettingsSection";
+import { i18n } from "@metro/common";
+import { findByName } from "@metro/filters";
 
 const screensModule = findByName("getScreens", false);
 const settingsModule = findByName("UserSettingsOverviewWrapper", false);
@@ -27,9 +27,9 @@ export default function patchPanels() {
 
         // TODO: Rewrite this whole patch, the index hasn't been properly found for months now
         patches.push(after("render", Overview.type.prototype, (_, { props: { children } }) => {
-            const titles = [i18n.Messages["BILLING_SETTINGS"], i18n.Messages["PREMIUM_SETTINGS"]];
+            const titles = [i18n.Messages.BILLING_SETTINGS, i18n.Messages.PREMIUM_SETTINGS];
             //! Fix for Android 174201 and iOS 42188
-            children = findInReactTree(children, i => i.children?.[1].type?.name === "FormSection").children;
+            ({ children } = findInReactTree(children, i => i.children?.[1].type?.name === "FormSection"));
             const index = children.findIndex((c: any) => titles.includes(c?.props.label));
             children.splice(index === -1 ? 4 : index, 0, <SettingsSection />);
         }));

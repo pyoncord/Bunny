@@ -1,16 +1,16 @@
-import { findByProps, find } from "@metro/filters";
-import { ReactNative as RN, channels, url } from "@metro/common";
-import { PROXY_PREFIX, THEMES_CHANNEL_ID } from "@lib/utils/constants";
+import { formatString, Strings } from "@core/i18n";
+import { getAssetIDByName } from "@lib/api/assets";
+import { isThemeSupported } from "@lib/api/native/loader";
 import { after, instead } from "@lib/api/patcher";
 import { installPlugin } from "@lib/managers/plugins";
 import { installTheme } from "@lib/managers/themes";
+import { PROXY_PREFIX, THEMES_CHANNEL_ID } from "@lib/utils/constants";
+import { channels, url } from "@metro/common";
+import { find, findByProps } from "@metro/filters";
 import { showConfirmationAlert } from "@ui/alerts";
-import { getAssetIDByName } from "@/lib/api/assets";
 import { showToast } from "@ui/toasts";
-import { isThemeSupported } from "@/lib/api/native/loader";
-import { Strings, formatString } from "@/core/i18n";
 
-const showSimpleActionSheet = find((m) => m?.showSimpleActionSheet && !Object.getOwnPropertyDescriptor(m, "showSimpleActionSheet")?.get);
+const showSimpleActionSheet = find(m => m?.showSimpleActionSheet && !Object.getOwnPropertyDescriptor(m, "showSimpleActionSheet")?.get);
 const handleClick = findByProps("handleClick");
 const { openURL } = url;
 const { getChannelId } = channels;
@@ -38,7 +38,7 @@ export default () => {
     const patches = new Array<Function>();
 
     patches.push(
-        after("showSimpleActionSheet", showSimpleActionSheet, (args) => {
+        after("showSimpleActionSheet", showSimpleActionSheet, args => {
             if (args[0].key !== "LongPressUrl") return;
             const {
                 header: { title: url },
@@ -77,5 +77,5 @@ export default () => {
         })
     );
 
-    return () => patches.forEach((p) => p());
+    return () => patches.forEach(p => p());
 };

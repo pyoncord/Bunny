@@ -1,13 +1,13 @@
+import { ButtonColors } from "@lib/utils/types";
 import { findByProps } from "@metro/filters";
 import InputAlert, { InputAlertProps } from "@ui/components/InputAlert";
-import { ButtonColors } from "@/lib/utils/types";
 
 const Alerts = findByProps("openLazy", "close");
 
 interface InternalConfirmationAlertOptions extends Omit<ConfirmationAlertOptions, "content"> {
     content?: ConfirmationAlertOptions["content"];
     body?: ConfirmationAlertOptions["content"];
-};
+}
 
 export interface ConfirmationAlertOptions {
     title?: string;
@@ -31,7 +31,7 @@ export function showConfirmationAlert(options: ConfirmationAlertOptions) {
     internalOptions.isDismissable ??= true;
 
     return Alerts.show(internalOptions);
-};
+}
 
 export const showCustomAlert = (component: React.ComponentType<any>, props: any) => Alerts.openLazy({
     importer: async () => () => React.createElement(component, props),

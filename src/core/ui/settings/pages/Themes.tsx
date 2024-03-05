@@ -1,11 +1,11 @@
-import { useProxy } from "@/lib/api/storage";
-import { Theme, installTheme, themes } from "@lib/managers/themes";
-import { Button } from "@ui/components";
+import { Strings } from "@core/i18n";
+import AddonPage from "@core/ui/components/AddonPage";
+import ThemeCard from "@core/ui/components/ThemeCard";
+import { useProxy } from "@lib/api/storage";
+import { installTheme, Theme, themes } from "@lib/managers/themes";
 import { settings } from "@lib/settings";
-import AddonPage from "@/core/ui/components/AddonPage";
-import ThemeCard from "@/core/ui/components/ThemeCard";
-import { ButtonColors } from "@/lib/utils/types";
-import { Strings } from "@/core/i18n";
+import { ButtonColors } from "@lib/utils/types";
+import { Button } from "@ui/components";
 
 export default function Themes() {
     useProxy(settings);
@@ -27,5 +27,5 @@ export default function Themes() {
             /> : undefined}
             card={ThemeCard}
         />
-    )
+    );
 }

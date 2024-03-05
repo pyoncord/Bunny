@@ -1,9 +1,9 @@
-import { ReactNative as RN, clipboard } from "@metro/common";
-import { showToast } from "@ui/toasts";
+import { Asset } from "@lib/api/assets";
+import { clipboard, ReactNative as RN } from "@metro/common";
 import { Forms } from "@ui/components";
-import { Asset } from "@/lib/api/assets";
+import { showToast } from "@ui/toasts";
 
-interface AssetDisplayProps { asset: Asset }
+interface AssetDisplayProps { asset: Asset; }
 
 const { FormRow } = Forms;
 
@@ -17,5 +17,5 @@ export default function AssetDisplay({ asset }: AssetDisplayProps) {
                 showToast.showCopyToClipboard();
             }}
         />
-    )
+    );
 }

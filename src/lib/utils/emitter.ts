@@ -2,7 +2,7 @@ export enum Events {
     GET = "GET",
     SET = "SET",
     DEL = "DEL",
-};
+}
 
 export type EmitterEvent = "SET" | "GET" | "DEL";
 

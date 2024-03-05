@@ -1,13 +1,13 @@
-import { NavigationNative, clipboard } from "@metro/common";
-import { removePlugin, startPlugin, stopPlugin, getSettings, fetchPlugin, BunnyPlugin } from "@lib/managers/plugins";
+import { formatString, Strings } from "@core/i18n";
+import Card, { CardWrapper } from "@core/ui/components/Card";
+import { getAssetIDByName } from "@lib/api/assets";
 import { MMKVManager } from "@lib/api/native/modules";
-import { getAssetIDByName } from "@/lib/api/assets";
-import { showToast } from "@ui/toasts";
+import { useProxy } from "@lib/api/storage";
+import { BunnyPlugin, fetchPlugin, getSettings, removePlugin, startPlugin, stopPlugin } from "@lib/managers/plugins";
+import { ButtonColors } from "@lib/utils/types";
+import { clipboard, NavigationNative } from "@metro/common";
 import { showConfirmationAlert } from "@ui/alerts";
-import Card, { CardWrapper } from "@/core/ui/components/Card";
-import { useProxy } from "@/lib/api/storage";
-import { ButtonColors } from "@/lib/utils/types";
-import { Strings, formatString } from "@/core/i18n";
+import { showToast } from "@ui/toasts";
 
 async function stopThenStart(plugin: BunnyPlugin, callback: Function) {
     if (plugin.enabled) stopPlugin(plugin.id, false);
@@ -60,7 +60,7 @@ export default function PluginCard({ item: plugin, index }: CardWrapper<BunnyPlu
                                 showToast("Successfully refetched plugin.", getAssetIDByName("toast_image_saved"));
                             }).catch(() => {
                                 showToast("Failed to refetch plugin!", getAssetIDByName("Small"));
-                            })
+                            });
                         });
                     },
                 },
@@ -72,7 +72,7 @@ export default function PluginCard({ item: plugin, index }: CardWrapper<BunnyPlu
                         showToast.showCopyToClipboard();
                     }
                 },
-                {   
+                {
                     icon: "ic_download_24px",
                     label: plugin.update ? Strings.DISABLE_UPDATES : Strings.ENABLE_UPDATES,
                     onPress: () => {
@@ -108,7 +108,7 @@ export default function PluginCard({ item: plugin, index }: CardWrapper<BunnyPlu
                     isDestructive: true,
                     onPress: () => showConfirmationAlert({
                         title: Strings.HOLD_UP,
-                        content: formatString("ARE_YOU_SURE_TO_DELETE_PLUGIN", {name: plugin.manifest.name}),
+                        content: formatString("ARE_YOU_SURE_TO_DELETE_PLUGIN", { name: plugin.manifest.name }),
                         confirmText: Strings.DELETE,
                         cancelText: Strings.CANCEL,
                         confirmColor: ButtonColors.RED,
@@ -124,5 +124,5 @@ export default function PluginCard({ item: plugin, index }: CardWrapper<BunnyPlu
                 }
             ]}
         />
-    )
+    );
 }

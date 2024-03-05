@@ -1,14 +1,14 @@
-import { clipboard } from "@metro/common";
-import { Theme, applyTheme, fetchTheme, removeTheme, selectTheme, themes } from "@lib/managers/themes";
-import { useProxy } from "@/lib/api/storage";
+import { formatString, Strings } from "@core/i18n";
+import Card, { CardWrapper } from "@core/ui/components/Card";
+import { getAssetIDByName } from "@lib/api/assets";
 import { BundleUpdaterManager } from "@lib/api/native/modules";
-import { getAssetIDByName } from "@/lib/api/assets";
+import { useProxy } from "@lib/api/storage";
+import { applyTheme, fetchTheme, removeTheme, selectTheme, Theme, themes } from "@lib/managers/themes";
+import { settings } from "@lib/settings";
+import { ButtonColors } from "@lib/utils/types";
+import { clipboard } from "@metro/common";
 import { showConfirmationAlert } from "@ui/alerts";
 import { showToast } from "@ui/toasts";
-import { settings } from "@lib/settings";
-import Card, { CardWrapper } from "@/core/ui/components/Card";
-import { ButtonColors } from "@/lib/utils/types";
-import { Strings, formatString } from "@/core/i18n";
 
 async function selectAndApply(value: boolean, id: string) {
     try {
@@ -18,8 +18,8 @@ async function selectAndApply(value: boolean, id: string) {
         // TODO: Implement native side reload-less & check if it's applied by 100%
         showToast(Strings.THEMES_RELOAD_FOR_CHANGES, getAssetIDByName("yellow-alert"));
     } catch (e: any) {
-        console.error("Error while selectAndApply,", e)
-    } 
+        console.error("Error while selectAndApply,", e);
+    }
 }
 
 export default function ThemeCard({ item: theme, index }: CardWrapper<Theme>) {
@@ -30,7 +30,7 @@ export default function ThemeCard({ item: theme, index }: CardWrapper<Theme>) {
     // This is needed because of React™
     if (removed) return null;
 
-    const authors = theme.data.authors;
+    const { authors } = theme.data;
 
     return (
         <Card
@@ -57,7 +57,7 @@ export default function ThemeCard({ item: theme, index }: CardWrapper<Theme>) {
                                     cancelText: Strings.CANCEL,
                                     confirmColor: ButtonColors.RED,
                                     onConfirm: () => BundleUpdaterManager.reload(),
-                                })
+                                });
                             } else {
                                 showToast(Strings.THEME_REFETCH_SUCCESSFUL, getAssetIDByName("toast_image_saved"));
                             }
@@ -85,7 +85,7 @@ export default function ThemeCard({ item: theme, index }: CardWrapper<Theme>) {
                         cancelText: Strings.CANCEL,
                         confirmColor: ButtonColors.RED,
                         onConfirm: () => {
-                            removeTheme(theme.id).then((wasSelected) => {
+                            removeTheme(theme.id).then(wasSelected => {
                                 setRemoved(true);
                                 if (wasSelected) selectAndApply(false, theme.id);
                             }).catch((e: Error) => {
@@ -96,5 +96,5 @@ export default function ThemeCard({ item: theme, index }: CardWrapper<Theme>) {
                 },
             ]}
         />
-    )
+    );
 }

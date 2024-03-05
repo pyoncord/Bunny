@@ -1,23 +1,23 @@
-import { ReactNative as RN, NavigationNative, stylesheet, lodash } from "@metro/common";
+import { Strings } from "@core/i18n";
+import InstallButton from "@core/ui/components/InstallButton";
+import Developer from "@core/ui/settings/pages/Developer";
+import General from "@core/ui/settings/pages/General";
+import Plugins from "@core/ui/settings/pages/Plugins";
+import Themes from "@core/ui/settings/pages/Themes";
+import { getAssetIDByName } from "@lib/api/assets";
+import { isThemeSupported } from "@lib/api/native/loader";
+import { useProxy } from "@lib/api/storage";
 import { installPlugin } from "@lib/managers/plugins";
 import { installTheme } from "@lib/managers/themes";
+import { findByProps } from "@lib/metro/filters";
+import { settings } from "@lib/settings";
+import { without } from "@lib/utils";
+import { PROXY_PREFIX } from "@lib/utils/constants";
+import { NavigationNative, ReactNative as RN, stylesheet } from "@metro/common";
 import { showConfirmationAlert } from "@ui/alerts";
 import { semanticColors } from "@ui/color";
-import { showToast } from "@ui/toasts";
-import { without } from "@lib/utils";
-import { getAssetIDByName } from "@/lib/api/assets";
-import { settings } from "@lib/settings";
 import ErrorBoundary from "@ui/components/ErrorBoundary";
-import InstallButton from "@/core/ui/components/InstallButton";
-import General from "@/core/ui/settings/pages/General";
-import Plugins from "@/core/ui/settings/pages/Plugins";
-import Themes from "@/core/ui/settings/pages/Themes";
-import Developer from "@/core/ui/settings/pages/Developer";
-import { PROXY_PREFIX } from "@/lib/utils/constants";
-import { findByProps } from "@/lib/metro/filters";
-import { isThemeSupported } from "@/lib/api/native/loader";
-import { Strings } from "@/core/i18n";
-import { useProxy } from "@/lib/api/storage";
+import { showToast } from "@ui/toasts";
 
 const { useSafeAreaInsets } = findByProps("useSafeAreaInsets");
 
@@ -31,10 +31,10 @@ interface Screen {
     render: React.ComponentType<any>;
 }
 
-const useStyles = stylesheet.createStyles({ 
-    container: { 
+const useStyles = stylesheet.createStyles({
+    container: {
         flex: 1,
-        backgroundColor: semanticColors.BACKGROUND_MOBILE_PRIMARY 
+        backgroundColor: semanticColors.BACKGROUND_MOBILE_PRIMARY
     }
 });
 
@@ -58,7 +58,7 @@ export const getScreens = (): Screen[] => [
             headerRight: () => (
                 <InstallButton
                     alertTitle={Strings.INSTALL_PLUGIN}
-                    installFunction={async (input) => {
+                    installFunction={async input => {
                         if (!input.startsWith(PROXY_PREFIX) && !settings.developerSettings)
                             setImmediate(() => showConfirmationAlert({
                                 title: Strings.MODAL_UNPROXIED_PLUGIN_HEADER,
@@ -99,16 +99,16 @@ export const getScreens = (): Screen[] => [
         key: "VendettaCustomPage",
         title: "Vendetta Page",
         shouldRender: () => false,
-        render: ({ render: PageView, noErrorBoundary, ...options }: { render: React.ComponentType; noErrorBoundary: boolean } & Record<string, object>) => {
+        render: ({ render: PageView, noErrorBoundary, ...options }: { render: React.ComponentType; noErrorBoundary: boolean; } & Record<string, object>) => {
             const navigation = NavigationNative.useNavigation();
 
             navigation.addListener("focus", () => navigation.setOptions(without(options, "render", "noErrorBoundary")));
-            return noErrorBoundary ? <PageView /> : <ErrorBoundary><PageView /></ErrorBoundary>
+            return noErrorBoundary ? <PageView /> : <ErrorBoundary><PageView /></ErrorBoundary>;
         },
     },
 ];
 
-export const getPanelsScreens = () => keyMap(getScreens(), (s) => ({
+export const getPanelsScreens = () => keyMap(getScreens(), s => ({
     title: s.title,
     render: s.render,
     ...s.options,
@@ -128,12 +128,12 @@ export const getYouData = () => {
         }),
         titleConfig: keyMap(screens, "title"),
         relationships: keyMap(screens, null),
-        rendererConfigs: keyMap(screens, (s) => {
+        rendererConfigs: keyMap(screens, s => {
             const WrappedComponent = React.memo(({ navigation, route }: any) => {
                 const styles = useStyles();
                 const { bottom: paddingBottom } = useSafeAreaInsets();
                 navigation.addListener("focus", () => navigation.setOptions(s.options));
-                return <RN.View style={[{ paddingBottom }, styles.container]}><s.render {...route.params} /></RN.View>
+                return <RN.View style={[{ paddingBottom }, styles.container]}><s.render {...route.params} /></RN.View>;
             });
 
             return {
@@ -145,7 +145,7 @@ export const getYouData = () => {
                     route: s.key,
                     getComponent: () => WrappedComponent,
                 }
-            }
+            };
         }),
     };
 };

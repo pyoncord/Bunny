@@ -1,5 +1,5 @@
-import { createEmitter, Emitter } from "@lib/utils/emitter";
 import { StorageBackend } from "@lib/api/storage/backends";
+import { createEmitter, Emitter } from "@lib/utils/emitter";
 
 const emitterSymbol = Symbol.for("vendetta.storage.emitter");
 const syncAwaitSymbol = Symbol.for("vendetta.storage.accessor");
@@ -59,7 +59,7 @@ export function createProxy(target: any = {}): { proxy: any; emitter: Emitter } 
 export function useProxy<T>(storage: T): T {
     const emitter = (storage as any)[emitterSymbol] as Emitter;
 
-    const [, forceUpdate] = React.useReducer((n) => ~n, 0);
+    const [, forceUpdate] = React.useReducer(n => ~n, 0);
 
     React.useEffect(() => {
         const listener = () => forceUpdate();
@@ -93,16 +93,16 @@ export function wrapSync<T extends Promise<any>>(store: T): Awaited<T> {
     const awaitQueue: (() => void)[] = [];
     const awaitInit = (cb: () => void) => (awaited ? cb() : awaitQueue.push(cb));
 
-    store.then((v) => {
+    store.then(v => {
         awaited = v;
-        awaitQueue.forEach((cb) => cb());
+        awaitQueue.forEach(cb => cb());
     });
 
     return new Proxy({} as Awaited<T>, {
         ...Object.fromEntries(
             Object.getOwnPropertyNames(Reflect)
                 // @ts-expect-error
-                .map((k) => [k, (t: T, ...a: any[]) => Reflect[k](awaited ?? t, ...a)])
+                .map(k => [k, (t: T, ...a: any[]) => Reflect[k](awaited ?? t, ...a)])
         ),
         get(target, prop, recv) {
             if (prop === syncAwaitSymbol) return awaitInit;
@@ -111,6 +111,6 @@ export function wrapSync<T extends Promise<any>>(store: T): Awaited<T> {
     });
 }
 
-export const awaitSyncWrapper = (store: any) => new Promise<void>((res) => store[syncAwaitSymbol](res));
+export const awaitSyncWrapper = (store: any) => new Promise<void>(res => store[syncAwaitSymbol](res));
 
 export * from "@lib/api/storage/backends";

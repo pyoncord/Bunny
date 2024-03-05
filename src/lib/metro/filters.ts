@@ -26,7 +26,7 @@ for (const key in window.modules) {
     const id = key as MetroModulesIndex;
     const module = window.modules[id]?.publicModule?.exports;
 
-    if (!module || module === window || module["proxygone"] === null) {
+    if (!module || module === window || module.proxygone === null) {
         blacklist(id);
         continue;
     }
@@ -44,9 +44,9 @@ const onModuleCheck = (exports: any) => {
             } catch {
                 return args[0];
             }
-        })
+        });
     }
-}
+};
 
 // Function to filter through modules
 const filterModules = (modules: MetroModules, single = false) => (filter: (m: any) => boolean) => {
@@ -81,13 +81,13 @@ const filterModules = (modules: MetroModules, single = false) => (filter: (m: an
     }
 
     if (!single) return found;
-}
+};
 
-export const modules = window.modules;
+export const { modules } = window;
 export const find = filterModules(modules, true);
 export const findAll = filterModules(modules);
 
-const propsFilter = (props: (string | symbol)[]) => (m: any) => props.every((p) => m[p] !== undefined);
+const propsFilter = (props: (string | symbol)[]) => (m: any) => props.every(p => m[p] !== undefined);
 const nameFilter = (name: string, defaultExp: boolean) => (defaultExp ? (m: any) => m?.name === name : (m: any) => m?.default?.name === name);
 const dNameFilter = (displayName: string, defaultExp: boolean) => (defaultExp ? (m: any) => m?.displayName === displayName : (m: any) => m?.default?.displayName === displayName);
 const tNameFilter = (typeName: string, defaultExp: boolean) => (defaultExp ? (m: any) => m?.type?.name === typeName : (m: any) => m?.default?.type?.name === typeName);

@@ -1,4 +1,4 @@
-import { Theme } from "../../managers/themes";
+import { Theme } from "@lib/managers/themes";
 
 // @ts-ignore
 const pyonLoaderIdentity = globalThis.__PYON_LOADER__;
@@ -15,8 +15,8 @@ export interface VendettaLoaderIdentity {
         },
         themes?: {
             prop: string;
-        }
-    }
+        };
+    };
 }
 
 export function isVendettaLoader() {
@@ -33,13 +33,13 @@ function polyfillVendettaLoaderIdentity() {
     const loader = {
         name: pyonLoaderIdentity.loaderName,
         features: {} as Record<string, any>
-    }
+    };
 
     if (isLoaderConfigSupported()) loader.features.loaderConfig = true;
     if (isSysColorsSupported()) {
         loader.features.syscolors = {
             prop: "__vendetta_syscolors"
-        }
+        };
 
         Object.defineProperty(globalThis, "__vendetta_syscolors", {
             get: () => getSysColors(),
@@ -49,7 +49,7 @@ function polyfillVendettaLoaderIdentity() {
     if (isThemeSupported()) {
         loader.features.themes = {
             prop: "__vendetta_theme"
-        }
+        };
 
         Object.defineProperty(globalThis, "__vendetta_theme", {
             get: () => getStoredTheme(),
@@ -126,7 +126,7 @@ export function getStoredTheme(): Theme | null {
 
 export function getThemeFilePath() {
     if (isPyonLoader()) {
-        return "pyoncord/current-theme.json"
+        return "pyoncord/current-theme.json";
     } else if (isVendettaLoader()) {
         return "vendetta_theme.json";
     }
@@ -157,7 +157,7 @@ export function getReactDevToolsVersion() {
     if (!isReactDevToolsPreloaded()) return null;
 
     if (isVendettaLoader()) {
-        return vendettaLoaderIdentity!!.features.devtools!!.version
+        return vendettaLoaderIdentity!!.features.devtools!!.version;
     }
 
     return null;

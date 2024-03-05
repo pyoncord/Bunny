@@ -1,9 +1,9 @@
-import { safeFetch } from "@lib/utils";
-import { awaitSyncWrapper, createMMKVBackend, createStorage, purgeStorage, wrapSync } from "@/lib/api/storage";
-import logger, { logModule } from "@lib/utils/logger";
+import { allSettled } from "@core/polyfills";
+import { awaitSyncWrapper, createMMKVBackend, createStorage, purgeStorage, wrapSync } from "@lib/api/storage";
 import { settings } from "@lib/settings";
-import { Author } from "../utils/types";
-import { allSettled } from "@/core/polyfills";
+import { safeFetch } from "@lib/utils";
+import logger, { logModule } from "@lib/utils/logger";
+import { Author } from "@lib/utils/types";
 
 type EvaledPlugin = {
     onLoad?(): void;
@@ -53,7 +53,7 @@ export async function fetchPlugin(id: string) {
         try {
             // by polymanifest spec, plugins should always specify their main file, but just in case
             pluginJs = await (await safeFetch(id + (pluginManifest.main || "index.js"), { cache: "no-store" })).text();
-        } catch {} // Empty catch, checked below
+        } catch { } // Empty catch, checked below
     }
 
     if (!pluginJs && !existingPlugin) throw new Error(`Failed to fetch JS for ${id}`);
@@ -88,7 +88,7 @@ export async function evalPlugin(plugin: BunnyPlugin) {
     const pluginString = `vendetta=>{return ${plugin.js}}\n//# sourceURL=${plugin.id}`;
 
     const raw = (0, eval)(pluginString)(vendettaForPlugins);
-    const ret = typeof raw == "function" ? raw() : raw;
+    const ret = typeof raw === "function" ? raw() : raw;
     return ret?.default ?? ret ?? {};
 }
 
@@ -152,10 +152,10 @@ export async function initPlugins() {
 
     if (!settings.safeMode?.enabled) {
         // Loop over any plugin that is enabled, update it if allowed, then start it.
-        await allSettled(allIds.filter(pl => plugins[pl].enabled).map(async (pl) => (plugins[pl].update && await fetchPlugin(pl).catch((e: Error) => logger.error(e.message)), await startPlugin(pl))));
+        await allSettled(allIds.filter(pl => plugins[pl].enabled).map(async pl => (plugins[pl].update && await fetchPlugin(pl).catch((e: Error) => logger.error(e.message)), await startPlugin(pl))));
         // Wait for the above to finish, then update all disabled plugins that are allowed to.
         allIds.filter(pl => !plugins[pl].enabled && plugins[pl].update).forEach(pl => fetchPlugin(pl));
-    };
+    }
 
     return stopAllPlugins;
 }

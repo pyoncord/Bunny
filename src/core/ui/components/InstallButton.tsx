@@ -1,9 +1,9 @@
-import { ReactNative as RN, stylesheet, clipboard } from "@metro/common";
+import { Strings } from "@core/i18n";
+import { getAssetIDByName } from "@lib/api/assets";
 import { HTTP_REGEX_MULTI } from "@lib/utils/constants";
+import { clipboard, ReactNative as RN, stylesheet } from "@metro/common";
 import { showInputAlert } from "@ui/alerts";
-import { getAssetIDByName } from "@/lib/api/assets";
 import { semanticColors } from "@ui/color";
-import { Strings } from "@/core/i18n";
 
 const styles = stylesheet.createThemedStyleSheet({
     icon: {
@@ -20,7 +20,7 @@ interface InstallButtonProps {
 export default function InstallButton({ alertTitle, installFunction: fetchFunction }: InstallButtonProps) {
     return (
         <RN.TouchableOpacity onPress={() =>
-            clipboard.getString().then((content) =>
+            clipboard.getString().then(content =>
                 showInputAlert({
                     title: alertTitle,
                     initialValue: content.match(HTTP_REGEX_MULTI)?.[0] ?? "",

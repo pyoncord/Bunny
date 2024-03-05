@@ -1,4 +1,5 @@
-import { findByName } from "@/lib/metro/filters";
+import { findByName } from "@lib/metro/filters";
+
 import langDefault from "./default.json";
 
 const IntlMessageFormat = findByName("MessageFormat") as typeof import("intl-messageformat").default;
@@ -11,7 +12,10 @@ export const Strings = new Proxy({}, {
     }
 }) as Record<I18nKey, string>;
 
-export function formatString<T = void>(key: I18nKey, val: Record<string, T>) {
+type FRet<T> = T extends string ? string : string | T | (string | T)[];
+
+export function formatString<T = void>(key: I18nKey, val: Record<string, T>): FRet<T> {
     const str = Strings[key];
+    // @ts-ignore
     return new IntlMessageFormat(str).format(val);
 }

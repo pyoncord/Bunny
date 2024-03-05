@@ -1,12 +1,12 @@
-import { ReactNative as RN, stylesheet } from "@metro/common";
-import { findByName, findByProps, findByStoreName } from "@metro/filters";
+import { DeviceManager } from "@lib/api/native/modules";
 import { after } from "@lib/api/patcher";
 import { toggleSafeMode } from "@lib/debug";
-import { DeviceManager } from "@lib/api/native/modules";
+import { settings } from "@lib/settings";
+import { ButtonColors } from "@lib/utils/types";
+import { ReactNative as RN, stylesheet } from "@metro/common";
+import { findByName, findByProps, findByStoreName } from "@metro/filters";
 import { semanticColors } from "@ui/color";
 import { Button, Codeblock, ErrorBoundary as _ErrorBoundary, SafeAreaView } from "@ui/components";
-import { settings } from "@lib/settings";
-import { ButtonColors } from "@/lib/utils/types";
 
 const ErrorBoundary = findByName("ErrorBoundary");
 
@@ -80,8 +80,8 @@ export default () => after("render", ErrorBoundary.prototype, function (this: an
         { text: "Restart Discord", onPress: this.handleReload },
         ...!settings.safeMode?.enabled ? [{ text: "Restart in Safe Mode", onPress: toggleSafeMode }] : [],
         { text: "Retry Render", color: ButtonColors.RED, onPress: () => this.setState({ info: null, error: null }) },
-    ]
-    
+    ];
+
     return (
         <_ErrorBoundary>
             <SafeAreaView style={styles.container}>
@@ -98,7 +98,7 @@ export default () => after("render", ErrorBoundary.prototype, function (this: an
                         <BadgableTabBar
                             tabs={tabs}
                             activeTab={this.state.activeTab}
-                            onTabSelected={(tab: string) => { this.setState({ activeTab: tab }) }}
+                            onTabSelected={(tab: string) => { this.setState({ activeTab: tab }); }}
                         />
                     </RN.View>
                     <Codeblock
@@ -122,10 +122,10 @@ export default () => after("render", ErrorBoundary.prototype, function (this: an
                             size={button.size ?? "small"}
                             onPress={button.onPress}
                             style={DeviceManager.isTablet ? { flex: `0.${buttons.length}`, marginLeft: buttonIndex } : { marginTop: buttonIndex }}
-                        />
+                        />;
                     })}
                 </RN.View>
             </SafeAreaView>
         </_ErrorBoundary>
-    )
+    );
 });

@@ -1,5 +1,4 @@
 // A really basic fetch wrapper which throws on non-ok response codes
-
 export async function safeFetch(input: RequestInfo | URL, options?: RequestInit, timeout = 10000) {
     const req = await fetch(input, {
         signal: timeoutSignal(timeout),

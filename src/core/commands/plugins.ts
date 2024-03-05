@@ -1,7 +1,7 @@
-import { messageUtil } from "@metro/common";
+import { Strings } from "@core/i18n";
+import { ApplicationCommand, ApplicationCommandOptionType } from "@lib/api/commands/types";
 import { plugins as pluginStorage } from "@lib/managers/plugins";
-import { Strings } from "@/core/i18n";
-import { ApplicationCommand, ApplicationCommandOptionType } from "@/lib/api/commands/types";
+import { messageUtil } from "@metro/common";
 
 export default () => <ApplicationCommand>{
     name: "plugins",
@@ -38,4 +38,4 @@ export default () => <ApplicationCommand>{
             messageUtil.sendMessage(ctx.channel.id, { content });
         }
     }
-}
+};

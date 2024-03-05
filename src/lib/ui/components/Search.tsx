@@ -1,8 +1,8 @@
+import { Strings } from "@core/i18n";
+import { getAssetIDByName } from "@lib/api/assets";
 import { ReactNative as RN } from "@metro/common";
 import { findByProps } from "@metro/filters";
 import ErrorBoundary from "@ui/components/ErrorBoundary";
-import { getAssetIDByName } from "@/lib/api/assets";
-import { Strings } from "@/core/i18n";
 
 const { TextInput } = findByProps("TableRow");
 
@@ -14,16 +14,16 @@ export interface SearchProps {
 
 
 function SearchIcon() {
-    return <RN.Image style={{ transform: [{ scale: 0.8 }]}} source={getAssetIDByName("search")} />
+    return <RN.Image style={{ transform: [{ scale: 0.8 }] }} source={getAssetIDByName("search")} />;
 }
 
 export default ({ onChangeText, placeholder, style }: SearchProps) => {
     const [query, setQuery] = React.useState("");
-    
+
     const onChange = (value: string) => {
         setQuery(value);
         onChangeText?.(value);
-    }
+    };
 
     return <ErrorBoundary>
         <RN.View style={style}>
@@ -38,5 +38,5 @@ export default ({ onChangeText, placeholder, style }: SearchProps) => {
                 value={query}
             />
         </RN.View>
-    </ErrorBoundary>
+    </ErrorBoundary>;
 };

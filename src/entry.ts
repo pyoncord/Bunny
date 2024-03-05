@@ -1,5 +1,5 @@
-import { instead } from "spitroast";
 import { version } from "bunny-build";
+import { instead } from "spitroast";
 
 // @ts-ignore - shut up fr
 globalThis.window = globalThis;
@@ -8,11 +8,11 @@ const init = (async () => {
     try {
         // This logs in the native logging implementation, e.g. logcat
         console.log("Hello from Bunny! Pyon!");
-        
+
         // Make 'freeze' and 'seal' do nothing
         Object.freeze = Object.seal = Object;
 
-        await import(".").then((m) => m.default());
+        await import(".").then(m => m.default());
     } catch (e) {
         const { ClientInfoManager } = require("@lib/api/native/modules");
         const stack = e instanceof Error ? e.stack : undefined;
@@ -50,14 +50,14 @@ if (typeof globalThis.__r !== "undefined") {
             unpatch();
             originalRequire(0);
 
-            callQueue.forEach(arg => 
-                batchedBridge.getCallableModule(arg[0]) 
+            callQueue.forEach(arg =>
+                batchedBridge.getCallableModule(arg[0])
                 && batchedBridge.__callFunction(...arg));
         };
 
         startDiscord();
     }
-    
+
     var _requireFunc: any; // We can't set properties to 'this' during __r set for some reason
 
     Object.defineProperties(globalThis, {
@@ -71,7 +71,7 @@ if (typeof globalThis.__r !== "undefined") {
                         onceIndexRequired(v);
                         _requireFunc = v;
                     } else return v(a);
-                }
+                };
             }
         },
         __d: {
@@ -83,7 +83,7 @@ if (typeof globalThis.__r !== "undefined") {
                 }
                 return this.value;
             },
-            set(v) { this.value = v }
+            set(v) { this.value = v; }
         }
     });
 }

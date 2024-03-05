@@ -1,5 +1,5 @@
-import { assets } from "@metro/common";
 import { after } from "@lib/api/patcher";
+import { assets } from "@metro/common";
 
 export const all: Record<string, Asset> = {};
 
@@ -19,7 +19,7 @@ export function patchAssets() {
         if (!asset) break;
         if (all[asset.name]) continue;
         all[asset.name] = { ...asset, id: id };
-    };
+    }
 
     return unpatch;
 }

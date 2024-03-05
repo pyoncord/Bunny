@@ -1,7 +1,7 @@
-import { Strings } from "@/core/i18n";
+import { Strings } from "@core/i18n";
+import { ApplicationCommand, ApplicationCommandOptionType } from "@lib/api/commands/types";
 import { getDebugInfo } from "@lib/debug";
 import { messageUtil } from "@metro/common";
-import { ApplicationCommand, ApplicationCommandOptionType } from "@/lib/api/commands/types";
 
 export default () => <ApplicationCommand>{
     name: "debug",
@@ -31,4 +31,4 @@ export default () => <ApplicationCommand>{
             messageUtil.sendMessage(ctx.channel.id, { content });
         }
     }
-}
+};

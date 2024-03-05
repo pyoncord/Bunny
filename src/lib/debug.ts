@@ -1,14 +1,14 @@
-import { ReactNative as RN } from "@metro/common";
+import { getAssetIDByName } from "@lib/api/assets";
+import { getLoaderName, isThemeSupported } from "@lib/api/native/loader";
+import { BundleUpdaterManager, ClientInfoManager, DeviceManager } from "@lib/api/native/modules";
 import { after } from "@lib/api/patcher";
 import { getThemeFromLoader, selectTheme } from "@lib/managers/themes";
-import { ClientInfoManager, DeviceManager, BundleUpdaterManager } from "@lib/api/native/modules";
-import { getAssetIDByName } from "@/lib/api/assets";
-import { showToast } from "@ui/toasts";
 import { settings } from "@lib/settings";
 import logger from "@lib/utils/logger";
-import { getLoaderName, isThemeSupported } from "./api/native/loader";
-import type { PlatformConstants } from "react-native";
+import { ReactNative as RN } from "@metro/common";
+import { showToast } from "@ui/toasts";
 import { version } from "bunny-build";
+import type { PlatformConstants } from "react-native";
 export let socket: WebSocket;
 
 export interface RNConstants extends PlatformConstants {
@@ -30,7 +30,7 @@ export interface RNConstants extends PlatformConstants {
 }
 
 export async function toggleSafeMode() {
-    settings.safeMode = { ...settings.safeMode, enabled: !settings.safeMode?.enabled }
+    settings.safeMode = { ...settings.safeMode, enabled: !settings.safeMode?.enabled };
     if (isThemeSupported()) {
         if (getThemeFromLoader()?.id) settings.safeMode!.currentThemeId = getThemeFromLoader()!.id;
         if (settings.safeMode?.enabled) {
@@ -68,7 +68,7 @@ export function connectToDebugger(url: string) {
 }
 
 export function patchLogHook() {
-    const unpatch = after("nativeLoggingHook", globalThis, (args) => {
+    const unpatch = after("nativeLoggingHook", globalThis, args => {
         if (socket?.readyState === WebSocket.OPEN) socket.send(JSON.stringify({ message: args[0], level: args[1] }));
         logger.log(args[0]);
     });
@@ -76,7 +76,7 @@ export function patchLogHook() {
     return () => {
         socket && socket.close();
         unpatch();
-    }
+    };
 }
 
 export const versionHash = version;
@@ -111,7 +111,7 @@ export function getDebugInfo() {
         },
         hermes: {
             version: hermesVer,
-            buildType: hermesProps["Build"],
+            buildType: hermesProps.Build,
             bytecodeVersion: hermesProps["Bytecode Version"],
         },
         ...RN.Platform.select(
@@ -151,5 +151,5 @@ export function getDebugInfo() {
                 }
             }
         )!
-    }
+    };
 }

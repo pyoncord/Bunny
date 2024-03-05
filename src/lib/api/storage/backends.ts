@@ -1,12 +1,12 @@
+import { FileManager, MMKVManager } from "@lib/api/native/modules";
 import { ReactNative as RN } from "@metro/common";
-import { FileManager, MMKVManager } from "../native/modules";
 
 export interface StorageBackend {
     get: () => unknown | Promise<unknown>;
     set: (data: unknown) => void | Promise<void>;
 }
 
-const ILLEGAL_CHARS_REGEX = /[<>:"\/\\|?*]/g;
+const ILLEGAL_CHARS_REGEX = /[<>:"/\\|?*]/g;
 
 const filePathFixer = (file: string): string => RN.Platform.select({
     default: file,
@@ -16,11 +16,11 @@ const filePathFixer = (file: string): string => RN.Platform.select({
 const getMMKVPath = (name: string): string => {
     if (ILLEGAL_CHARS_REGEX.test(name)) {
         // Replace forbidden characters with hyphens
-        name = name.replace(ILLEGAL_CHARS_REGEX, '-').replace(/-+/g, '-');
+        name = name.replace(ILLEGAL_CHARS_REGEX, "-").replace(/-+/g, "-");
     }
 
     return `vd_mmkv/${name}`;
-}
+};
 
 export const purgeStorage = async (store: string) => {
     if (await MMKVManager.getItem(store)) {
@@ -31,7 +31,7 @@ export const purgeStorage = async (store: string) => {
     if (await FileManager.fileExists(`${FileManager.getConstants().DocumentsDirPath}/${mmkvPath}`)) {
         await FileManager.removeFile?.("documents", mmkvPath);
     }
-}
+};
 
 export const createMMKVBackend = (store: string, defaultData = {}) => {
     const mmkvPath = getMMKVPath(store);
@@ -47,7 +47,7 @@ export const createMMKVBackend = (store: string, defaultData = {}) => {
         if (oldData === "!!LARGE_VALUE!!") {
             const cachePath = `${FileManager.getConstants().CacheDirPath}/mmkv/${store}`;
             if (await FileManager.fileExists(cachePath)) {
-                oldData = await FileManager.readFile(cachePath, "utf8")
+                oldData = await FileManager.readFile(cachePath, "utf8");
             } else {
                 console.log(`${store}: Experienced data loss :(`);
                 oldData = defaultStr;
@@ -67,7 +67,7 @@ export const createMMKVBackend = (store: string, defaultData = {}) => {
             console.log(`Successfully migrated ${store} store from MMKV storage to fs`);
         }
     })());
-}
+};
 
 export const createFileBackend = (file: string, defaultData = {}, migratePromise?: Promise<void>): StorageBackend => {
     return {
@@ -86,7 +86,7 @@ export const createFileBackend = (file: string, defaultData = {}, migratePromise
             await FileManager.writeFile("documents", filePathFixer(file), JSON.stringify(defaultData), "utf8");
             return JSON.parse(await FileManager.readFile(path, "utf8"));
         },
-        set: async (data) => {
+        set: async data => {
             await migratePromise;
             await FileManager.writeFile("documents", filePathFixer(file), JSON.stringify(data), "utf8");
         }

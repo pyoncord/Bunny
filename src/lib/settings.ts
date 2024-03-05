@@ -1,4 +1,5 @@
-import { createFileBackend, createMMKVBackend, createStorage, wrapSync } from "@/lib/api/storage";
+import { createFileBackend, createMMKVBackend, createStorage, wrapSync } from "@lib/api/storage";
+
 import { getLoaderConfigPath } from "./api/native/loader";
 
 export interface Settings {

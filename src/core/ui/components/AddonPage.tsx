@@ -1,34 +1,36 @@
-import { NavigationNative, ReactNative as RN, clipboard } from "@metro/common";
-import { useProxy } from "@/lib/api/storage";
-import { HelpMessage, ErrorBoundary, Search } from "@ui/components";
-import { CardWrapper } from "@/core/ui/components/Card";
+import { formatString, Strings } from "@core/i18n";
+import { CardWrapper } from "@core/ui/components/Card";
+import { getAssetIDByName } from "@lib/api/assets";
+import { useProxy } from "@lib/api/storage";
+import { findByProps } from "@lib/metro/filters";
 import { settings } from "@lib/settings";
-import { findByProps } from "@/lib/metro/filters";
-import { HTTP_REGEX_MULTI } from "@/lib/utils/constants";
+import { HTTP_REGEX_MULTI } from "@lib/utils/constants";
+import { clipboard, ReactNative as RN } from "@metro/common";
 import { showInputAlert } from "@ui/alerts";
-import { getAssetIDByName } from "@/lib/api/assets";
-import { Strings, formatString } from "@/core/i18n";
+import { ErrorBoundary, HelpMessage, Search } from "@ui/components";
 import fuzzysort from "fuzzysort";
 
 interface AddonPageProps<T> {
     title: string;
     fetchFunction: (url: string) => Promise<void>;
-    items: Record<string, T & { id: string }>;
+    items: Record<string, T & { id: string; }>;
     safeModeMessage: string;
     safeModeExtras?: JSX.Element | JSX.Element[];
     card: React.ComponentType<CardWrapper<T>>;
 }
 
-function getItemsByQuery<T extends { id?: string }>(items: T[], query: string): T[] {
+function getItemsByQuery<T extends { id?: string; }>(items: T[], query: string): T[] {
     if (!query) return items;
 
-    return fuzzysort.go(query, items, { keys: [
-        "id",
-        "manifest.name",
-        "manifest.description",
-        "manifest.authors.0.name", 
-        "manifest.authors.1.name"
-    ]}).map(r => r.obj);
+    return fuzzysort.go(query, items, {
+        keys: [
+            "id",
+            "manifest.name",
+            "manifest.description",
+            "manifest.authors.0.name",
+            "manifest.authors.1.name"
+        ]
+    }).map(r => r.obj);
 }
 
 const reanimated = findByProps("useSharedValue");
@@ -68,13 +70,13 @@ export default function AddonPage<T>({ title, fetchFunction, items, safeModeMess
                 data={getItemsByQuery(Object.values(items), search)}
                 renderItem={({ item, index }) => <CardComponent item={item} index={index} />}
             />
-            <FloatingActionButton 
+            <FloatingActionButton
                 text={formatString("INSTALL_TITLE", { title })}
                 icon={getAssetIDByName("DownloadIcon")}
                 state={{ collapseText }}
                 onPress={() => {
                     // from ./InstallButton.tsx
-                    clipboard.getString().then((content) =>
+                    clipboard.getString().then(content =>
                         showInputAlert({
                             title: formatString("INSTALL_TITLE", { title }),
                             initialValue: content.match(HTTP_REGEX_MULTI)?.[0] ?? "",
@@ -83,9 +85,9 @@ export default function AddonPage<T>({ title, fetchFunction, items, safeModeMess
                             confirmText: Strings.INSTALL,
                             cancelText: Strings.CANCEL,
                         })
-                    )
-                }} 
+                    );
+                }}
             />
         </ErrorBoundary>
-    )
+    );
 }

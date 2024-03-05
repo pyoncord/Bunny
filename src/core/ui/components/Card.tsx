@@ -1,8 +1,8 @@
-import ContextMenu from "@ui/components/ContextMenu";
+import { getAssetIDByName } from "@lib/api/assets";
 import { ReactNative as RN, stylesheet } from "@metro/common";
 import { findByProps } from "@metro/filters";
-import { getAssetIDByName } from "@/lib/api/assets";
 import { semanticColors } from "@ui/color";
+import ContextMenu from "@ui/components/ContextMenu";
 
 const { TableRow, TableRowIcon, TableSwitchRow, TableCheckboxRow, TableRowGroup } = findByProps("TableRow");
 
@@ -33,7 +33,7 @@ const styles = stylesheet.createThemedStyleSheet({
         marginLeft: 5,
         tintColor: semanticColors?.INTERACTIVE_NORMAL,
     }
-})
+});
 
 interface Action {
     icon: string;
@@ -77,43 +77,43 @@ export default function Card(props: CardProps) {
     return (
         <RN.View style={[styles.card, { marginTop: props.index !== 0 ? 10 : 0 }]}>
             <TableRowGroup>
-            {props.toggleType && (props.toggleType === "switch" ?
-                <TableSwitchRow
-                    {...headerProps}
-                    value={props.toggleValue}
-                    onValueChange={props.onToggleChange}
-                /> : props.toggleType === "radio" ?
-                <TableCheckboxRow
-                    {...headerProps}
-                    onPress={() => {
-                        pressableState = !pressableState;
-                        props.onToggleChange?.(pressableState)
-                    }}
-                    checked={props.toggleValue}
-                /> : undefined) || <TableRow {...headerProps} />}
-            <TableRow
-                label={props.descriptionLabel}
-                trailing={
-                    <RN.View style={styles.actions}>
-                        {props.overflowActions &&
-                            <ContextMenu
-                                triggerOnLongPress={false}
-                                items={props.overflowActions.map(i => ({ 
-                                    label: i.label,
-                                    iconSource: getAssetIDByName(i.icon),
-                                    action: i.onPress
-                                }))}
-                                align="auto"
-                                title={props.overflowTitle!!}
-                                children={(props) => <RN.TouchableOpacity {...props}>
-                                    <RN.Image style={styles.icon} source={getAssetIDByName("ic_more_24px")} />
-                                </RN.TouchableOpacity>}
-                            />
-                        }
-                    </RN.View>
-                }
-            />
+                {props.toggleType && (props.toggleType === "switch" ?
+                    <TableSwitchRow
+                        {...headerProps}
+                        value={props.toggleValue}
+                        onValueChange={props.onToggleChange}
+                    /> : props.toggleType === "radio" ?
+                        <TableCheckboxRow
+                            {...headerProps}
+                            onPress={() => {
+                                pressableState = !pressableState;
+                                props.onToggleChange?.(pressableState);
+                            }}
+                            checked={props.toggleValue}
+                        /> : undefined) || <TableRow {...headerProps} />}
+                <TableRow
+                    label={props.descriptionLabel}
+                    trailing={
+                        <RN.View style={styles.actions}>
+                            {props.overflowActions &&
+                                <ContextMenu
+                                    triggerOnLongPress={false}
+                                    items={props.overflowActions.map(i => ({
+                                        label: i.label,
+                                        iconSource: getAssetIDByName(i.icon),
+                                        action: i.onPress
+                                    }))}
+                                    align="auto"
+                                    title={props.overflowTitle!!}
+                                    children={props => <RN.TouchableOpacity {...props}>
+                                        <RN.Image style={styles.icon} source={getAssetIDByName("ic_more_24px")} />
+                                    </RN.TouchableOpacity>}
+                                />
+                            }
+                        </RN.View>
+                    }
+                />
             </TableRowGroup>
         </RN.View>
-    )
+    );
 }

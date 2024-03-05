@@ -1,4 +1,3 @@
-import { ReactNative as RN } from "@metro/common";
 import { findByDisplayName, findByName, findByProps } from "@metro/filters";
 
 // Discord
@@ -11,7 +10,7 @@ export const HelpMessage = findByName("HelpMessage");
 export const SafeAreaView = findByProps("useSafeAreaInsets").SafeAreaView as any;
 
 // Vendetta
-export { default as Summary } from "@ui/components/Summary";
-export { default as ErrorBoundary } from "@ui/components/ErrorBoundary";
 export { default as Codeblock } from "@ui/components/Codeblock";
+export { default as ErrorBoundary } from "@ui/components/ErrorBoundary";
 export { default as Search } from "@ui/components/Search";
+export { default as Summary } from "@ui/components/Summary";

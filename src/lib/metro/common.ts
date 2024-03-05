@@ -18,11 +18,11 @@ function createThemedStyleSheet<T extends StyleSheet.NamedStyles<T>>(sheet: T) {
     for (const key in sheet) {
         // @ts-ignore
         sheet[key] = new Proxy(ReactNative.StyleSheet.flatten(sheet[key]), {
-            get(target, prop, receiver) { 
+            get(target, prop, receiver) {
                 const res = Reflect.get(target, prop, receiver);
-                return colorResolver.isSemanticColor(res) 
+                return colorResolver.isSemanticColor(res)
                     ? colorResolver.resolveSemanticColor(ThemeStore.theme, res)
-                    : res
+                    : res;
             }
         });
     }

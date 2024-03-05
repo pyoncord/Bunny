@@ -1,8 +1,8 @@
+import { getAssetIDByName } from "@lib/api/assets";
+import { findByProps } from "@lib/metro/filters";
 import { clipboard } from "@metro/common";
-import { getAssetIDByName } from "@/lib/api/assets";
-import { showToast } from "@ui/toasts";
 import { Forms } from "@ui/components";
-import { findByProps } from "@/lib/metro/filters";
+import { showToast } from "@ui/toasts";
 
 interface VersionProps {
     label: string;
@@ -15,7 +15,7 @@ const { TableRow } = findByProps("TableRow");
 const { FormText } = Forms;
 
 export default function Version({ label, version, icon, padding }: VersionProps) {
-    return ( 
+    return (
         <TableRow
             style={padding && { paddingHorizontal: 15, paddingVertical: -15 }}
             label={label}
@@ -26,5 +26,5 @@ export default function Version({ label, version, icon, padding }: VersionProps)
                 showToast.showCopyToClipboard();
             }}
         />
-    )
+    );
 }

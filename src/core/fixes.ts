@@ -6,10 +6,10 @@
  * - @pylixonly
  */
 
-import { FluxDispatcher, moment } from "@metro/common";
 import logger from "@lib/utils/logger";
+import { FluxDispatcher, moment } from "@metro/common";
 
-function onDispatch({ locale }: { locale: string }) {
+function onDispatch({ locale }: { locale: string; }) {
     // Timestamps
     try {
         moment.locale(locale.toLowerCase());
@@ -22,5 +22,5 @@ function onDispatch({ locale }: { locale: string }) {
 }
 
 export default () => {
-    FluxDispatcher.subscribe("I18N_LOAD_SUCCESS", onDispatch)
+    FluxDispatcher.subscribe("I18N_LOAD_SUCCESS", onDispatch);
 };

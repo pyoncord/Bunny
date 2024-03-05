@@ -2,8 +2,8 @@
 import swc from "@swc/core";
 import { execSync } from "child_process";
 import esbuild from "esbuild";
-import { copyFile, copyFileSync } from "fs";
-import { readFile, writeFile } from "fs/promises";
+import { copyFileSync } from "fs";
+import { readFile } from "fs/promises";
 import { createServer } from "http";
 import path from "path";
 import { argv } from "process";
@@ -36,8 +36,11 @@ try {
         loader: { ".png": "dataurl" },
         legalComments: "none",
         alias: {
-            "@*": "src*",
-            "@types": "src/utils/types.ts"
+            "@lib/*": "src/lib/*",
+            "@core/*": "src/core/*",
+            "@metro/*": "src/lib/metro/*",
+            "@ui/*": "src/lib/ui/*",
+            "@types": "src/utils/types.ts",
         },
         plugins: [
             {
@@ -45,12 +48,12 @@ try {
                 setup: async build => {
                     build.onStart(() => {
                         console.clear();
-                        console.log(`Building with commit hash "${commitHash}", isRelease="${isRelease}"`)
+                        console.log(`Building with commit hash "${commitHash}", isRelease="${isRelease}"`);
                     });
 
                     build.onEnd(result => {
                         const { outfile } = build.initialOptions;
-                        copyFileSync(outfile, path.resolve(outfile, "..", "pyondetta.js"))
+                        copyFileSync(outfile, path.resolve(outfile, "..", "pyondetta.js"));
                         console.log(`Built with ${result.errors?.length} errors!`);
                     });
                 }
@@ -59,12 +62,12 @@ try {
                 name: "swc",
                 setup(build) {
                     let timeString = Number(new Date).toString(36);
-                    
+
                     build.onStart(() => {
                         timeString = Number(new Date).toString(36);
                         console.log(`swc plugin: time-string="${timeString}"`);
-                    })
-                    
+                    });
+
                     build.onLoad({ filter: /\.[jt]sx?$/ }, async args => {
                         const result = await swc.transformFile(args.path, {
                             jsc: {

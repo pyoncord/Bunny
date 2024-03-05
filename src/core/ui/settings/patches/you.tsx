@@ -1,8 +1,8 @@
-import { findByProps } from "@metro/filters";
+import { Strings } from "@core/i18n";
+import { getScreens, getYouData } from "@core/ui/settings/data";
 import { after, before } from "@lib/api/patcher";
-import { getScreens, getYouData } from "@/core/ui/settings/data";
 import { i18n } from "@lib/metro/common";
-import { Strings } from "@/core/i18n";
+import { findByProps } from "@metro/filters";
 
 export default function patchYou() {
     const patches = new Array<Function>;
@@ -53,7 +53,7 @@ function oldYouPatch(patches: Function[]) {
 
     const oldRelationships = miscModule.SETTING_RELATIONSHIPS;
     const oldRendererConfigs = miscModule.SETTING_RENDERER_CONFIGS;
-    
+
     miscModule.SETTING_RELATIONSHIPS = { ...oldRelationships, ...data.relationships };
     miscModule.SETTING_RENDERER_CONFIGS = { ...oldRendererConfigs, ...data.rendererConfigs };
 
@@ -78,7 +78,7 @@ function newYouPatch(patches: Function[]) {
     patches.push(before("type", settingsListComponents.SearchableSettingsList, ([{ sections }]) => manipulateSections(sections, data.getLayout())));
 
     patches.push(after("getSettingListSearchResultItems", gettersModule, (_, ret) => {
-        ret.forEach((s: any) => screens.some(b => b.key === s.setting) && (s.breadcrumbs = [Strings.BUNNY]))
+        ret.forEach((s: any) => screens.some(b => b.key === s.setting) && (s.breadcrumbs = [Strings.BUNNY]));
     }));
 
     const oldRendererConfig = settingConstantsModule.SETTING_RENDERER_CONFIG;
@@ -102,5 +102,5 @@ function manipulateSections(sections: any[], layout: any) {
 
     // Upload Logs button be gone
     const supportCategory = sections.find((i: any) => isLabel(i, i18n.Messages.SUPPORT));
-    if (supportCategory) supportCategory.settings = supportCategory.settings.filter((s: string) => s !== "UPLOAD_DEBUG_LOGS")
+    if (supportCategory) supportCategory.settings = supportCategory.settings.filter((s: string) => s !== "UPLOAD_DEBUG_LOGS");
 }

@@ -6,7 +6,8 @@
         "dev": "node build.mjs",
         "build": "node build.mjs --release",
         "serve": "node build.mjs --serve",
-        "watch": "node build.mjs --watch"
+        "watch": "node build.mjs --watch",
+        "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx"
     },
     "keywords": [
         "discord",
@@ -26,13 +27,22 @@
         "@types/node": "^20.11.21",
         "@types/react": "18.2.60",
         "@types/react-native": "0.72.3",
+        "@typescript-eslint/eslint-plugin": "^7.1.1",
+        "@typescript-eslint/parser": "^7.1.1",
+        "@typescript-eslint/typescript-estree": "^7.1.1",
         "esbuild": "^0.17.19",
+        "eslint": "^8.57.0",
+        "eslint-import-resolver-alias": "^1.1.2",
+        "eslint-plugin-path-alias": "^1.0.0",
+        "eslint-plugin-react": "^7.34.0",
+        "eslint-plugin-unused-imports": "^3.1.0",
         "moment": "2.22.2",
         "typescript": "^5.3.3",
         "typescript-transform-paths": "^3.4.7"
     },
     "dependencies": {
         "@swc/helpers": "0.5.0",
+        "eslint-plugin-simple-import-sort": "^12.0.0",
         "fuzzysort": "^2.0.4",
         "intl-messageformat": "^10.5.11",
         "spitroast": "^1.4.3"

@@ -1,6 +1,7 @@
-import { commands as commandsModule } from "@metro/common";
 import { after } from "@lib/api/patcher";
-import { ApplicationCommand, ApplicationCommandType, ApplicationCommandInputType } from "./types";
+import { commands as commandsModule } from "@metro/common";
+
+import { ApplicationCommand, ApplicationCommandInputType, ApplicationCommandType } from "./types";
 
 let commands: ApplicationCommand[] = [];
 
@@ -11,9 +12,9 @@ export function patchCommands() {
 
     // Register core commands
     [
-        // require("@/core/commands/eval"),
-        require("@/core/commands/debug"),
-        require("@/core/commands/plugins")
+        // require("@core/commands/eval"),
+        require("@core/commands/debug"),
+        require("@core/commands/plugins")
     ].forEach(r => registerCommand(r.default()));
 
     return () => {

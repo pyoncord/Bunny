@@ -1,7 +1,7 @@
+import AssetDisplay from "@core/ui/components/AssetDisplay";
+import { all } from "@lib/api/assets";
 import { ReactNative as RN } from "@metro/common";
-import { all } from "@/lib/api/assets";
-import { Forms, Search, ErrorBoundary } from "@ui/components";
-import AssetDisplay from "@/core/ui/components/AssetDisplay";
+import { ErrorBoundary, Forms, Search } from "@ui/components";
 
 const { FormDivider } = Forms;
 
@@ -24,5 +24,5 @@ export default function AssetBrowser() {
                 />
             </RN.View>
         </ErrorBoundary>
-    )
+    );
 }

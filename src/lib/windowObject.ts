@@ -1,14 +1,12 @@
-import { createVendettaObject } from "../core/vendettaObject";
-
+import { createVendettaObject } from "@core/vendettaObject";
 import * as api from "@lib/api";
+import patcher from "@lib/api/patcher";
 import * as debug from "@lib/debug";
 import * as managers from "@lib/managers";
 import * as metro from "@lib/metro";
 import * as settings from "@lib/settings";
 import * as ui from "@lib/ui";
 import * as utils from "@lib/utils";
-
-import patcher from "@lib/api/patcher";
 
 // You may now worry about my mental state.
 function createBunnyObject(unloads: any[]) {
@@ -59,7 +57,7 @@ function createBunnyObject(unloads: any[]) {
             // @ts-expect-error
             delete window.bunny;
         },
-    }
+    };
 }
 
 export type BunnyObject = ReturnType<typeof createBunnyObject>;

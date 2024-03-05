@@ -1,6 +1,6 @@
-import { Strings } from "@/core/i18n";
+import { Strings } from "@core/i18n";
 import { React, ReactNative as RN, stylesheet } from "@metro/common";
-import { Forms, Button, Codeblock } from "@ui/components";
+import { Button, Codeblock, Forms } from "@ui/components";
 
 interface ErrorBoundaryState {
     hasErr: boolean;
@@ -47,6 +47,6 @@ export default class ErrorBoundary extends React.Component<ErrorBoundaryProps, E
                     text={Strings.RETRY}
                 />
             </RN.ScrollView>
-        )
+        );
     }
 }

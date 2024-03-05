@@ -1,6 +1,6 @@
-import { findByProps } from "@lib/metro/filters";
 import { instead } from "@lib/api/patcher";
-import { ReactNative } from "@/lib/metro/common";
+import { ReactNative } from "@lib/metro/common";
+import { findByProps } from "@lib/metro/filters";
 
 const { ContextMenu: _ContextMenu } = findByProps("ContextMenu");
 const { AccessibilityInfo } = ReactNative;
@@ -10,7 +10,7 @@ type ContextMenuItem = {
     iconSource: import("react-native").ImageSourcePropType,
     action: () => unknown,
     [key: string]: any;
-}
+};
 
 type ContextMenuProps = {
     triggerOnLongPress: boolean;
@@ -19,7 +19,7 @@ type ContextMenuProps = {
     title: string;
     children: React.FC;
     [key: string]: any;
-}
+};
 
 export default function ContextMenu(props: ContextMenuProps) {
     const ref = React.useRef(null);
@@ -41,12 +41,12 @@ export default function ContextMenu(props: ContextMenuProps) {
                     unpatch(); // and skip this call
                 }
             });
-        }
+        };
     }, []);
 
     return <ReactNative.View ref={ref}>
         <_ContextMenu
             {...props}
         />
-    </ReactNative.View>
+    </ReactNative.View>;
 }

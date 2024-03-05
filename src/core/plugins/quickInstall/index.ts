@@ -8,4 +8,4 @@ export default function onLoad() {
     patches.push(patchUrl());
 
     return () => patches.forEach(p => p());
-};
+}

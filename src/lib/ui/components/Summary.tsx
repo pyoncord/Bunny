@@ -1,6 +1,6 @@
+import { getAssetIDByName } from "@lib/api/assets";
+import { findByProps } from "@lib/metro/filters";
 import { ReactNative as RN } from "@metro/common";
-import { getAssetIDByName } from "@/lib/api/assets";
-import { findByProps } from "@/lib/metro/filters";
 
 const { FormRow } = findByProps("FormRow");
 const { TableRow } = findByProps("TableRow");
@@ -30,5 +30,5 @@ export default function Summary({ label, icon, noPadding = false, noAnimation = 
                 <RN.View style={!noPadding && { paddingHorizontal: 15 }}>{children}</RN.View>
             </>}
         </>
-    )
+    );
 }

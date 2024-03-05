@@ -1,19 +1,19 @@
-import patcher from "@lib/api/patcher";
+import * as assets from "@lib/api/assets";
+import * as commands from "@lib/api/commands";
 import { getVendettaLoaderIdentity } from "@lib/api/native/loader";
-import { settings, loaderConfig } from "@lib/settings";
+import patcher from "@lib/api/patcher";
+import * as storage from "@lib/api/storage";
 import * as debug from "@lib/debug";
 import * as plugins from "@lib/managers/plugins";
 import * as themes from "@lib/managers/themes";
-import * as commands from "@/lib/api/commands";
-import * as storage from "@/lib/api/storage";
-import * as metro from "@metro/filters";
+import { loaderConfig, settings } from "@lib/settings";
+import * as utils from "@lib/utils";
 import * as common from "@metro/common";
+import * as metro from "@metro/filters";
+import * as alerts from "@ui/alerts";
+import * as color from "@ui/color";
 import * as components from "@ui/components";
 import * as toasts from "@ui/toasts";
-import * as alerts from "@ui/alerts";
-import * as assets from "@/lib/api/assets";
-import * as color from "@ui/color";
-import * as utils from "@lib/utils";
 
 export const createVendettaObject = (unloads: any[]): any => ({
     patcher: {
@@ -21,7 +21,7 @@ export const createVendettaObject = (unloads: any[]): any => ({
         after: patcher.after,
         instead: patcher.instead
     },
-    metro: { 
+    metro: {
         find: (filter: (m: any) => boolean) => metro.find(filter),
         findAll: (filter: (m: any) => boolean) => metro.findAll(filter),
         findByProps: (...props: any) => metro.findByProps(...props),
@@ -60,9 +60,9 @@ export const createVendettaObject = (unloads: any[]): any => ({
     constants: {
         DISCORD_SERVER: "https://discord.gg/n9QQ4XhhJP",
         GITHUB: "https://github.com/vendetta-mod",
-        PROXY_PREFIX:  "https://vd-plugins.github.io/proxy",
-        HTTP_REGEX:  /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/,
-        HTTP_REGEX_MULTI: /https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&//=]*)/g,
+        PROXY_PREFIX: "https://vd-plugins.github.io/proxy",
+        HTTP_REGEX: /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_+.~#?&/=]*)$/,
+        HTTP_REGEX_MULTI: /https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_+.~#?&//=]*)/g,
         DISCORD_SERVER_ID: "1015931589865246730",
         PLUGINS_CHANNEL_ID: "1091880384561684561",
         THEMES_CHANNEL_ID: "1091880434939482202",
