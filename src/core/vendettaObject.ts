@@ -71,7 +71,7 @@ export const createVendettaObject = (unloads: any[]): any => ({
         findInReactTree: (tree: { [key: string]: any; }, filter: any) => utils.findInReactTree(tree, filter),
         findInTree: (tree: any, filter: any, options: any) => utils.findInTree(tree, filter, options),
         safeFetch: (input: RequestInfo | URL, options?: RequestInit | undefined, timeout?: number | undefined) => utils.safeFetch(input, options, timeout),
-        unfreeze: (obj: object) => utils.unfreeze(obj),
+        unfreeze: (obj: object) => ({ ...obj }),
         without: (object: any, ...keys: any) => utils.without(object, ...keys)
     },
     debug: {
