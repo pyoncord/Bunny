@@ -15,11 +15,11 @@ dependencies:
     specifier: ^4.14.191
     version: 4.14.191
   '@types/react':
-    specifier: 18.0.26
-    version: 18.0.26
+    specifier: 18.2.60
+    version: 18.2.60
   '@types/react-native':
-    specifier: 0.68.1
-    version: 0.68.1
+    specifier: 0.72.3
+    version: 0.72.3(react-native@0.73.4)
   moment:
     specifier: 2.22.2
     version: 2.22.2
@@ -1935,6 +1935,16 @@ packages:
     resolution: {integrity: sha512-bRBcb2T+I88aG74LMVHaKms2p/T8aQd8+BZ7LuuzXlRfog1bMWWn/C5i0HVuvW4RPtXQYgIlGiXVDy9Ir1So/w==}
     dev: false
 
+  /@react-native/virtualized-lists@0.72.8(react-native@0.73.4):
+    resolution: {integrity: sha512-J3Q4Bkuo99k7mu+jPS9gSUSgq+lLRSI/+ahXNwV92XgJ/8UgOTxu2LPwhJnBk/sQKxq7E8WkZBnBiozukQMqrw==}
+    peerDependencies:
+      react-native: '*'
+    dependencies:
+      invariant: 2.2.4
+      nullthrows: 1.1.1
+      react-native: 0.73.4(@babel/core@7.23.9)(@babel/preset-env@7.23.9)(react@18.2.0)
+    dev: false
+
   /@react-native/virtualized-lists@0.73.4(react-native@0.73.4):
     resolution: {integrity: sha512-HpmLg1FrEiDtrtAbXiwCgXFYyloK/dOIPIuWW3fsqukwJEWAiTzm1nXGJ7xPU5XTHiWZ4sKup5Ebaj8z7iyWog==}
     engines: {node: '>=18'}
@@ -2010,14 +2020,17 @@ packages:
     resolution: {integrity: sha512-ga8y9v9uyeiLdpKddhxYQkxNDrfvuPrlFb0N1qnZZByvcElJaXthF1UhvCh9TLWJBEHeNtdnbysW7Y6Uq8CVng==}
     dev: false
 
-  /@types/react-native@0.68.1:
-    resolution: {integrity: sha512-S+r6VamWqVutlQ3q/vhTn4b0F/DdZj8R6AIDdgwV9xN9Ln1kRdQd7o3mo7FnfdddVdzEkWMUVlK2sbkFOJFAiQ==}
+  /@types/react-native@0.72.3(react-native@0.73.4):
+    resolution: {integrity: sha512-9+g+DBJIY3bG7+ZlYzKPr9kxTQxUuZQgLWZhYK4RlIcrsm3qaJhL2PU2e/K4CjnzznWCo2Islgec94x2z1pG4Q==}
     dependencies:
-      '@types/react': 18.0.26
+      '@react-native/virtualized-lists': 0.72.8(react-native@0.73.4)
+      '@types/react': 18.2.60
+    transitivePeerDependencies:
+      - react-native
     dev: false
 
-  /@types/react@18.0.26:
-    resolution: {integrity: sha512-hCR3PJQsAIXyxhTNSiDFY//LhnMZWpNNr5etoCqx/iUfGc5gXWtQR2Phl908jVR6uPXacojQWTg4qRpkxTuGug==}
+  /@types/react@18.2.60:
+    resolution: {integrity: sha512-dfiPj9+k20jJrLGOu9Nf6eqxm2EyJRrq2NvwOFsfbb7sFExZ9WELPs67UImHj3Ayxg8ruTtKtNnbjaF8olPq0A==}
     dependencies:
       '@types/prop-types': 15.7.11
       '@types/scheduler': 0.16.8

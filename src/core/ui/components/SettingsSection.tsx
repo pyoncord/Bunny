@@ -19,7 +19,7 @@ export default function SettingsSection() {
                 {screens.filter(s => (s.shouldRender?.() ?? true)).map((s, i) => (
                     <>
                         <FormRow
-                            label={s.title}
+                            label={s.title()}
                             leading={<FormRow.Icon source={getAssetIDByName(s.icon!)} />}
                             trailing={FormRow.Arrow}
                             onPress={() => navigation.push(s.key)}

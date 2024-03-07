@@ -1,11 +1,11 @@
 import { constants } from "@metro/common";
 import { semanticColors } from "@ui/color";
 import { createStyles } from "@ui/styles";
-import { Platform, Text, TextInput, type TextStyle } from "react-native";
+import { Platform, Text, TextInput } from "react-native";
 
 export interface CodeblockProps {
     selectable?: boolean;
-    style?: TextStyle;
+    style?: import("react-native").TextStyle;
     children?: string;
 }
 
