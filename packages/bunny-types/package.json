@@ -1,6 +1,6 @@
 {
   "name": "bunny-types",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Types for Bunny, a mod for Discord's mobile apps",
   "author": "pylixonly",
   "publishConfig": {
