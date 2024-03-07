@@ -2,7 +2,7 @@ import { Strings } from "@core/i18n";
 import Version from "@core/ui/components/Version";
 import { getAssetIDByName } from "@lib/api/assets";
 import { useProxy } from "@lib/api/storage";
-import { getDebugInfo, _toggleSafeMode } from "@lib/debug";
+import { _toggleSafeMode, getDebugInfo } from "@lib/debug";
 import { settings } from "@lib/settings";
 import { Stack, TableRow, TableRowGroup, TableSwitchRow } from "@lib/ui/components/discord/Redesign";
 import { DISCORD_SERVER, GITHUB } from "@lib/utils/constants";

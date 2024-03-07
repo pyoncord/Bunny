@@ -33,6 +33,7 @@
 		color
 		toasts
 		styles
+		settings
 	}
 	utils {
 		constants

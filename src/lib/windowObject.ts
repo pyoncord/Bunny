@@ -88,7 +88,8 @@ const _bunnyObject = () => ({ // this function is never used, only exists for ty
         alerts: { ...ui.alerts },
         color: { ...ui.color },
         toasts: { ...ui.toasts },
-        styles: { ...ui.styles }
+        styles: { ...ui.styles },
+        settings: { ...ui.settings }
     },
     utils: {
         ...utils,
