@@ -26,7 +26,7 @@ const { useSafeAreaInsets } = findByProps("useSafeAreaInsets");
 interface Screen {
     [index: string]: any;
     key: string;
-    title: string;
+    title: () => string;
     icon?: string;
     shouldRender?: () => boolean;
     options?: Record<string, any>;
@@ -48,13 +48,13 @@ const keyMap = (screens: Screen[], data: string | ((s: Screen) => any) | null) =
 export const getScreens = (): Screen[] => [
     {
         key: "VendettaSettings",
-        title: Strings.GENERAL,
+        title: () => Strings.GENERAL,
         icon: "settings",
         render: General,
     },
     {
         key: "VendettaPlugins",
-        title: Strings.PLUGINS,
+        title: () => Strings.PLUGINS,
         icon: "debug",
         options: {
             headerRight: () => (
@@ -81,7 +81,7 @@ export const getScreens = (): Screen[] => [
     },
     {
         key: "VendettaThemes",
-        title: Strings.THEMES,
+        title: () => Strings.THEMES,
         icon: "ic_theme_24px",
         // TODO: bad
         shouldRender: () => isThemeSupported(),
@@ -92,14 +92,14 @@ export const getScreens = (): Screen[] => [
     },
     {
         key: "VendettaDeveloper",
-        title: Strings.DEVELOPER,
+        title: () => Strings.DEVELOPER,
         icon: "ic_progress_wrench_24px",
         shouldRender: () => settings.developerSettings ?? false,
         render: Developer,
     },
     {
         key: "VendettaCustomPage",
-        title: "Vendetta Page",
+        title: () => "Vendetta Page",
         shouldRender: () => false,
         render: ({ render: PageView, noErrorBoundary, ...options }: { render: React.ComponentType; noErrorBoundary: boolean; } & Record<string, object>) => {
             const navigation = NavigationNative.useNavigation();
@@ -111,7 +111,7 @@ export const getScreens = (): Screen[] => [
 ];
 
 export const getPanelsScreens = () => keyMap(getScreens(), s => ({
-    title: s.title,
+    title: s.title(),
     render: s.render,
     ...s.options,
 }));
@@ -128,7 +128,7 @@ export const getYouData = () => {
             // We can't use our keyMap function here since `settings` is an array not an object
             settings: screens.map(s => s.key)
         }),
-        titleConfig: keyMap(screens, "title"),
+        titleConfig: keyMap(screens, s => s.title()),
         relationships: keyMap(screens, null),
         rendererConfigs: keyMap(screens, s => {
             const WrappedComponent = React.memo(({ navigation, route }: any) => {
@@ -142,7 +142,7 @@ export const getYouData = () => {
 
             return {
                 type: "route",
-                title: () => s.title,
+                title: s.title,
                 icon: s.icon ? getAssetIDByName(s.icon) : null,
                 usePredicate: s.shouldRender && (() => useProxy(settings) && s.shouldRender!!()),
                 screen: {

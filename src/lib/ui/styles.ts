@@ -21,7 +21,7 @@ export function createThemedStyleSheet<T extends StyleSheet.NamedStyles<T>>(shee
         sheet[key] = new Proxy(StyleSheet.flatten(sheet[key]), {
             get(target, prop, receiver) {
                 const res = Reflect.get(target, prop, receiver);
-                return typeof res === "symbol" && isSemanticColor(res) ? resolveSemanticColor(res) : res;
+                return isSemanticColor(res) ? resolveSemanticColor(res) : res;
             }
         });
     }
