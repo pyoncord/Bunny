@@ -1,8 +1,8 @@
 import { ButtonColors } from "@lib/utils/types";
 import { findByProps } from "@metro/filters";
-import { Alert, Forms } from "@ui/components";
+import { Alert } from "@ui/components";
+import { FormInput } from "@ui/components/discord/Forms";
 
-const { FormInput } = Forms;
 const Alerts = findByProps("openLazy", "close");
 
 export interface InputAlertProps {

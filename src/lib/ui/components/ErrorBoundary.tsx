@@ -1,6 +1,11 @@
 import { Strings } from "@core/i18n";
-import { React, ReactNative as RN, stylesheet } from "@metro/common";
-import { Button, Codeblock, Forms } from "@ui/components";
+import { React } from "@metro/common";
+import { Button, Codeblock } from "@ui/components";
+import { ScrollView } from "react-native";
+
+import { createThemedStyleSheet } from "../styles";
+import { FormText } from "./discord/Forms";
+
 
 interface ErrorBoundaryState {
     hasErr: boolean;
@@ -11,7 +16,7 @@ export interface ErrorBoundaryProps {
     children: JSX.Element | JSX.Element[];
 }
 
-const styles = stylesheet.createThemedStyleSheet({
+const styles = createThemedStyleSheet({
     view: {
         flex: 1,
         flexDirection: "column",
@@ -36,8 +41,8 @@ export default class ErrorBoundary extends React.Component<ErrorBoundaryProps, E
         if (!this.state.hasErr) return this.props.children;
 
         return (
-            <RN.ScrollView style={styles.view}>
-                <Forms.FormText style={styles.title}>{Strings.UH_OH}</Forms.FormText>
+            <ScrollView style={styles.view}>
+                <FormText style={styles.title}>{Strings.UH_OH}</FormText>
                 <Codeblock selectable style={{ marginBottom: 5 }}>{this.state.errText}</Codeblock>
                 <Button
                     color={Button.Colors.RED}
@@ -46,7 +51,7 @@ export default class ErrorBoundary extends React.Component<ErrorBoundaryProps, E
                     onPress={() => this.setState({ hasErr: false, errText: undefined })}
                     text={Strings.RETRY}
                 />
-            </RN.ScrollView>
+            </ScrollView>
         );
     }
 }

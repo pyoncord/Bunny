@@ -1,28 +1,27 @@
 import AssetDisplay from "@core/ui/components/AssetDisplay";
 import { all } from "@lib/api/assets";
-import { ReactNative as RN } from "@metro/common";
-import { ErrorBoundary, Forms, Search } from "@ui/components";
-
-const { FormDivider } = Forms;
+import { FormDivider } from "@lib/ui/components/discord/Forms";
+import { ErrorBoundary, Search } from "@ui/components";
+import { FlatList, View } from "react-native";
 
 export default function AssetBrowser() {
     const [search, setSearch] = React.useState("");
 
     return (
         <ErrorBoundary>
-            <RN.View style={{ flex: 1 }}>
+            <View style={{ flex: 1 }}>
                 <Search
                     style={{ margin: 10 }}
                     onChangeText={(v: string) => setSearch(v)}
                     placeholder="Search"
                 />
-                <RN.FlatList
+                <FlatList
                     data={Object.values(all).filter(a => a.name.includes(search) || a.id.toString() === search)}
                     renderItem={({ item }) => <AssetDisplay asset={item} />}
                     ItemSeparatorComponent={FormDivider}
                     keyExtractor={item => item.name}
                 />
-            </RN.View>
+            </View>
         </ErrorBoundary>
     );
 }

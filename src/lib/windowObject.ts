@@ -12,6 +12,7 @@ import * as utils from "@lib/utils";
 function createBunnyObject(unloads: any[]) {
     return {
         api: {
+            ...api,
             commands: { ...api.commands },
             native: {
                 fs: { ...api.native.fs },
@@ -27,26 +28,39 @@ function createBunnyObject(unloads: any[]) {
             }
         },
         managers: {
+            ...managers,
             plugins: { ...managers.plugins },
             themes: { ...managers.themes }
         },
         metro: {
+            ...metro,
             common: { ...metro.common },
             filters: { ...metro.filters },
             ...metro.filters
         },
         ui: {
-            components: { ...ui.components },
+            ...ui,
+            components: {
+                ...ui.components,
+                discord: {
+                    ...ui.components.discord,
+                    Forms: { ...ui.components.discord.Forms },
+                    Redesign: { ...ui.components.discord.Redesign }
+                }
+            },
             alerts: { ...ui.alerts },
             color: { ...ui.color },
             toasts: { ...ui.toasts },
+            styles: { ...ui.styles }
         },
         utils: {
+            ...utils,
             constants: { ...utils.constants },
             types: { ...utils.types },
-            logger: { ...utils.logger }
+            logger: { ...utils.logger },
         },
         settings: {
+            ...settings,
             settings: settings.settings,
             loaderConfig: { ...settings.loaderConfig }
         },

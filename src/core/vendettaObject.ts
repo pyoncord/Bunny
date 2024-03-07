@@ -7,6 +7,9 @@ import * as debug from "@lib/debug";
 import * as plugins from "@lib/managers/plugins";
 import * as themes from "@lib/managers/themes";
 import { loaderConfig, settings } from "@lib/settings";
+import { Forms } from "@lib/ui/components/discord/Forms";
+import { CompatfulRedesign } from "@lib/ui/components/discord/Redesign";
+import { createThemedStyleSheet } from "@lib/ui/styles";
 import * as utils from "@lib/utils";
 import * as common from "@metro/common";
 import * as metro from "@metro/filters";
@@ -39,7 +42,10 @@ export const createVendettaObject = (unloads: any[]): any => ({
             i18n: common.i18n,
             url: common.url,
             toasts: common.toasts,
-            stylesheet: common.stylesheet,
+            stylesheet: {
+                ...CompatfulRedesign,
+                createThemedStyleSheet
+            },
             clipboard: common.clipboard,
             assets: common.assets,
             invites: common.invites,
@@ -80,8 +86,8 @@ export const createVendettaObject = (unloads: any[]): any => ({
     },
     ui: {
         components: {
-            Forms: components.Forms,
-            General: components.General,
+            Forms,
+            General: common.ReactNative,
             Alert: components.Alert,
             Button: components.Button,
             HelpMessage: components.HelpMessage,

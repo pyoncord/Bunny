@@ -13,11 +13,13 @@ import { findByProps } from "@lib/metro/filters";
 import { settings } from "@lib/settings";
 import { without } from "@lib/utils";
 import { PROXY_PREFIX } from "@lib/utils/constants";
-import { NavigationNative, ReactNative as RN, stylesheet } from "@metro/common";
+import { NavigationNative } from "@metro/common";
 import { showConfirmationAlert } from "@ui/alerts";
 import { semanticColors } from "@ui/color";
 import ErrorBoundary from "@ui/components/ErrorBoundary";
+import { createStyles } from "@ui/styles";
 import { showToast } from "@ui/toasts";
+import { View } from "react-native";
 
 const { useSafeAreaInsets } = findByProps("useSafeAreaInsets");
 
@@ -31,10 +33,10 @@ interface Screen {
     render: React.ComponentType<any>;
 }
 
-const useStyles = stylesheet.createStyles({
+const useStyles = createStyles({
     container: {
         flex: 1,
-        backgroundColor: semanticColors.BACKGROUND_MOBILE_PRIMARY
+        backgroundColor: semanticColors.BACKGROUND_MOBILE_PRIMARY,
     }
 });
 
@@ -133,7 +135,9 @@ export const getYouData = () => {
                 const styles = useStyles();
                 const { bottom: paddingBottom } = useSafeAreaInsets();
                 navigation.addListener("focus", () => navigation.setOptions(s.options));
-                return <RN.View style={[{ paddingBottom }, styles.container]}><s.render {...route.params} /></RN.View>;
+                return <View style={[{ paddingBottom }, styles.container]}>
+                    <s.render {...route.params} />
+                </View>;
             });
 
             return {

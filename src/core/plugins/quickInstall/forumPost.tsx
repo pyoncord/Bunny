@@ -5,6 +5,7 @@ import { after } from "@lib/api/patcher";
 import { useProxy } from "@lib/api/storage";
 import { installPlugin, plugins, removePlugin } from "@lib/managers/plugins";
 import { installTheme, removeTheme, themes } from "@lib/managers/themes";
+import { Button } from "@lib/ui/components/discord/Redesign";
 import { findInReactTree } from "@lib/utils";
 import { DISCORD_SERVER_ID, HTTP_REGEX_MULTI, PLUGINS_CHANNEL_ID, PROXY_PREFIX, THEMES_CHANNEL_ID } from "@lib/utils/constants";
 import { findByName, findByProps } from "@metro/filters";
@@ -14,7 +15,6 @@ type PostType = "Plugin" | "Theme";
 
 const ForumPostLongPressActionSheet = findByName("ForumPostLongPressActionSheet", false);
 const { ActionSheetRow } = findByProps("ActionSheetRow");
-const { Button } = findByProps("TableRow");
 const { useFirstForumPostMessage } = findByProps("useFirstForumPostMessage");
 const forumReactions = findByProps("MostCommonForumPostReaction");
 

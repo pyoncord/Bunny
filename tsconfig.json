@@ -20,7 +20,7 @@
             "@core/*": ["src/core/*"],
             "@metro/*": ["src/lib/metro/*"],
             "@ui/*": ["src/lib/ui/*"],
-            "@types": ["src/utils/types.ts"],
+            "@types": ["src/lib/utils/types.ts"],
             "bunny-build": ["src/modules.d.ts"]
         },
         "plugins": [

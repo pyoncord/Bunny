@@ -1,13 +1,15 @@
-import { constants,ReactNative as RN, stylesheet } from "@metro/common";
+import { constants } from "@metro/common";
 import { semanticColors } from "@ui/color";
+import { createStyles } from "@ui/styles";
+import { Platform, Text, TextInput, type TextStyle } from "react-native";
 
 export interface CodeblockProps {
     selectable?: boolean;
-    style?: import("react-native").TextStyle;
+    style?: TextStyle;
     children?: string;
 }
 
-const styles = stylesheet.createThemedStyleSheet({
+const useStyles = createStyles({
     codeBlock: {
         fontFamily: constants.Fonts.CODE_SEMIBOLD,
         fontSize: 12,
@@ -22,13 +24,13 @@ const styles = stylesheet.createThemedStyleSheet({
 });
 
 // iOS doesn't support the selectable property on RN.Text...
-const InputBasedCodeblock = ({ style, children }: CodeblockProps) => <RN.TextInput editable={false} multiline style={[styles.codeBlock, style && style]} value={children} />;
-const TextBasedCodeblock = ({ selectable, style, children }: CodeblockProps) => <RN.Text selectable={selectable} style={[styles.codeBlock, style && style]}>{children}</RN.Text>;
+const InputBasedCodeblock = ({ style, children }: CodeblockProps) => <TextInput editable={false} multiline style={[useStyles().codeBlock, style && style]} value={children} />;
+const TextBasedCodeblock = ({ selectable, style, children }: CodeblockProps) => <Text selectable={selectable} style={[useStyles().codeBlock, style && style]}>{children}</Text>;
 
 export default function Codeblock({ selectable, style, children }: CodeblockProps) {
     if (!selectable) return <TextBasedCodeblock style={style} children={children} />;
 
-    return RN.Platform.select({
+    return Platform.select({
         ios: <InputBasedCodeblock style={style} children={children} />,
         default: <TextBasedCodeblock style={style} children={children} selectable />,
     });

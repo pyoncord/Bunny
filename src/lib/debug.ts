@@ -5,10 +5,9 @@ import { after } from "@lib/api/patcher";
 import { getThemeFromLoader, selectTheme } from "@lib/managers/themes";
 import { settings } from "@lib/settings";
 import logger from "@lib/utils/logger";
-import { ReactNative as RN } from "@metro/common";
 import { showToast } from "@ui/toasts";
 import { version } from "bunny-build";
-import type { PlatformConstants } from "react-native";
+import { Platform, type PlatformConstants } from "react-native";
 export let socket: WebSocket;
 
 export interface RNConstants extends PlatformConstants {
@@ -88,7 +87,7 @@ export function getDebugInfo() {
     const padding = "for RN ";
 
     // RN
-    const PlatformConstants = RN.Platform.constants as RNConstants;
+    const PlatformConstants = Platform.constants as RNConstants;
     const rnVer = PlatformConstants.reactNativeVersion;
 
     return {
@@ -114,7 +113,7 @@ export function getDebugInfo() {
             buildType: hermesProps.Build,
             bytecodeVersion: hermesProps["Bytecode Version"],
         },
-        ...RN.Platform.select(
+        ...Platform.select(
             {
                 android: {
                     os: {
@@ -131,7 +130,7 @@ export function getDebugInfo() {
                 }
             }
         )!,
-        ...RN.Platform.select(
+        ...Platform.select(
             {
                 android: {
                     device: {

@@ -22,10 +22,16 @@
 		common
 	}
 	ui {
-		components
+		components {
+			discord {
+				Forms
+				Redesign
+			}
+		}
 		alerts
 		color
 		toasts
+		styles
 	}
 	utils {
 		constants

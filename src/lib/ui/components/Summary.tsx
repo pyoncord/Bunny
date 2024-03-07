@@ -1,9 +1,8 @@
 import { getAssetIDByName } from "@lib/api/assets";
-import { findByProps } from "@lib/metro/filters";
-import { ReactNative as RN } from "@metro/common";
+import { FormRow } from "@ui/components/discord/Forms";
+import { TableRow } from "@ui/components/discord/Redesign";
+import { LayoutAnimation, View } from "react-native";
 
-const { FormRow } = findByProps("FormRow");
-const { TableRow } = findByProps("TableRow");
 export interface SummaryProps {
     label: string;
     icon?: string;
@@ -23,11 +22,11 @@ export default function Summary({ label, icon, noPadding = false, noAnimation = 
                 trailing={<FormRow.Arrow style={{ transform: [{ rotate: `${hidden ? 180 : 90}deg` }] }} />}
                 onPress={() => {
                     setHidden(!hidden);
-                    if (!noAnimation) RN.LayoutAnimation.configureNext(RN.LayoutAnimation.Presets.easeInEaseOut);
+                    if (!noAnimation) LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
                 }}
             />
             {!hidden && <>
-                <RN.View style={!noPadding && { paddingHorizontal: 15 }}>{children}</RN.View>
+                <View style={!noPadding && { paddingHorizontal: 15 }}>{children}</View>
             </>}
         </>
     );

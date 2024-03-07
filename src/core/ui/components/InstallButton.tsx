@@ -1,11 +1,13 @@
 import { Strings } from "@core/i18n";
 import { getAssetIDByName } from "@lib/api/assets";
 import { HTTP_REGEX_MULTI } from "@lib/utils/constants";
-import { clipboard, ReactNative as RN, stylesheet } from "@metro/common";
+import { clipboard } from "@metro/common";
 import { showInputAlert } from "@ui/alerts";
 import { semanticColors } from "@ui/color";
+import { createStyles } from "@ui/styles";
+import { Image, TouchableOpacity } from "react-native";
 
-const styles = stylesheet.createThemedStyleSheet({
+const useStyles = createStyles({
     icon: {
         marginRight: 10,
         tintColor: semanticColors.HEADER_PRIMARY,
@@ -18,8 +20,10 @@ interface InstallButtonProps {
 }
 
 export default function InstallButton({ alertTitle, installFunction: fetchFunction }: InstallButtonProps) {
+    const styles = useStyles();
+
     return (
-        <RN.TouchableOpacity onPress={() =>
+        <TouchableOpacity onPress={() =>
             clipboard.getString().then(content =>
                 showInputAlert({
                     title: alertTitle,
@@ -31,7 +35,7 @@ export default function InstallButton({ alertTitle, installFunction: fetchFuncti
                 })
             )
         }>
-            <RN.Image style={styles.icon} source={getAssetIDByName("ic_add_24px")} />
-        </RN.TouchableOpacity>
+            <Image style={styles.icon} source={getAssetIDByName("ic_add_24px")} />
+        </TouchableOpacity>
     );
 }

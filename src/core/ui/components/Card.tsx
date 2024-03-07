@@ -1,13 +1,12 @@
 import { getAssetIDByName } from "@lib/api/assets";
-import { ReactNative as RN, stylesheet } from "@metro/common";
-import { findByProps } from "@metro/filters";
+import { TableCheckboxRow, TableRow, TableRowGroup, TableRowIcon, TableSwitchRow } from "@lib/ui/components/discord/Redesign";
 import { semanticColors } from "@ui/color";
 import ContextMenu from "@ui/components/ContextMenu";
-
-const { TableRow, TableRowIcon, TableSwitchRow, TableCheckboxRow, TableRowGroup } = findByProps("TableRow");
+import { createStyles } from "@ui/styles";
+import { Image, TouchableOpacity, View } from "react-native";
 
 // TODO: These styles work weirdly. iOS has cramped text, Android with low DPI probably does too. Fix?
-const styles = stylesheet.createThemedStyleSheet({
+const useStyles = createStyles({
     card: {
         backgroundColor: semanticColors?.BACKGROUND_SECONDARY,
         borderRadius: 15,
@@ -66,6 +65,7 @@ interface CardProps {
 }
 
 export default function Card(props: CardProps) {
+    const styles = useStyles();
     let pressableState = props.toggleValue ?? false;
 
     const headerProps = {
@@ -75,7 +75,7 @@ export default function Card(props: CardProps) {
     };
 
     return (
-        <RN.View style={[styles.card, { marginTop: props.index !== 0 ? 10 : 0 }]}>
+        <View style={[styles.card, { marginTop: props.index !== 0 ? 10 : 0 }]}>
             <TableRowGroup>
                 {props.toggleType && (props.toggleType === "switch" ?
                     <TableSwitchRow
@@ -94,7 +94,7 @@ export default function Card(props: CardProps) {
                 <TableRow
                     label={props.descriptionLabel}
                     trailing={
-                        <RN.View style={styles.actions}>
+                        <View style={styles.actions}>
                             {props.overflowActions &&
                                 <ContextMenu
                                     triggerOnLongPress={false}
@@ -105,15 +105,15 @@ export default function Card(props: CardProps) {
                                     }))}
                                     align="auto"
                                     title={props.overflowTitle!!}
-                                    children={props => <RN.TouchableOpacity {...props}>
-                                        <RN.Image style={styles.icon} source={getAssetIDByName("ic_more_24px")} />
-                                    </RN.TouchableOpacity>}
+                                    children={props => <TouchableOpacity {...props}>
+                                        <Image style={styles.icon} source={getAssetIDByName("ic_more_24px")} />
+                                    </TouchableOpacity>}
                                 />
                             }
-                        </RN.View>
+                        </View>
                     }
                 />
             </TableRowGroup>
-        </RN.View>
+        </View>
     );
 }

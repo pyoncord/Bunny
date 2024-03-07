@@ -1,34 +1,6 @@
-import { find, findByProps, findByStoreName } from "@metro/filters";
-import type { StyleSheet } from "react-native";
+import { find, findByProps } from "@metro/filters";
 
-export interface DiscordStyleSheet {
-    [index: string]: any,
-    createStyles: <T extends import("react-native").StyleSheet.NamedStyles<T>>(sheet: T | (() => T)) => () => T;
-    createThemedStyleSheet: typeof import("react-native").StyleSheet.create;
-}
-
-const ThemeStore = findByStoreName("ThemeStore");
 const colorModule = findByProps("colors", "unsafe_rawColors");
-const colorResolver = colorModule.internal ??= colorModule.meta;
-
-// Reimplementation of Discord's createThemedStyleSheet, which was removed since 204201
-// Not exactly a 1:1 reimplementation, but sufficient to keep compatibility with existing plugins
-function createThemedStyleSheet<T extends StyleSheet.NamedStyles<T>>(sheet: T) {
-    if (!colorModule) return;
-    for (const key in sheet) {
-        // @ts-ignore
-        sheet[key] = new Proxy(ReactNative.StyleSheet.flatten(sheet[key]), {
-            get(target, prop, receiver) {
-                const res = Reflect.get(target, prop, receiver);
-                return colorResolver.isSemanticColor(res)
-                    ? colorResolver.resolveSemanticColor(ThemeStore.theme, res)
-                    : res;
-            }
-        });
-    }
-
-    return sheet;
-}
 
 // Discord
 export const constants = findByProps("Fonts", "Permissions");
@@ -36,14 +8,6 @@ export const channels = findByProps("getVoiceChannelId");
 export const i18n = findByProps("Messages");
 export const url = findByProps("openURL", "openDeeplink");
 export const toasts = find(m => m.open && m.close && !m.startDrag && !m.init && !m.openReplay && !m.setAlwaysOnTop && !m.setAccountFlag);
-
-// Compatible with pre-204201 versions since createThemedStyleSheet is undefined.
-export const stylesheet = {
-    ...find(m => m.createStyles && !m.ActionSheet),
-    createThemedStyleSheet,
-    ...findByProps("createThemedStyleSheet") as {},
-} as DiscordStyleSheet;
-
 export const clipboard = findByProps("setString", "getString", "hasString") as typeof import("@react-native-clipboard/clipboard").default;
 export const assets = findByProps("registerAsset");
 export const invites = findByProps("acceptInviteAndTransitionToInviteChannel");
@@ -59,7 +23,7 @@ export const FluxDispatcher = findByProps("_currentDispatchActionType");
 
 // React
 export const React = window.React = findByProps("createElement") as typeof import("react");
-export const ReactNative = findByProps("AppRegistry") as typeof import("react-native");
+export const ReactNative = window.ReactNative = findByProps("AppRegistry") as typeof import("react-native");
 
 // Moment
 export const moment = findByProps("isMoment") as typeof import("moment");

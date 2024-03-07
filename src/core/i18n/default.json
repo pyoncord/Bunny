@@ -72,6 +72,7 @@
     "THEMES_RELOAD_FOR_CHANGES": "Reload the app to fully apply changes!",
     "TOASTS_INSTALLED_PLUGIN": "Installed plugin",
     "TOASTS_SUCCESSFULLY_INSTALLED": "Successfully installed",
+    "TOASTS_COPIED_TO_CLIPBOARD": "Copied plugin URL to clipboard",
     "UH_OH": "Uh oh.",
     "UNINSTALL": "Uninstall",
     "UNINSTALL_TITLE": "Uninstall {title}",

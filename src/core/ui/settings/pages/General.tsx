@@ -3,17 +3,18 @@ import Version from "@core/ui/components/Version";
 import { getAssetIDByName } from "@lib/api/assets";
 import { useProxy } from "@lib/api/storage";
 import { getDebugInfo, toggleSafeMode } from "@lib/debug";
-import { findByProps } from "@lib/metro/filters";
 import { settings } from "@lib/settings";
+import { Stack, TableRow, TableRowGroup, TableSwitchRow } from "@lib/ui/components/discord/Redesign";
 import { DISCORD_SERVER, GITHUB } from "@lib/utils/constants";
-import { ReactNative as RN, stylesheet, url } from "@metro/common";
+import { url } from "@metro/common";
 import { semanticColors } from "@ui/color";
 import { Summary } from "@ui/components";
+import { createStyles } from "@ui/styles";
+import { NativeModules, Platform, ScrollView } from "react-native";
 
-const { Stack, TableRow, TableSwitchRow, TableRowGroup } = findByProps("TableRow");
 const debugInfo = getDebugInfo();
 
-const styles = stylesheet.createThemedStyleSheet({
+const useStyles = createStyles({
     container: {
         flex: 1,
         backgroundColor: semanticColors.BACKGROUND_MOBILE_SECONDARY,
@@ -21,6 +22,7 @@ const styles = stylesheet.createThemedStyleSheet({
 });
 
 export default function General() {
+    const styles = useStyles();
     useProxy(settings);
 
     const versions = [
@@ -83,14 +85,14 @@ export default function General() {
             icon: "ic_phonelink_24px"
         },
         {
-            label: RN.Platform.select({ android: Strings.CODENAME, ios: Strings.MACHINE_ID })!,
+            label: Platform.select({ android: Strings.CODENAME, ios: Strings.MACHINE_ID })!,
             version: debugInfo.device.codename,
             icon: "ic_compose_24px"
         }
     ];
 
     return (
-        <RN.ScrollView style={styles.container}>
+        <ScrollView style={styles.container}>
             <Stack style={{ paddingVertical: 24, paddingHorizontal: 12 }} spacing={24}>
                 <TableRowGroup title={Strings.LINKS}>
                     <TableRow
@@ -110,7 +112,7 @@ export default function General() {
                     <TableRow
                         label={Strings.RELOAD_DISCORD}
                         icon={<TableRow.Icon source={getAssetIDByName("ic_message_retry")} />}
-                        onPress={() => RN.NativeModules.BundleUpdaterManager.reload()}
+                        onPress={() => NativeModules.BundleUpdaterManager.reload()}
                     />
                     <TableRow
                         label={settings.safeMode?.enabled ? Strings.RELOAD_IN_NORMAL_MODE : Strings.RELOAD_IN_SAFE_MODE}
@@ -136,6 +138,6 @@ export default function General() {
                     </Summary>
                 </TableRowGroup>
             </Stack>
-        </RN.ScrollView>
+        </ScrollView>
     );
 }

@@ -3,10 +3,9 @@ import { getScreens } from "@core/ui/settings/data";
 import { getAssetIDByName } from "@lib/api/assets";
 import { useProxy } from "@lib/api/storage";
 import { settings } from "@lib/settings";
+import { FormDivider, FormRow, FormSection } from "@lib/ui/components/discord/Forms";
 import { NavigationNative } from "@metro/common";
-import { ErrorBoundary, Forms } from "@ui/components";
-
-const { FormRow, FormSection, FormDivider } = Forms;
+import { ErrorBoundary } from "@ui/components";
 
 export default function SettingsSection() {
     const navigation = NavigationNative.useNavigation();

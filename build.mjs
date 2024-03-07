@@ -44,6 +44,26 @@ try {
         },
         plugins: [
             {
+                name: "runtimeGlobalAlias",
+                setup: async build => {
+                    const globalMap = {
+                        "react": "globalThis.React",
+                        "react-native": "globalThis.ReactNative"
+                    };
+
+                    Object.keys(globalMap).forEach(key => {
+                        const filter = new RegExp(`^${key}$`);
+                        build.onResolve({ filter }, args => ({
+                            namespace: "glob-" + key, path: args.path
+                        }));
+                        build.onLoad({ filter, namespace: "glob-" + key }, () => ({
+                            contents: `Object.defineProperty(module, 'exports', { get: () => ${globalMap[key]} })`,
+                            resolveDir: "src",
+                        }));
+                    });
+                }
+            },
+            {
                 name: "buildLog",
                 setup: async build => {
                     build.onStart(() => {

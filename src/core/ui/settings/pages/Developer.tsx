@@ -5,18 +5,19 @@ import { getReactDevToolsProp, getReactDevToolsVersion, isLoaderConfigSupported,
 import { useProxy } from "@lib/api/storage";
 import { connectToDebugger } from "@lib/debug";
 import { loaderConfig, settings } from "@lib/settings";
-import { NavigationNative, ReactNative as RN, stylesheet } from "@metro/common";
+import { FormText } from "@lib/ui/components/discord/Forms";
+import { Stack, TableRow, TableRowGroup, TableSwitchRow, TextInput } from "@lib/ui/components/discord/Redesign";
+import { NavigationNative } from "@metro/common";
 import { findByProps } from "@metro/filters";
 import { semanticColors } from "@ui/color";
-import { ErrorBoundary, Forms } from "@ui/components";
+import { ErrorBoundary } from "@ui/components";
+import { createStyles, TextStyleSheet } from "@ui/styles";
+import { ScrollView, StyleSheet } from "react-native";
 
-const { Stack, TableRow, TableSwitchRow, TableRowGroup, TextInput } = findByProps("TableRow");
-const { FormText } = Forms;
 const { hideActionSheet } = findByProps("openLazy", "hideActionSheet");
 const { showSimpleActionSheet } = findByProps("showSimpleActionSheet");
-const { TextStyleSheet } = findByProps("TextStyleSheet");
 
-const styles = stylesheet.createThemedStyleSheet({
+const useStyles = createStyles({
     leadingText: {
         ...TextStyleSheet["heading-md/semibold"],
         color: semanticColors.TEXT_MUTED,
@@ -25,6 +26,7 @@ const styles = stylesheet.createThemedStyleSheet({
 });
 
 export default function Developer() {
+    const styles = useStyles();
     const navigation = NavigationNative.useNavigation();
 
     useProxy(settings);
@@ -32,7 +34,7 @@ export default function Developer() {
 
     return (
         <ErrorBoundary>
-            <RN.ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 38 }}>
+            <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 38 }}>
                 <Stack style={{ paddingVertical: 24, paddingHorizontal: 12 }} spacing={24}>
                     <TextInput
                         label="Debugger URL"
@@ -54,7 +56,7 @@ export default function Developer() {
                                 icon={<TableRow.Icon source={getAssetIDByName("ic_badge_staff")} />}
                                 onPress={() => window[getReactDevToolsProp() || "__vendetta_rdc"]?.connectToDevTools({
                                     host: settings.debuggerUrl.split(":")?.[0],
-                                    resolveRNStyle: RN.StyleSheet.flatten,
+                                    resolveRNStyle: StyleSheet.flatten,
                                 })}
                             />
                         </>}
@@ -120,7 +122,7 @@ export default function Developer() {
                         />
                     </TableRowGroup>
                 </Stack>
-            </RN.ScrollView>
+            </ScrollView>
         </ErrorBoundary>
     );
 }

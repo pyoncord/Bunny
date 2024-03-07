@@ -1,7 +1,7 @@
 import { getAssetIDByName } from "@lib/api/assets";
-import { findByProps } from "@lib/metro/filters";
+import { FormText } from "@lib/ui/components/discord/Forms";
+import { TableRow } from "@lib/ui/components/discord/Redesign";
 import { clipboard } from "@metro/common";
-import { Forms } from "@ui/components";
 import { showToast } from "@ui/toasts";
 
 interface VersionProps {
@@ -10,9 +10,6 @@ interface VersionProps {
     icon: string;
     padding: boolean;
 }
-
-const { TableRow } = findByProps("TableRow");
-const { FormText } = Forms;
 
 export default function Version({ label, version, icon, padding }: VersionProps) {
     return (

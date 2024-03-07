@@ -6,8 +6,9 @@ import { awaitSyncWrapper, createFileBackend, createMMKVBackend, createStorage, 
 import { findInReactTree, safeFetch } from "@lib/utils";
 import logger from "@lib/utils/logger";
 import { Author } from "@lib/utils/types";
-import { chroma, ReactNative as RN } from "@metro/common";
+import { chroma } from "@metro/common";
 import { find, findByName, findByProps, findByStoreName } from "@metro/filters";
+import { ImageBackground, Platform, processColor, StyleSheet } from "react-native";
 
 export interface ThemeData {
     name: string;
@@ -71,7 +72,7 @@ export function patchChatBackground() {
     if (!MessagesWrapper) return;
 
     const patches = [
-        after("default", MessagesWrapperConnected, (_, ret) => React.createElement(RN.ImageBackground, {
+        after("default", MessagesWrapperConnected, (_, ret) => React.createElement(ImageBackground, {
             style: { flex: 1, height: "100%" },
             source: currentTheme?.data?.background?.url && { uri: currentTheme.data.background.url } || 0,
             blurRadius: typeof currentTheme?.data?.background?.blur === "number" ? currentTheme?.data?.background?.blur : 0,
@@ -81,7 +82,7 @@ export function patchChatBackground() {
             const Messages = findInReactTree(ret, x => x && "HACK_fixModalInteraction" in x.props && x?.props?.style);
             if (Messages)
                 Messages.props.style = Object.assign(
-                    RN.StyleSheet.flatten(Messages.props.style ?? {}),
+                    StyleSheet.flatten(Messages.props.style ?? {}),
                     {
                         backgroundColor: "#0000"
                     }
@@ -97,7 +98,7 @@ export function patchChatBackground() {
 function normalizeToHex(colorString: string): string {
     if (chroma.valid(colorString)) return chroma(colorString).hex();
 
-    const color = Number(RN.processColor(colorString));
+    const color = Number(processColor(colorString));
 
     return chroma.rgb(
         color >> 16 & 0xff, // red
@@ -126,7 +127,7 @@ function processData(data: ThemeData) {
             data.rawColors[key] = normalizeToHex(rawColors[key]);
         }
 
-        if (RN.Platform.OS === "android") applyAndroidAlphaKeys(rawColors);
+        if (Platform.OS === "android") applyAndroidAlphaKeys(rawColors);
     }
 
     return data;

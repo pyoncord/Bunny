@@ -1,10 +1,9 @@
 import { Strings } from "@core/i18n";
 import { getAssetIDByName } from "@lib/api/assets";
-import { ReactNative as RN } from "@metro/common";
-import { findByProps } from "@metro/filters";
 import ErrorBoundary from "@ui/components/ErrorBoundary";
+import { Image, View } from "react-native";
 
-const { TextInput } = findByProps("TableRow");
+import { TextInput } from "./discord/Redesign";
 
 export interface SearchProps {
     onChangeText?: (v: string) => void;
@@ -14,7 +13,7 @@ export interface SearchProps {
 
 
 function SearchIcon() {
-    return <RN.Image style={{ transform: [{ scale: 0.8 }] }} source={getAssetIDByName("search")} />;
+    return <Image style={{ transform: [{ scale: 0.8 }] }} source={getAssetIDByName("search")} />;
 }
 
 export default ({ onChangeText, placeholder, style }: SearchProps) => {
@@ -26,8 +25,10 @@ export default ({ onChangeText, placeholder, style }: SearchProps) => {
     };
 
     return <ErrorBoundary>
-        <RN.View style={style}>
-            <TextInput isClearable grow
+        <View style={style}>
+            <TextInput
+                grow
+                isClearable
                 leadingIcon={SearchIcon}
                 placeholder={placeholder ?? Strings.SEARCH}
                 onChange={onChange}
@@ -37,6 +38,6 @@ export default ({ onChangeText, placeholder, style }: SearchProps) => {
                 autoCorrect={false}
                 value={query}
             />
-        </RN.View>
+        </View>
     </ErrorBoundary>;
 };

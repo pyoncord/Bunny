@@ -1,9 +1,8 @@
 import { instead } from "@lib/api/patcher";
-import { ReactNative } from "@lib/metro/common";
 import { findByProps } from "@lib/metro/filters";
+import { AccessibilityInfo, Platform, View } from "react-native";
 
 const { ContextMenu: _ContextMenu } = findByProps("ContextMenu");
-const { AccessibilityInfo } = ReactNative;
 
 type ContextMenuItem = {
     label: string,
@@ -26,7 +25,7 @@ export default function ContextMenu(props: ContextMenuProps) {
 
     React.useEffect(() => {
         // hacky discord fix for android where pressing back with context menu open crashes the client
-        if (ReactNative.Platform.OS !== "android") return;
+        if (Platform.OS !== "android") return;
 
         // @ts-ignore
         const ctxMenuReactTag = ref.current?._children?.[0]?._nativeTag;
@@ -44,9 +43,9 @@ export default function ContextMenu(props: ContextMenuProps) {
         };
     }, []);
 
-    return <ReactNative.View ref={ref}>
+    return <View ref={ref}>
         <_ContextMenu
             {...props}
         />
-    </ReactNative.View>;
+    </View>;
 }

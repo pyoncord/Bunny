@@ -3,20 +3,18 @@ import { after } from "@lib/api/patcher";
 import { toggleSafeMode } from "@lib/debug";
 import { settings } from "@lib/settings";
 import { ButtonColors } from "@lib/utils/types";
-import { ReactNative as RN, stylesheet } from "@metro/common";
-import { findByName, findByProps, findByStoreName } from "@metro/filters";
+import { findByName, findByProps } from "@metro/filters";
 import { semanticColors } from "@ui/color";
 import { Button, Codeblock, ErrorBoundary as _ErrorBoundary, SafeAreaView } from "@ui/components";
+import { createThemedStyleSheet, TextStyleSheet } from "@ui/styles";
+import { Text, View } from "react-native";
 
 const ErrorBoundary = findByName("ErrorBoundary");
 
 // Let's just pray they have this.
 const { BadgableTabBar } = findByProps("BadgableTabBar");
 
-const ThemeStore = findByStoreName("ThemeStore");
-
-const { TextStyleSheet } = findByProps("TextStyleSheet");
-const styles = stylesheet.createThemedStyleSheet({
+const styles = createThemedStyleSheet({
     container: {
         flex: 1,
         backgroundColor: semanticColors.BACKGROUND_PRIMARY,
@@ -85,22 +83,22 @@ export default () => after("render", ErrorBoundary.prototype, function (this: an
     return (
         <_ErrorBoundary>
             <SafeAreaView style={styles.container}>
-                <RN.View style={styles.header}>
+                <View style={styles.header}>
                     <ret.props.Illustration style={{ transform: [{ scale: 0.6 }], marginLeft: -40, marginRight: -80 }} />
-                    <RN.View style={{ flex: 2, paddingLeft: 24 }}>
-                        <RN.Text style={styles.headerTitle}>{ret.props.title}</RN.Text>
-                        <RN.Text style={styles.headerDescription}>{ret.props.body}</RN.Text>
-                    </RN.View>
-                </RN.View>
-                <RN.View style={{ flex: 6 }}>
-                    <RN.View style={{ paddingBottom: 8 }}>
+                    <View style={{ flex: 2, paddingLeft: 24 }}>
+                        <Text style={styles.headerTitle}>{ret.props.title}</Text>
+                        <Text style={styles.headerDescription}>{ret.props.body}</Text>
+                    </View>
+                </View>
+                <View style={{ flex: 6 }}>
+                    <View style={{ paddingBottom: 8 }}>
                         {/* Are errors caught by ErrorBoundary guaranteed to have the component stack? */}
                         <BadgableTabBar
                             tabs={tabs}
                             activeTab={this.state.activeTab}
                             onTabSelected={(tab: string) => { this.setState({ activeTab: tab }); }}
                         />
-                    </RN.View>
+                    </View>
                     <Codeblock
                         selectable
                         style={{ flex: 1, textAlignVertical: "top" }}
@@ -111,8 +109,8 @@ export default () => after("render", ErrorBoundary.prototype, function (this: an
                         */}
                         {tabData?.trimWhitespace ? errorText.split("\n").filter(i => i.length !== 0).map(i => i.trim()).join("\n") : errorText}
                     </Codeblock>
-                </RN.View>
-                <RN.View style={styles.footer}>
+                </View>
+                <View style={styles.footer}>
                     {buttons.map(button => {
                         const buttonIndex = buttons.indexOf(button) !== 0 ? 8 : 0;
 
@@ -124,7 +122,7 @@ export default () => after("render", ErrorBoundary.prototype, function (this: an
                             style={DeviceManager.isTablet ? { flex: `0.${buttons.length}`, marginLeft: buttonIndex } : { marginTop: buttonIndex }}
                         />;
                     })}
-                </RN.View>
+                </View>
             </SafeAreaView>
         </_ErrorBoundary>
     );

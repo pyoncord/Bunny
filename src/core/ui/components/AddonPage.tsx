@@ -5,10 +5,11 @@ import { useProxy } from "@lib/api/storage";
 import { findByProps } from "@lib/metro/filters";
 import { settings } from "@lib/settings";
 import { HTTP_REGEX_MULTI } from "@lib/utils/constants";
-import { clipboard, ReactNative as RN } from "@metro/common";
+import { clipboard } from "@metro/common";
 import { showInputAlert } from "@ui/alerts";
 import { ErrorBoundary, HelpMessage, Search } from "@ui/components";
 import fuzzysort from "fuzzysort";
+import { FlatList, View } from "react-native";
 
 interface AddonPageProps<T> {
     title: string;
@@ -47,12 +48,12 @@ export default function AddonPage<T>({ title, fetchFunction, items, safeModeMess
     return (
         <ErrorBoundary>
             {/* TODO: Implement better searching than just by ID */}
-            <RN.FlatList
+            <FlatList
                 ListHeaderComponent={<>
-                    {settings.safeMode?.enabled && <RN.View style={{ marginBottom: 10 }}>
+                    {settings.safeMode?.enabled && <View style={{ marginBottom: 10 }}>
                         <HelpMessage messageType={0}>{safeModeMessage}</HelpMessage>
                         {safeModeExtras}
-                    </RN.View>}
+                    </View>}
                     <Search
                         style={{ marginBottom: 15 }}
                         onChangeText={(v: string) => setSearch(v.toLowerCase())}

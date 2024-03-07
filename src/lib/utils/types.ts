@@ -1,3 +1,7 @@
+
+export type StringUnion<T> = T | (string & Record<any, unknown>);
+export type OptionalKeys<T extends Array<string>> = StringUnion<T[number]>;
+
 export interface Author {
     name: string;
     id?: string;

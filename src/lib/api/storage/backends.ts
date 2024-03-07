@@ -1,5 +1,5 @@
 import { FileManager, MMKVManager } from "@lib/api/native/modules";
-import { ReactNative as RN } from "@metro/common";
+import { Platform } from "react-native";
 
 export interface StorageBackend {
     get: () => unknown | Promise<unknown>;
@@ -8,7 +8,7 @@ export interface StorageBackend {
 
 const ILLEGAL_CHARS_REGEX = /[<>:"/\\|?*]/g;
 
-const filePathFixer = (file: string): string => RN.Platform.select({
+const filePathFixer = (file: string): string => Platform.select({
     default: file,
     ios: FileManager.saveFileToGallery ? file : `Documents/${file}`,
 });
