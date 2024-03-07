@@ -6,10 +6,12 @@ import { FormText } from "@ui/components/discord/Forms";
 import { createThemedStyleSheet } from "@ui/styles";
 import { ScrollView } from "react-native";
 
-interface ErrorBoundaryState {
-    hasErr: boolean;
-    errText?: string;
-}
+type ErrorBoundaryState = {
+    hasErr: false;
+} | {
+    hasErr: true;
+    error: Error;
+};
 
 export interface ErrorBoundaryProps {
     children: JSX.Element | JSX.Element[];
@@ -34,7 +36,7 @@ export default class ErrorBoundary extends React.Component<ErrorBoundaryProps, E
         this.state = { hasErr: false };
     }
 
-    static getDerivedStateFromError = (error: Error) => ({ hasErr: true, errText: error.message });
+    static getDerivedStateFromError = (error: Error) => ({ hasErr: true, error });
 
     render() {
         if (!this.state.hasErr) return this.props.children;
@@ -42,12 +44,16 @@ export default class ErrorBoundary extends React.Component<ErrorBoundaryProps, E
         return (
             <ScrollView style={styles.view}>
                 <FormText style={styles.title}>{Strings.UH_OH}</FormText>
-                <Codeblock selectable style={{ marginBottom: 5 }}>{this.state.errText}</Codeblock>
+                <Codeblock selectable style={{ marginBottom: 5 }}>{this.state.error.name}</Codeblock>
+                <Codeblock selectable style={{ marginBottom: 5 }}>{this.state.error.message}</Codeblock>
+                {this.state.error.stack && <ScrollView style={{ maxHeight: 420, marginBottom: 5 }}>
+                    <Codeblock selectable>{this.state.error.stack}</Codeblock>
+                </ScrollView>}
                 <Button
                     color={Button.Colors.RED}
                     size={Button.Sizes.MEDIUM}
                     look={Button.Looks.FILLED}
-                    onPress={() => this.setState({ hasErr: false, errText: undefined })}
+                    onPress={() => this.setState({ hasErr: false })}
                     text={Strings.RETRY}
                 />
             </ScrollView>
