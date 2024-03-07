@@ -1,3 +1,4 @@
+import { Strings } from "@core/i18n";
 import { DeviceManager } from "@lib/api/native/modules";
 import { after } from "@lib/api/patcher";
 import { _toggleSafeMode } from "@lib/debug";
@@ -61,9 +62,9 @@ interface Button {
 }
 
 const tabs: Tab[] = [
-    { id: "message", title: "Message" },
-    { id: "stack", title: "Stack Trace" },
-    { id: "componentStack", title: "Component", trimWhitespace: true },
+    { id: "message", title: Strings.MESSAGE },
+    { id: "stack", title: Strings.STACK_TRACE },
+    { id: "componentStack", title: Strings.COMPONENT, trimWhitespace: true },
 ];
 
 export default () => after("render", ErrorBoundary.prototype, function (this: any, _, ret) {
@@ -76,9 +77,9 @@ export default () => after("render", ErrorBoundary.prototype, function (this: an
 
     // This is in the patch and not outside of it so that we can use `this`, e.g. for setting state
     const buttons: Button[] = [
-        { text: "Restart Discord", onPress: this.handleReload },
-        ...!settings.safeMode?.enabled ? [{ text: "Restart in Safe Mode", onPress: _toggleSafeMode }] : [],
-        { text: "Retry Render", color: ButtonColors.RED, onPress: () => this.setState({ info: null, error: null }) },
+        { text: Strings.RELOAD_DISCORD, onPress: this.handleReload },
+        ...!settings.safeMode?.enabled ? [{ text: Strings.RELOAD_IN_SAFE_MODE, onPress: _toggleSafeMode }] : [],
+        { text: Strings.RETRY_RENDER, color: ButtonColors.RED, onPress: () => this.setState({ info: null, error: null }) },
     ];
 
     return (

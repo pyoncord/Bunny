@@ -27,7 +27,7 @@ function typeFromUrl(url: string) {
 function installWithToast(type: "plugin" | "theme", url: string) {
     (type === "plugin" ? installPlugin : installTheme)(url)
         .then(() => {
-            showToast(Strings.TOASTS_SUCCESSFULLY_INSTALLED, getAssetIDByName("Check"));
+            showToast(Strings.SUCCESSFULLY_INSTALLED, getAssetIDByName("Check"));
         })
         .catch((e: Error) => {
             showToast(e.message, getAssetIDByName("Small"));
@@ -49,7 +49,7 @@ export default () => {
             if (!urlType) return;
 
             options.push({
-                label: formatString("INSTALL_TITLE", { urlType }),
+                label: Strings.INSTALL_ADDON,
                 onPress: () => installWithToast(urlType, url),
             });
         })

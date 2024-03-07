@@ -15,7 +15,7 @@ export const showToast = (content: string, asset?: number) => toasts.open({
     icon: asset,
 });
 
-showToast.showCopyToClipboard = (message = Strings.TOASTS_COPIED_TO_CLIPBOARD) => {
+showToast.showCopyToClipboard = (message = Strings.COPIED_TO_CLIPBOARD) => {
     // On Android, only show toast for 12 and lower
     if (Platform.OS !== "android" || Platform.Version <= 32) {
         showToast(message, getAssetIDByName("toast_copy_link"));

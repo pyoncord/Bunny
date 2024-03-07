@@ -28,7 +28,7 @@ export default function InstallButton({ alertTitle, installFunction: fetchFuncti
                 showInputAlert({
                     title: alertTitle,
                     initialValue: content.match(HTTP_REGEX_MULTI)?.[0] ?? "",
-                    placeholder: "https://example.com/",
+                    placeholder: Strings.URL_PLACEHOLDER,
                     onConfirm: (input: string) => fetchFunction(input),
                     confirmText: Strings.INSTALL,
                     cancelText: Strings.CANCEL,

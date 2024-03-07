@@ -11,6 +11,7 @@ export default function Plugins() {
     return (
         <AddonPage<BunnyPlugin>
             title={Strings.PLUGINS}
+            floatingButtonText={Strings.INSTALL_PLUGIN}
             fetchFunction={installPlugin}
             items={plugins}
             safeModeMessage={Strings.SAFE_MODE_NOTICE_PLUGINS}

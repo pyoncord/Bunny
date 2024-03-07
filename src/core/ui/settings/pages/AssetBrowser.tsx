@@ -13,7 +13,6 @@ export default function AssetBrowser() {
                 <Search
                     style={{ margin: 10 }}
                     onChangeText={(v: string) => setSearch(v)}
-                    placeholder="Search"
                 />
                 <FlatList
                     data={Object.values(all).filter(a => a.name.includes(search) || a.id.toString() === search)}

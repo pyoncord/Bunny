@@ -80,7 +80,7 @@ export default function General() {
             icon: "ic_settings_boost_24px"
         },
         {
-            label: Strings.PHONE_MODEL,
+            label: Strings.MODEL,
             version: debugInfo.device.model,
             icon: "ic_phonelink_24px"
         },

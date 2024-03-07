@@ -1,4 +1,5 @@
 import { findByName } from "@lib/metro/filters";
+import { PrimitiveType } from "intl-messageformat";
 
 import langDefault from "./default.json";
 
@@ -12,9 +13,9 @@ export const Strings = new Proxy({}, {
     }
 }) as Record<I18nKey, string>;
 
-type FRet<T> = T extends string ? string : string | T | (string | T)[];
+type FormatStringRet<T> = T extends PrimitiveType ? string : string | T | (string | T)[];
 
-export function formatString<T = void>(key: I18nKey, val: Record<string, T>): FRet<T> {
+export function formatString<T = void>(key: I18nKey, val: Record<string, T>): FormatStringRet<T> {
     const str = Strings[key];
     // @ts-ignore
     return new IntlMessageFormat(str).format(val);

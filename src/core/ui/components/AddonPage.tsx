@@ -1,4 +1,4 @@
-import { formatString, Strings } from "@core/i18n";
+import { Strings } from "@core/i18n";
 import { CardWrapper } from "@core/ui/components/Card";
 import { getAssetIDByName } from "@lib/api/assets";
 import { useProxy } from "@lib/api/storage";
@@ -14,6 +14,7 @@ import { FlatList, View } from "react-native";
 
 interface AddonPageProps<T> {
     title: string;
+    floatingButtonText: string;
     fetchFunction: (url: string) => Promise<void>;
     items: Record<string, T & { id: string; }>;
     safeModeMessage: string;
@@ -38,7 +39,7 @@ function getItemsByQuery<T extends { id?: string; }>(items: T[], query: string):
 const reanimated = findByProps("useSharedValue");
 const { FloatingActionButton } = findByProps("FloatingActionButton");
 
-export default function AddonPage<T>({ title, fetchFunction, items, safeModeMessage, safeModeExtras, card: CardComponent }: AddonPageProps<T>) {
+export default function AddonPage<T>({ title, floatingButtonText, fetchFunction, items, safeModeMessage, safeModeExtras, card: CardComponent }: AddonPageProps<T>) {
     useProxy(settings);
     useProxy(items);
 
@@ -73,16 +74,16 @@ export default function AddonPage<T>({ title, fetchFunction, items, safeModeMess
                 renderItem={({ item, index }) => <CardComponent item={item} index={index} />}
             />
             <FloatingActionButton
-                text={formatString("INSTALL_TITLE", { title })}
+                text={floatingButtonText}
                 icon={getAssetIDByName("DownloadIcon")}
                 state={{ collapseText }}
                 onPress={() => {
                     // from ./InstallButton.tsx
                     clipboard.getString().then(content =>
                         showInputAlert({
-                            title: formatString("INSTALL_TITLE", { title }),
+                            title: floatingButtonText,
                             initialValue: content.match(HTTP_REGEX_MULTI)?.[0] ?? "",
-                            placeholder: "https://example.com/",
+                            placeholder: Strings.URL_PLACEHOLDER,
                             onConfirm: (input: string) => fetchFunction(input),
                             confirmText: Strings.INSTALL,
                             cancelText: Strings.CANCEL,

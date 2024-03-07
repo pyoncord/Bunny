@@ -1,5 +1,6 @@
 import { NavigationNative } from "@lib/metro/common";
 import { findByProps } from "@lib/metro/filters";
+import { ErrorBoundary } from "@lib/ui/components";
 import { RowConfig } from "@lib/ui/settings";
 
 const tabsNavigationRef = findByProps("getRootNavigationRef");
@@ -12,7 +13,7 @@ export const CustomPageRenderer = React.memo(() => {
 
     React.useEffect(() => void navigation.setOptions({ ...args }), []);
 
-    return <PageComponent />;
+    return <ErrorBoundary><PageComponent /></ErrorBoundary>;
 });
 
 export function wrapOnPress(

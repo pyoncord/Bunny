@@ -37,14 +37,14 @@ export default function Developer() {
             <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 38 }}>
                 <Stack style={{ paddingVertical: 24, paddingHorizontal: 12 }} spacing={24}>
                     <TextInput
-                        label="Debugger URL"
+                        label={Strings.DEBUGGER_URL}
                         placeholder="127.0.0.1:9090"
                         size="md"
                         leadingIcon={() => <FormText style={styles.leadingText}>ws://</FormText>}
                         defaultValue={settings.debuggerUrl}
                         onChange={(v: string) => settings.debuggerUrl = v}
                     />
-                    <TableRowGroup title="Debug">
+                    <TableRowGroup title={Strings.DEBUG}>
                         <TableRow
                             label={Strings.CONNECT_TO_DEBUG_WEBSOCKET}
                             icon={<TableRow.Icon source={getAssetIDByName("copy")} />}
@@ -64,8 +64,8 @@ export default function Developer() {
                     {isLoaderConfigSupported() && <>
                         <TableRowGroup title="Loader config">
                             <TableSwitchRow
-                                label="Load from custom url"
-                                subLabel={"Load Bunny from a custom endpoint."}
+                                label={Strings.LOAD_FROM_CUSTOM_URL}
+                                subLabel={Strings.LOAD_FROM_CUSTOM_URL_DEC}
                                 icon={<TableRow.Icon source={getAssetIDByName("copy")} />}
                                 value={loaderConfig.customLoadUrl.enabled}
                                 onValueChange={(v: boolean) => {
@@ -80,8 +80,8 @@ export default function Developer() {
                                 label={Strings.BUNNY_URL}
                             />} />}
                             {isReactDevToolsPreloaded() && <TableSwitchRow
-                                label="Load React DevTools"
-                                subLabel={`Version: ${getReactDevToolsVersion()}`}
+                                label={Strings.LOAD_REACT_DEVTOOLS}
+                                subLabel={`${Strings.VERSION}: ${getReactDevToolsVersion()}`}
                                 icon={<TableRow.Icon source={getAssetIDByName("ic_badge_staff")} />}
                                 value={loaderConfig.loadReactDevTools}
                                 onValueChange={(v: boolean) => {
@@ -93,17 +93,17 @@ export default function Developer() {
                     <TableRowGroup title="Other">
                         <TableRow
                             arrow
-                            label="Asset Browser"
+                            label={Strings.ASSET_BROWSER}
                             icon={<TableRow.Icon source={getAssetIDByName("ic_image")} />}
                             trailing={TableRow.Arrow}
                             onPress={() => navigation.push("VendettaCustomPage", {
-                                title: "Asset Browser",
+                                title: Strings.ASSET_BROWSER,
                                 render: AssetBrowser,
                             })}
                         />
                         <TableRow
                             arrow
-                            label="ErrorBoundary Tools"
+                            label={Strings.ERROR_BOUNDARY_TOOLS_LABEL}
                             icon={<TableRow.Icon source={getAssetIDByName("ic_warning_24px")} />}
                             onPress={() => showSimpleActionSheet({
                                 key: "ErrorBoundaryTools",
