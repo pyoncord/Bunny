@@ -3,6 +3,7 @@ import { initCorePlugins } from "@core/plugins";
 import initSettings from "@core/ui/settings";
 import { patchAssets } from "@lib/api/assets";
 import { patchCommands } from "@lib/api/commands";
+import { injectFluxInterceptor } from "@lib/api/flux";
 import { isThemeSupported } from "@lib/api/native/loader";
 import { patchLogHook } from "@lib/debug";
 import { initPlugins } from "@lib/managers/plugins";
@@ -23,6 +24,7 @@ export default async () => {
 
     // Load everything in parallel
     const unloads = await Promise.all([
+        injectFluxInterceptor(),
         patchLogHook(),
         patchAssets(),
         patchCommands(),

@@ -1,4 +1,5 @@
 import { find, findByProps } from "@metro/filters";
+import { Dispatcher } from "@metro/types";
 
 const colorModule = findByProps("colors", "unsafe_rawColors");
 
@@ -19,7 +20,7 @@ export const NavigationNative = findByProps("NavigationContainer");
 
 // Flux
 export const Flux = findByProps("connectStores");
-export const FluxDispatcher = findByProps("_currentDispatchActionType");
+export const FluxDispatcher = findByProps("_currentDispatchActionType") as Dispatcher;
 
 // React
 export const React = window.React = findByProps("createElement") as typeof import("react");

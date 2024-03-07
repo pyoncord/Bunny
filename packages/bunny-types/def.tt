@@ -4,6 +4,7 @@
 @bunny from BunnyObject {
 	api {
 		commands
+		flux
 		native {
 			fs
 			modules

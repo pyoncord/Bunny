@@ -48,6 +48,7 @@ export type BunnyObject = ReturnType<typeof _bunnyObject>;
 const _bunnyObject = () => ({ // this function is never used, only exists for typings
     api: {
         ...api,
+        flux: utils.without({ ...api.flux }, "injectFluxInterceptor"),
         commands: { ...api.commands },
         native: {
             ...api.native,
@@ -59,7 +60,7 @@ const _bunnyObject = () => ({ // this function is never used, only exists for ty
         assets: { ...api.assets },
         patcher: utils.without({
             ...patcher,
-            unpatchAll: () => {}
+            unpatchAll: () => { }
         }, "unpatchAll")
     },
     managers: {
@@ -101,5 +102,5 @@ const _bunnyObject = () => ({ // this function is never used, only exists for ty
     },
     debug: { ...debug },
     version: debug.versionHash,
-    unload: () => {},
+    unload: () => { },
 });
