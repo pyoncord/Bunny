@@ -4,10 +4,11 @@ import { getAssetIDByName } from "@lib/api/assets";
 import { useProxy } from "@lib/api/storage";
 import { findByProps } from "@lib/metro/filters";
 import { settings } from "@lib/settings";
+import { HelpMessage } from "@lib/ui/components/discord";
 import { HTTP_REGEX_MULTI } from "@lib/utils/constants";
 import { clipboard } from "@metro/common";
 import { showInputAlert } from "@ui/alerts";
-import { ErrorBoundary, HelpMessage, Search } from "@ui/components";
+import { ErrorBoundary, Search } from "@ui/components";
 import fuzzysort from "fuzzysort";
 import { FlatList, View } from "react-native";
 

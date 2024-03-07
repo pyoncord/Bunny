@@ -2,7 +2,7 @@ import { allSettled } from "@core/polyfills";
 import { awaitSyncWrapper, createMMKVBackend, createStorage, purgeStorage, wrapSync } from "@lib/api/storage";
 import { settings } from "@lib/settings";
 import { safeFetch } from "@lib/utils";
-import logger, { logModule } from "@lib/utils/logger";
+import { logger, logModule } from "@lib/utils/logger";
 import { Author } from "@lib/utils/types";
 
 type EvaledPlugin = {

@@ -4,7 +4,7 @@ import { BundleUpdaterManager, ClientInfoManager, DeviceManager } from "@lib/api
 import { after } from "@lib/api/patcher";
 import { getThemeFromLoader, selectTheme } from "@lib/managers/themes";
 import { settings } from "@lib/settings";
-import logger from "@lib/utils/logger";
+import { logger } from "@lib/utils/logger";
 import { showToast } from "@ui/toasts";
 import { version } from "bunny-build";
 import { Platform, type PlatformConstants } from "react-native";

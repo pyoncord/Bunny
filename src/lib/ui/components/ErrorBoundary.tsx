@@ -1,11 +1,10 @@
 import { Strings } from "@core/i18n";
 import { React } from "@metro/common";
-import { Button, Codeblock } from "@ui/components";
+import { Codeblock } from "@ui/components";
+import { Button } from "@ui/components/discord";
+import { FormText } from "@ui/components/discord/Forms";
+import { createThemedStyleSheet } from "@ui/styles";
 import { ScrollView } from "react-native";
-
-import { createThemedStyleSheet } from "../styles";
-import { FormText } from "./discord/Forms";
-
 
 interface ErrorBoundaryState {
     hasErr: boolean;

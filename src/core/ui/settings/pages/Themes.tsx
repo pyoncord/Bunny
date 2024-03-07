@@ -5,7 +5,7 @@ import { useProxy } from "@lib/api/storage";
 import { installTheme, Theme, themes } from "@lib/managers/themes";
 import { settings } from "@lib/settings";
 import { ButtonColors } from "@lib/utils/types";
-import { Button } from "@ui/components";
+import { Button } from "@ui/components/discord";
 
 export default function Themes() {
     useProxy(settings);

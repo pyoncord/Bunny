@@ -7,7 +7,7 @@ import { isThemeSupported } from "@lib/api/native/loader";
 import { patchLogHook } from "@lib/debug";
 import { initPlugins } from "@lib/managers/plugins";
 import { initThemes, patchChatBackground } from "@lib/managers/themes";
-import logger from "@lib/utils/logger";
+import { logger } from "@lib/utils/logger";
 import initWindowObject from "@lib/windowObject";
 import initSafeMode from "@ui/safeMode";
 

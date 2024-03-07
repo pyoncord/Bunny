@@ -4,7 +4,7 @@ import { ThemeManager } from "@lib/api/native/modules";
 import { after, before, instead } from "@lib/api/patcher";
 import { awaitSyncWrapper, createFileBackend, createMMKVBackend, createStorage, wrapSync } from "@lib/api/storage";
 import { findInReactTree, safeFetch } from "@lib/utils";
-import logger from "@lib/utils/logger";
+import { logger } from "@lib/utils/logger";
 import { Author } from "@lib/utils/types";
 import { chroma } from "@metro/common";
 import { find, findByName, findByProps, findByStoreName } from "@metro/filters";

@@ -12,6 +12,4 @@ export interface Logger {
 }
 
 export const logModule = findByProps("setLogFn").default;
-const logger: Logger = new logModule("Bunny");
-
-export default logger;
+export const logger: Logger = new logModule("Bunny");

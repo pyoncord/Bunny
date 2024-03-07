@@ -1,5 +1,6 @@
 import { instead } from "@lib/api/patcher";
 import { findByProps } from "@lib/metro/filters";
+import { OptionalKeys } from "@lib/utils/types";
 import { AccessibilityInfo, Platform, View } from "react-native";
 
 const { ContextMenu: _ContextMenu } = findByProps("ContextMenu");
@@ -14,7 +15,7 @@ type ContextMenuItem = {
 type ContextMenuProps = {
     triggerOnLongPress: boolean;
     items: ContextMenuItem[] | ContextMenuItem[][];
-    align: "left" | "right" | "above" | "below" | "auto" | null;
+    align: OptionalKeys<["left", "right", "above", "below", "auto"]>;
     title: string;
     children: React.FC;
     [key: string]: any;

@@ -6,7 +6,7 @@
  * - @pylixonly
  */
 
-import logger from "@lib/utils/logger";
+import { logger } from "@lib/utils/logger";
 import { FluxDispatcher, moment } from "@metro/common";
 
 function onDispatch({ locale }: { locale: string; }) {

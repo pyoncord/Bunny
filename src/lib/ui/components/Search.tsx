@@ -1,16 +1,14 @@
 import { Strings } from "@core/i18n";
 import { getAssetIDByName } from "@lib/api/assets";
+import { TextInput } from "@ui/components/discord/Redesign";
 import ErrorBoundary from "@ui/components/ErrorBoundary";
 import { Image, View } from "react-native";
-
-import { TextInput } from "./discord/Redesign";
 
 export interface SearchProps {
     onChangeText?: (v: string) => void;
     placeholder?: string;
     style?: import("react-native").TextStyle;
 }
-
 
 function SearchIcon() {
     return <Image style={{ transform: [{ scale: 0.8 }] }} source={getAssetIDByName("search")} />;

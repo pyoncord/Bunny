@@ -5,7 +5,8 @@ import { settings } from "@lib/settings";
 import { ButtonColors } from "@lib/utils/types";
 import { findByName, findByProps } from "@metro/filters";
 import { semanticColors } from "@ui/color";
-import { Button, Codeblock, ErrorBoundary as _ErrorBoundary, SafeAreaView } from "@ui/components";
+import { Codeblock, ErrorBoundary as _ErrorBoundary } from "@ui/components";
+import { Button, SafeAreaView } from "@ui/components/discord";
 import { createThemedStyleSheet, TextStyleSheet } from "@ui/styles";
 import { Text, View } from "react-native";
 

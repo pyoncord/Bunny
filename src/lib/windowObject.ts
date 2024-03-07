@@ -8,7 +8,15 @@ import * as settings from "@lib/settings";
 import * as ui from "@lib/ui";
 import * as utils from "@lib/utils";
 
-// You may now worry about my mental state.
+/*
+    (You may now worry about my mental state.)
+    This is a hack, apparently when you destruct a star-imported module, its type is deferenced
+    We need to do this for every module because the types bundler apparently does not support referencing star-imported modules(?)
+    I only have realized this after getting everything set up, thinking it'd go well :)
+    The API should be the same even if we got alternatives in the future
+
+    See: https://github.com/timocov/dts-bundle-generator/issues/304
+*/
 function createBunnyObject(unloads: any[]) {
     return {
         api: {
