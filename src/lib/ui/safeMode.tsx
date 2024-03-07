@@ -1,6 +1,6 @@
 import { DeviceManager } from "@lib/api/native/modules";
 import { after } from "@lib/api/patcher";
-import { toggleSafeMode } from "@lib/debug";
+import { _toggleSafeMode } from "@lib/debug";
 import { settings } from "@lib/settings";
 import { ButtonColors } from "@lib/utils/types";
 import { findByName, findByProps } from "@metro/filters";
@@ -77,7 +77,7 @@ export default () => after("render", ErrorBoundary.prototype, function (this: an
     // This is in the patch and not outside of it so that we can use `this`, e.g. for setting state
     const buttons: Button[] = [
         { text: "Restart Discord", onPress: this.handleReload },
-        ...!settings.safeMode?.enabled ? [{ text: "Restart in Safe Mode", onPress: toggleSafeMode }] : [],
+        ...!settings.safeMode?.enabled ? [{ text: "Restart in Safe Mode", onPress: _toggleSafeMode }] : [],
         { text: "Retry Render", color: ButtonColors.RED, onPress: () => this.setState({ info: null, error: null }) },
     ];
 

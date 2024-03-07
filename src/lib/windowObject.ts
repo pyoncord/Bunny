@@ -7,6 +7,7 @@ import * as metro from "@lib/metro";
 import * as settings from "@lib/settings";
 import * as ui from "@lib/ui";
 import * as utils from "@lib/utils";
+import { ExcludeInternalProperties } from "@lib/utils/types";
 
 function createBunnyObject(unloads: any[]): BunnyObject {
     return {
@@ -20,7 +21,7 @@ function createBunnyObject(unloads: any[]): BunnyObject {
         utils,
         settings,
         debug,
-        version: debug.versionHash,
+        version: debug._versionHash,
         unload: () => {
             unloads.filter(i => typeof i === "function").forEach(p => p());
             // @ts-expect-error
@@ -34,21 +35,21 @@ export default function initWindowObject(unloads: any[]) {
     window.bunny = createBunnyObject(unloads);
 }
 
-
 /*
     (You may now worry about my mental state.)
     This is a hack, apparently when you destruct a star-imported module, its type is deferenced
     We need to do this for every module because the types bundler apparently does not support referencing star-imported modules(?)
     I only have realized this after getting everything set up, thinking it'd go well :)
-    The API should be the same even if we got alternatives in the future
+    The API should be the same (or easy to migrate) even if we got alternatives in the future
+    Another cons: JSDocs are stripped and a lot of declaration duplicates
 
     See: https://github.com/timocov/dts-bundle-generator/issues/304
 */
-export type BunnyObject = ReturnType<typeof _bunnyObject>;
+export type BunnyObject = ExcludeInternalProperties<ReturnType<typeof _bunnyObject>>;
 const _bunnyObject = () => ({ // this function is never used, only exists for typings
     api: {
         ...api,
-        flux: utils.without({ ...api.flux }, "injectFluxInterceptor"),
+        flux: { ...api.flux },
         commands: { ...api.commands },
         native: {
             ...api.native,
@@ -101,6 +102,6 @@ const _bunnyObject = () => ({ // this function is never used, only exists for ty
         loaderConfig: { ...settings.loaderConfig }
     },
     debug: { ...debug },
-    version: debug.versionHash,
+    version: debug._versionHash,
     unload: () => { },
 });

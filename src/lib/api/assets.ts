@@ -8,7 +8,7 @@ export interface Asset {
     id: number;
 }
 
-export function patchAssets() {
+export function _patchAssets() {
     const unpatch = after("registerAsset", assets, (args: Asset[], id: number) => {
         const asset = args[0];
         all[asset.name] = { ...asset, id: id };

@@ -74,7 +74,7 @@ export async function installPlugin(id: string, enabled = true) {
     if (enabled) await startPlugin(id);
 }
 
-export async function evalPlugin(plugin: BunnyPlugin) {
+export async function _evalPlugin(plugin: BunnyPlugin) {
     const vendettaForPlugins = {
         ...window.vendetta,
         plugin: {
@@ -99,7 +99,7 @@ export async function startPlugin(id: string) {
 
     try {
         if (!settings.safeMode?.enabled) {
-            const pluginRet: EvaledPlugin = await evalPlugin(plugin);
+            const pluginRet: EvaledPlugin = await _evalPlugin(plugin);
             loadedPlugins[id] = pluginRet;
             pluginRet.onLoad?.();
         }
@@ -145,7 +145,7 @@ export async function removePlugin(id: string) {
     await purgeStorage(id);
 }
 
-export async function initPlugins() {
+export async function _initPlugins() {
     await awaitSyncWrapper(settings);
     await awaitSyncWrapper(plugins);
     const allIds = Object.keys(plugins);

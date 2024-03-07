@@ -2,7 +2,7 @@ import { getAssetIDByName } from "@lib/api/assets";
 import { getLoaderName, isThemeSupported } from "@lib/api/native/loader";
 import { BundleUpdaterManager, ClientInfoManager, DeviceManager } from "@lib/api/native/modules";
 import { after } from "@lib/api/patcher";
-import { getThemeFromLoader, selectTheme } from "@lib/managers/themes";
+import { _getThemeFromLoader, selectTheme } from "@lib/managers/themes";
 import { settings } from "@lib/settings";
 import { logger } from "@lib/utils/logger";
 import { showToast } from "@ui/toasts";
@@ -28,10 +28,10 @@ export interface RNConstants extends PlatformConstants {
     systemName: string;
 }
 
-export async function toggleSafeMode() {
+export async function _toggleSafeMode() {
     settings.safeMode = { ...settings.safeMode, enabled: !settings.safeMode?.enabled };
     if (isThemeSupported()) {
-        if (getThemeFromLoader()?.id) settings.safeMode!.currentThemeId = getThemeFromLoader()!.id;
+        if (_getThemeFromLoader()?.id) settings.safeMode!.currentThemeId = _getThemeFromLoader()!.id;
         if (settings.safeMode?.enabled) {
             await selectTheme("default");
         } else if (settings.safeMode?.currentThemeId) {
@@ -66,7 +66,7 @@ export function connectToDebugger(url: string) {
     });
 }
 
-export function patchLogHook() {
+export function _patchLogHook() {
     const unpatch = after("nativeLoggingHook", globalThis, args => {
         if (socket?.readyState === WebSocket.OPEN) socket.send(JSON.stringify({ message: args[0], level: args[1] }));
         logger.log(args[0]);
@@ -78,7 +78,7 @@ export function patchLogHook() {
     };
 }
 
-export const versionHash = version;
+export const _versionHash = version;
 
 export function getDebugInfo() {
     // Hermes
@@ -93,11 +93,11 @@ export function getDebugInfo() {
     return {
         /** @deprecated */
         vendetta: {
-            version: versionHash,
+            version: _versionHash,
             loader: getLoaderName(),
         },
         bunny: {
-            version: versionHash,
+            version: _versionHash,
             loader: getLoaderName(),
         },
         discord: {

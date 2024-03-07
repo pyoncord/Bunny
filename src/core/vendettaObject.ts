@@ -130,7 +130,7 @@ export const createVendettaObject = (unloads: any[]): any => ({
         installTheme: (id: string) => themes.installTheme(id),
         selectTheme: (id: string) => themes.selectTheme(id),
         removeTheme: (id: string) => themes.removeTheme(id),
-        getCurrentTheme: () => themes.getThemeFromLoader(),
+        getCurrentTheme: () => themes._getThemeFromLoader(),
         updateThemes: () => themes.updateThemes()
     },
     commands: {
@@ -159,7 +159,7 @@ export const createVendettaObject = (unloads: any[]): any => ({
         trace: (...message: any) => console.trace(...message),
         verbose: (...message: any) => console.log(...message)
     },
-    version: debug.versionHash,
+    version: debug._versionHash,
     unload: () => {
         unloads.filter(i => typeof i === "function").forEach(p => p());
         delete window.vendetta;

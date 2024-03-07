@@ -2,7 +2,7 @@ import { Strings } from "@core/i18n";
 import Version from "@core/ui/components/Version";
 import { getAssetIDByName } from "@lib/api/assets";
 import { useProxy } from "@lib/api/storage";
-import { getDebugInfo, toggleSafeMode } from "@lib/debug";
+import { getDebugInfo, _toggleSafeMode } from "@lib/debug";
 import { settings } from "@lib/settings";
 import { Stack, TableRow, TableRowGroup, TableSwitchRow } from "@lib/ui/components/discord/Redesign";
 import { DISCORD_SERVER, GITHUB } from "@lib/utils/constants";
@@ -118,7 +118,7 @@ export default function General() {
                         label={settings.safeMode?.enabled ? Strings.RELOAD_IN_NORMAL_MODE : Strings.RELOAD_IN_SAFE_MODE}
                         subLabel={settings.safeMode?.enabled ? Strings.RELOAD_IN_NORMAL_MODE_DESC : Strings.RELOAD_IN_SAFE_MODE_DESC}
                         icon={<TableRow.Icon source={getAssetIDByName("ic_privacy_24px")} />}
-                        onPress={toggleSafeMode}
+                        onPress={_toggleSafeMode}
                     />
                     <TableSwitchRow
                         label={Strings.DEVELOPER_SETTINGS}
