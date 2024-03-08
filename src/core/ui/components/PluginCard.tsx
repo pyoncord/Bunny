@@ -29,8 +29,9 @@ export default function PluginCard({ item: plugin, index }: CardWrapper<BunnyPlu
         <Card
             index={index}
             // TODO: Actually make use of user IDs
-            headerLabel={`${plugin.manifest.name} by ${plugin.manifest.authors.map(i => i.name).join(", ")}`}
-            headerIcon={plugin.manifest.vendetta?.icon || "ic_application_command_24px"}
+            headerLabel={`${plugin.manifest.name}`}
+            headerSublabel={plugin.manifest.authors?.[0] && `by ${plugin.manifest.authors.map(i => i.name).join(", ")}`}
+            headerIcon={plugin.manifest.vendetta?.icon}
             toggleType="switch"
             toggleValue={plugin.enabled}
             onToggleChange={(v: boolean) => {
@@ -42,6 +43,14 @@ export default function PluginCard({ item: plugin, index }: CardWrapper<BunnyPlu
             }}
             descriptionLabel={plugin.manifest.description}
             overflowTitle={plugin.manifest.name}
+            actions={[{
+                icon: "WrenchIcon",
+                disabled: !settings,
+                onPress: () => navigation.push("VendettaCustomPage", {
+                    title: plugin.manifest.name,
+                    render: settings,
+                })
+            }]}
             overflowActions={[
                 ...(settings ? [{
                     label: Strings.OVERFLOW_PLUGIN_SETTINGS,

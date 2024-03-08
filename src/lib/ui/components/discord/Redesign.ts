@@ -1,5 +1,7 @@
-import { findByProps } from "@lib/metro";
+import { find, findByProps } from "@lib/metro";
 import { RedesignModuleKeys } from "@lib/ui/types";
+
+const findSingular = (prop: string) => find(m => m[prop] && Object.keys(m).length === 1)?.[prop];
 
 export const Redesign = findByProps("TableRow") as Record<RedesignModuleKeys, any>;
 
@@ -7,6 +9,10 @@ export const CompatfulRedesign = findByProps("ActionSheetRow") as unknown as {
     TextStyleSheet: typeof import("@ui/styles").TextStyleSheet;
     [key: string]: any;
 };
+
+export const FormSwitch = findSingular("FormSwitch");
+export const FormRadio = findSingular("FormRadio");
+export const FormCheckbox = findSingular("FormCheckbox");
 
 export const {
     AlertActionButton,

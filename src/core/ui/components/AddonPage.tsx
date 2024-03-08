@@ -39,7 +39,7 @@ function getItemsByQuery<T extends { id?: string; }>(items: T[], query: string):
 const reanimated = findByProps("useSharedValue");
 const { FloatingActionButton } = findByProps("FloatingActionButton");
 
-export default function AddonPage<T>({ title, floatingButtonText, fetchFunction, items, safeModeMessage, safeModeExtras, card: CardComponent }: AddonPageProps<T>) {
+export default function AddonPage<T>({ floatingButtonText, fetchFunction, items, safeModeMessage, safeModeExtras, card: CardComponent }: AddonPageProps<T>) {
     useProxy(settings);
     useProxy(items);
 
@@ -67,9 +67,8 @@ export default function AddonPage<T>({ title, floatingButtonText, fetchFunction,
                     collapseText.value = Number(e.nativeEvent.contentOffset.y > yOffset.current);
                     yOffset.current = e.nativeEvent.contentOffset.y;
                 }}
-                onMomentumScrollEnd={() => collapseText.value = 0}
                 style={{ paddingHorizontal: 10, paddingTop: 10 }}
-                contentContainerStyle={{ paddingBottom: 70 }}
+                contentContainerStyle={{ paddingBottom: 90, paddingHorizontal: 5 }}
                 data={getItemsByQuery(Object.values(items), search)}
                 renderItem={({ item, index }) => <CardComponent item={item} index={index} />}
             />

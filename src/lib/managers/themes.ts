@@ -177,11 +177,13 @@ export async function installTheme(id: string) {
     await fetchTheme(id);
 }
 
-export async function selectTheme(id: string) {
+export async function selectTheme(id: string | null) {
     Object.values(themes).forEach(s => s.selected = s.id === id);
 
-    if (id === "default") {
+    if (id === null) {
         return await writeTheme({});
+    } else {
+        themes[id].selected = true;
     }
 
     await writeTheme(themes[id]);
@@ -189,7 +191,7 @@ export async function selectTheme(id: string) {
 
 export async function removeTheme(id: string) {
     const theme = themes[id];
-    if (theme.selected) await selectTheme("default");
+    if (theme.selected) await selectTheme(null);
     delete themes[id];
 
     return theme.selected;

@@ -9,6 +9,7 @@ import { Button } from "@ui/components/discord";
 
 export default function Themes() {
     useProxy(settings);
+    useProxy(themes);
 
     return (
         <AddonPage<Theme>

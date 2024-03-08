@@ -1,4 +1,5 @@
 {
+    "ABOUT": "About",
     "ACTIONS": "Actions",
     "ARE_YOU_SURE_TO_CLEAR_DATA": "Are you sure you wish to clear the data of {name}?",
     "ARE_YOU_SURE_TO_DELETE_PLUGIN": "Are you sure you wish to delete {name}? This will clear all of the plugin's data.",

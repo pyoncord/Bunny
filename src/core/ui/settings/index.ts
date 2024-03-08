@@ -7,7 +7,9 @@ import { registerSection } from "@lib/ui/settings";
 import { version } from "bunny-build";
 
 // @ts-ignore
-import PyoncordIcon from "../../../assets/icons/pyon64.png";
+import _PyoncordIcon from "../../../assets/icons/pyon64.png";
+
+export const PyoncordIcon = _PyoncordIcon as string;
 
 export default function initSettings() {
     registerSection({

@@ -12,11 +12,8 @@ import { showToast } from "@ui/toasts";
 
 async function selectAndApply(value: boolean, id: string) {
     try {
-        await selectTheme(value ? id : "default");
-        value ? applyTheme(themes[id]) : applyTheme(null);
-
-        // TODO: Implement native side reload-less & check if it's applied by 100%
-        showToast(Strings.THEMES_RELOAD_FOR_CHANGES, getAssetIDByName("yellow-alert"));
+        await selectTheme(value ? id : null);
+        applyTheme(value ? themes[id] : null);
     } catch (e: any) {
         console.error("Error while selectAndApply,", e);
     }
@@ -25,6 +22,8 @@ async function selectAndApply(value: boolean, id: string) {
 export default function ThemeCard({ item: theme, index }: CardWrapper<Theme>) {
     useProxy(theme);
 
+    // little hack, our useProxy is kinda not reliable here
+    const [, forceUpdate] = React.useReducer(n => ~n, 0);
     const [removed, setRemoved] = React.useState(false);
 
     // This is needed because of React™
@@ -35,12 +34,14 @@ export default function ThemeCard({ item: theme, index }: CardWrapper<Theme>) {
     return (
         <Card
             index={index}
-            headerLabel={`${theme.data.name} ${authors ? `by ${authors.map(i => i.name).join(", ")}` : ""}`}
+            headerLabel={theme.data.name}
+            headerSublabel={authors ? `by ${authors.map(i => i.name).join(", ")}` : ""}
             descriptionLabel={theme.data.description ?? "No description."}
             toggleType={!settings.safeMode?.enabled ? "radio" : undefined}
             toggleValue={theme.selected}
             onToggleChange={(v: boolean) => {
                 selectAndApply(v, theme.id);
+                forceUpdate();
             }}
             overflowTitle={theme.data.name}
             overflowActions={[

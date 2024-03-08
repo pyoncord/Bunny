@@ -1,41 +1,67 @@
 import { getAssetIDByName } from "@lib/api/assets";
-import { TableCheckboxRow, TableRow, TableRowGroup, TableRowIcon, TableSwitchRow } from "@lib/ui/components/discord/Redesign";
+import { FormRow } from "@lib/ui/components/discord/Forms";
+import { FormCheckbox, FormSwitch, IconButton } from "@lib/ui/components/discord/Redesign";
+import { createStyles, TextStyleSheet } from "@lib/ui/styles";
+import { ReactNative as RN } from "@metro/common";
+import { findByProps } from "@metro/filters";
 import { semanticColors } from "@ui/color";
-import ContextMenu from "@ui/components/ContextMenu";
-import { createStyles } from "@ui/styles";
-import { Image, TouchableOpacity, View } from "react-native";
+import { ImageBackground, View } from "react-native";
+
+const { hideActionSheet } = findByProps("openLazy", "hideActionSheet");
+const { showSimpleActionSheet } = findByProps("showSimpleActionSheet");
 
 // TODO: These styles work weirdly. iOS has cramped text, Android with low DPI probably does too. Fix?
 const useStyles = createStyles({
     card: {
-        backgroundColor: semanticColors?.BACKGROUND_SECONDARY,
-        borderRadius: 15,
+        backgroundColor: semanticColors?.CARD_SECONDARY_BG,
+        borderRadius: 12,
         overflow: "hidden"
     },
     header: {
         padding: 0,
-        backgroundColor: semanticColors?.BACKGROUND_TERTIARY,
+    },
+    headerLeading: {
+        flexDirection: "column",
+        justifyContent: "center",
+        scale: 1.2
+    },
+    headerTrailing: {
+        display: "flex",
+        flexDirection: "row",
+        gap: 15,
+        alignItems: "center"
+    },
+    headerLabel: {
+        ...TextStyleSheet["heading-md/semibold"],
+        color: semanticColors.TEXT_NORMAL,
+    },
+    headerSubtitle: {
+        ...TextStyleSheet["text-md/semibold"],
+        color: semanticColors.TEXT_MUTED,
+    },
+    descriptionLabel: {
+        ...TextStyleSheet["text-md/semibold"],
+        color: semanticColors.TEXT_NORMAL,
     },
     actions: {
         flexDirection: "row-reverse",
         alignItems: "center",
+        gap: 5
     },
-    actionIcon: {
-        width: 22,
-        height: 22,
-        marginLeft: 5,
-        tintColor: semanticColors?.INTERACTIVE_NORMAL,
-    },
-    icon: {
-        width: 22,
-        height: 22,
-        marginLeft: 5,
-        tintColor: semanticColors?.INTERACTIVE_NORMAL,
+    iconStyle: {
+        tintColor: semanticColors.LOGO_PRIMARY,
+        opacity: 0.2,
+        height: 64,
+        width: 64,
+        left: void 0,
+        right: "30%",
+        top: "-10%"
     }
 });
 
 interface Action {
     icon: string;
+    disabled?: boolean;
     onPress: () => void;
 }
 
@@ -51,69 +77,89 @@ export interface CardWrapper<T> {
 
 interface CardProps {
     index?: number;
-    headerLabel: string | React.ComponentType;
+    headerLabel: string;
+    headerSublabel?: string;
     headerIcon?: string;
     toggleType?: "switch" | "radio";
     toggleValue?: boolean;
     onToggleChange?: (v: boolean) => void;
-    descriptionLabel?: string | React.ComponentType;
-    /** @deprecated use overflowActions */
+    descriptionLabel?: string;
     actions?: Action[];
     overflowTitle?: string;
     overflowActions?: OverflowAction[];
-    overflowIcon?: string;
 }
 
 export default function Card(props: CardProps) {
     const styles = useStyles();
-    let pressableState = props.toggleValue ?? false;
-
-    const headerProps = {
-        style: styles.header,
-        label: props.headerLabel,
-        icon: props.headerIcon && <TableRowIcon source={getAssetIDByName(props.headerIcon)} />
-    };
 
     return (
-        <View style={[styles.card, { marginTop: props.index !== 0 ? 10 : 0 }]}>
-            <TableRowGroup>
-                {props.toggleType && (props.toggleType === "switch" ?
-                    <TableSwitchRow
-                        {...headerProps}
-                        value={props.toggleValue}
-                        onValueChange={props.onToggleChange}
-                    /> : props.toggleType === "radio" ?
-                        <TableCheckboxRow
-                            {...headerProps}
-                            onPress={() => {
-                                pressableState = !pressableState;
-                                props.onToggleChange?.(pressableState);
-                            }}
-                            checked={props.toggleValue}
-                        /> : undefined) || <TableRow {...headerProps} />}
-                <TableRow
-                    label={props.descriptionLabel}
+        <RN.View style={[styles.card, { marginTop: props.index !== 0 ? 15 : 0 }]}>
+            <ImageBackground
+                source={props.headerIcon && getAssetIDByName(props.headerIcon) || {}}
+                resizeMode="cover"
+                imageStyle={styles.iconStyle}
+            >
+                <FormRow
+                    style={styles.header}
+                    label={
+                        <View style={styles.headerLeading}>
+                            <RN.Text style={styles.headerLabel}>{props.headerLabel}</RN.Text>
+                            {props.headerSublabel && (
+                                <RN.Text style={styles.headerSubtitle}>{props.headerSublabel}</RN.Text>
+                            )}
+                        </View>
+                    }
                     trailing={
-                        <View style={styles.actions}>
-                            {props.overflowActions &&
-                                <ContextMenu
-                                    triggerOnLongPress={false}
-                                    items={props.overflowActions.map(i => ({
-                                        label: i.label,
-                                        iconSource: getAssetIDByName(i.icon),
-                                        action: i.onPress
-                                    }))}
-                                    align="auto"
-                                    title={props.overflowTitle!!}
-                                    children={props => <TouchableOpacity {...props}>
-                                        <Image style={styles.icon} source={getAssetIDByName("ic_more_24px")} />
-                                    </TouchableOpacity>}
+                        <View style={styles.headerTrailing}>
+                            <View style={styles.actions}>
+                                {props.overflowActions &&
+                                    <IconButton
+                                        onPress={() => showSimpleActionSheet({
+                                            key: "CardOverflow",
+                                            header: {
+                                                title: props.overflowTitle,
+                                                icon: props.headerIcon && <FormRow.Icon style={{ marginRight: 8 }} source={getAssetIDByName(props.headerIcon)} />,
+                                                onClose: () => hideActionSheet(),
+                                            },
+                                            options: props.overflowActions?.map(i => ({ ...i, icon: getAssetIDByName(i.icon) })),
+                                        })}
+                                        size="sm"
+                                        variant="secondary"
+                                        icon={getAssetIDByName("CircleInformationIcon")}
+                                    />}
+                                {props.actions?.map(({ icon, onPress, disabled }) => (
+                                    <IconButton
+                                        onPress={onPress}
+                                        disabled={disabled}
+                                        size="sm"
+                                        variant="secondary"
+                                        icon={getAssetIDByName(icon)}
+                                    />
+                                ))}
+                            </View>
+                            {props.toggleType && (props.toggleType === "switch" ?
+                                <FormSwitch
+                                    value={props.toggleValue}
+                                    onValueChange={props.onToggleChange}
                                 />
-                            }
+                                :
+                                <RN.Pressable onPress={() => {
+                                    props.onToggleChange?.(!props.toggleValue);
+                                }}>
+                                    <FormCheckbox checked={props.toggleValue} />
+                                </RN.Pressable>
+                            )}
                         </View>
                     }
                 />
-            </TableRowGroup>
-        </View>
+                <FormRow
+                    label={
+                        <RN.View>
+                            <RN.Text style={styles.descriptionLabel}>{props.descriptionLabel}</RN.Text>
+                        </RN.View>
+                    }
+                />
+            </ImageBackground>
+        </RN.View>
     );
 }
