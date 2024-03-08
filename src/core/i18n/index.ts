@@ -46,6 +46,8 @@ export function initFetchI18nStrings() {
                 .then(strings => _loadedStrings[resolvedLocale] = strings)
                 .then(() => currentLocale = resolvedLocale)
                 .catch(e => console.error(`An error occured while fetching strings for ${resolvedLocale}: ${e}`));
+        } else {
+            currentLocale = resolvedLocale;
         }
     };
 
