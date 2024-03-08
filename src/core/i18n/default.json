@@ -74,7 +74,7 @@
     "RETRY_RENDER": "Retry Render",
     "SAFE_MODE": "Safe Mode",
     "SAFE_MODE_NOTICE_PLUGINS": "You are in Safe Mode, so plugins cannot be loaded. Disable any misbehaving plugins, then return to Normal Mode from the General settings page.",
-    "SAFE_MODE_NOTICE_THEMES": "You are in Safe Mode, meaning themes have been temporarily disabled.{enabled, select, true { If a theme appears to be causing the issue, you can press below to disable it persistently.}}",
+    "SAFE_MODE_NOTICE_THEMES": "You are in Safe Mode, meaning themes have been temporarily disabled. {enabled, select, true {If a theme appears to be causing the issue, you can press below to disable it persistently.} false {}}",
     "SEARCH": "Search",
     "STACK_TRACE": "Stack Trace",
     "SUCCESSFULLY_INSTALLED": "Successfully installed",
