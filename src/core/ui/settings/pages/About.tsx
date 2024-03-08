@@ -80,10 +80,10 @@ export default function About() {
         <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 38 }}>
             <Stack style={{ paddingVertical: 24, paddingHorizontal: 12 }} spacing={24}>
                 <TableRowGroup title={Strings.VERSIONS}>
-                    {versions.map(v => <Version padding label={v.label} version={v.version} icon={v.icon} />)}
+                    {versions.map(v => <Version label={v.label} version={v.version} icon={v.icon} />)}
                 </TableRowGroup>
                 <TableRowGroup title={Strings.PLATFORM}>
-                    {platformInfo.map(p => <Version padding label={p.label} version={p.version} icon={p.icon} />)}
+                    {platformInfo.map(p => <Version label={p.label} version={p.version} icon={p.icon} />)}
                 </TableRowGroup>
             </Stack>
         </ScrollView>

@@ -8,13 +8,11 @@ interface VersionProps {
     label: string;
     version: string;
     icon: string;
-    padding: boolean;
 }
 
-export default function Version({ label, version, icon, padding }: VersionProps) {
+export default function Version({ label, version, icon }: VersionProps) {
     return (
         <TableRow
-            style={padding && { paddingHorizontal: 15, paddingVertical: -15 }}
             label={label}
             icon={<TableRow.Icon source={getAssetIDByName(icon)} />}
             trailing={<FormText>{version}</FormText>}
