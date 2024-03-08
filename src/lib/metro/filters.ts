@@ -1,20 +1,16 @@
 import { instead } from "@lib/api/patcher";
 
-type MetroModulesIndex = `${number}` | number;
 
-export type MetroModules = { [id: MetroModulesIndex]: any };
+export type MetroModules = { [id: string]: any; };
 export type PropIntellisense<P extends string | symbol> = Record<P, any> & Record<PropertyKey, any>;
 export type PropsFinder = <T extends string | symbol>(...props: T[]) => PropIntellisense<T>;
 export type PropsFinderAll = <T extends string | symbol>(...props: T[]) => PropIntellisense<T>[];
 
 // Metro require
-declare const __r: (moduleId: MetroModulesIndex) => any;
-
-// Internal Metro error reporting logic
-const originalHandler = window.ErrorUtils.getGlobalHandler();
+declare const __r: (moduleId: string) => any;
 
 // Function to blacklist a module, preventing it from being searched again
-const blacklist = (id: MetroModulesIndex) => Object.defineProperty(window.modules, id, {
+const blacklist = (id: string) => Object.defineProperty(window.modules, id, {
     value: window.modules[id],
     enumerable: false,
     configurable: true,
@@ -22,8 +18,7 @@ const blacklist = (id: MetroModulesIndex) => Object.defineProperty(window.module
 });
 
 // Blacklist any "bad-actor" modules, e.g. the dreaded null proxy, the window itself, or undefined modules
-for (const key in window.modules) {
-    const id = key as MetroModulesIndex;
+for (const id in window.modules) {
     const module = window.modules[id]?.publicModule?.exports;
 
     if (!module || module === window || module.proxygone === null) {
@@ -48,19 +43,43 @@ const onModuleCheck = (exports: any) => {
     }
 };
 
+function maybeInitializeModule(id: string) {
+    if (modules[id].isInitialized) return;
+
+    try {
+        // There's a dum Function.prototype.toString polyfill somewhere in Discord's codebase
+        const orig = Function.prototype.toString;
+        Object.defineProperty(Function.prototype, "toString", {
+            value: orig,
+            configurable: true,
+            writable: false
+        });
+
+        // Disable Internal Metro error reporting logic
+        const originalHandler = window.ErrorUtils.getGlobalHandler();
+        window.ErrorUtils.setGlobalHandler(null);
+
+        __r(id); // metroRequire(id);
+
+        // Done initializing! Now, revert our hacks
+        window.ErrorUtils.setGlobalHandler(originalHandler);
+        Object.defineProperty(Function.prototype, "toString", {
+            value: orig,
+            configurable: true,
+            writable: true
+        });
+    } catch { }
+
+}
+
 // Function to filter through modules
 const filterModules = (modules: MetroModules, single = false) => (filter: (m: any) => boolean) => {
     const found = [];
 
-    for (const key in modules) {
-        const id = key as MetroModulesIndex;
+    for (const id in modules) {
         const module = modules[id]?.publicModule?.exports;
 
-        if (!modules[id].isInitialized) try {
-            window.ErrorUtils.setGlobalHandler(() => {});
-            __r(id);
-            window.ErrorUtils.setGlobalHandler(originalHandler);
-        } catch { }
+        maybeInitializeModule(id);
 
         if (!module) {
             blacklist(id);
