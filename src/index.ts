@@ -1,4 +1,5 @@
 import initFixes from "@core/fixes";
+import { initFetchI18nStrings } from "@core/i18n";
 import { initCorePlugins } from "@core/plugins";
 import initSettings from "@core/ui/settings";
 import { _patchAssets } from "@lib/api/assets";
@@ -31,6 +32,7 @@ export default async () => {
         _patchAssets(),
         _patchCommands(),
         _patchChatBackground(),
+        initFetchI18nStrings(),
         initSettings(),
         initFixes(),
         initSafeMode(),

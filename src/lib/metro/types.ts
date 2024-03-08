@@ -12,8 +12,8 @@ export interface Dispatcher {
     isDispatching(): boolean;
     register(name: string, actionHandler: Record<string, (e: any) => void>, storeDidChange: (e: any) => boolean): string;
     setInterceptor(interceptor?: (payload: any) => void | boolean): void;
-    subscribe(actionType: string, callback: (payload: any) => void): () => void;
-    unsubscribe(actionType: string, callback: (payload: any) => void): () => void;
+    subscribe(actionType: string, callback: (payload: any) => void): void;
+    unsubscribe(actionType: string, callback: (payload: any) => void): void;
     wait(cb: () => void): void;
 }
 
