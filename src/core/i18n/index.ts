@@ -29,6 +29,7 @@ export function initFetchI18nStrings() {
             "zh-TW": "zh-Hant",
             "zh-CN": "zh-Hans",
             "pt-PT": "pt",
+            "pt-BR": "pt_BR",
             "sv-SE": "sv"
         } as Record<string, string>;
 
