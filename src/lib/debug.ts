@@ -2,7 +2,7 @@ import { getAssetIDByName } from "@lib/api/assets";
 import { getLoaderName, isThemeSupported } from "@lib/api/native/loader";
 import { BundleUpdaterManager, ClientInfoManager, DeviceManager } from "@lib/api/native/modules";
 import { after } from "@lib/api/patcher";
-import { getThemeFromLoader, selectTheme } from "@lib/managers/themes";
+import { getThemeFromLoader, selectTheme, themes } from "@lib/managers/themes";
 import { settings } from "@lib/settings";
 import { logger } from "@lib/utils/logger";
 import { showToast } from "@ui/toasts";
@@ -36,9 +36,9 @@ export async function toggleSafeMode() {
     if (isThemeSupported()) {
         if (getThemeFromLoader()?.id) settings.safeMode!.currentThemeId = getThemeFromLoader()!.id;
         if (settings.safeMode?.enabled) {
-            await selectTheme("default");
+            await selectTheme(null);
         } else if (settings.safeMode?.currentThemeId) {
-            await selectTheme(settings.safeMode?.currentThemeId);
+            await selectTheme(themes[settings.safeMode?.currentThemeId]);
         }
     }
     setTimeout(BundleUpdaterManager.reload, 400);

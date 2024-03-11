@@ -130,7 +130,7 @@ export const initVendettaObject = (): any => {
             themes: themes.themes,
             fetchTheme: (id: string, selected?: boolean) => themes.fetchTheme(id, selected),
             installTheme: (id: string) => themes.installTheme(id),
-            selectTheme: (id: string) => themes.selectTheme(id === "default" ? null : id),
+            selectTheme: (id: string) => themes.selectTheme(id === "default" ? null : themes.themes[id]),
             removeTheme: (id: string) => themes.removeTheme(id),
             getCurrentTheme: () => themes.getThemeFromLoader(),
             updateThemes: () => themes.updateThemes()

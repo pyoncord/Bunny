@@ -187,16 +187,16 @@ export async function installTheme(id: string) {
     await fetchTheme(id);
 }
 
-export async function selectTheme(id: string | null) {
-    Object.values(themes).forEach(s => s.selected = s.id === id);
+export function selectTheme(theme: Theme | null) {
+    Object.keys(themes).forEach(
+        k => themes[k].selected = themes[k].id === theme?.id
+    );
 
-    if (id === null) {
-        return await writeTheme({});
-    } else {
-        themes[id].selected = true;
+    if (theme === null) {
+        return writeTheme({});
     }
 
-    await writeTheme(themes[id]);
+    return writeTheme(theme);
 }
 
 export async function removeTheme(id: string) {
@@ -225,7 +225,7 @@ const origRawColor = { ...color.RawColor };
 let inc = 0;
 let vdKey = "vd-theme";
 
-let vdThemeFallback = "dark";
+let vdThemeFallback = "darker";
 let enabled = false;
 let currentTheme: Theme | null;
 
@@ -233,13 +233,6 @@ const discordThemes = new Set(["darker", "midnight", "dark", "light"]);
 function isDiscordTheme(name: string) {
     return discordThemes.has(name);
 }
-
-const dMapThemeType = {
-    dark: "dark",
-    darker: "dark",
-    midnight: "dark",
-    light: "light"
-};
 
 function patchColor() {
     const isThemeModule = find(m => m.isThemeDark && Object.getOwnPropertyDescriptor(m, "isThemeDark")?.value);
@@ -302,7 +295,7 @@ function patchColor() {
                 if (value._state?.theme) {
                     const { theme } = value._state;
                     if (isDiscordTheme(theme)) {
-                        selectTheme("default");
+                        selectTheme(null);
                         vdThemeFallback = theme;
                     } else {
                         value._state.theme = vdThemeFallback;
@@ -319,7 +312,9 @@ function patchColor() {
 
     instead("resolveSemanticColor", color.default.meta ?? color.default.internal, (args, orig) => {
         if (!enabled || !currentTheme) return orig(...args);
-        if (args[1] !== vdKey) return orig(...args);
+        if (args[0] !== vdKey) return orig(...args);
+
+        args[0] = vdThemeFallback;
 
         const [name, colorDef] = extractInfo(vdThemeFallback, args[1]);
 
@@ -358,7 +353,6 @@ function getDefaultFallbackTheme(fallback: string = vdThemeFallback) {
 
 export function applyTheme(appliedTheme: Theme | null, fallbackTheme?: string, update = true) {
     if (!fallbackTheme) fallbackTheme = getDefaultFallbackTheme();
-    fallbackTheme = (dMapThemeType as any)[fallbackTheme] ?? "dark";
 
     currentTheme = appliedTheme;
     vdThemeFallback = fallbackTheme!!;
