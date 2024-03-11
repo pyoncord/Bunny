@@ -173,7 +173,10 @@ export async function fetchTheme(id: string, selected = false) {
     };
 
     // TODO: Should we prompt when the selected theme is updated?
-    if (selected) writeTheme(themes[id]);
+    if (selected) {
+        writeTheme(themes[id]);
+        applyTheme(themes[id], vdThemeFallback, true);
+    }
 }
 
 export async function installTheme(id: string) {

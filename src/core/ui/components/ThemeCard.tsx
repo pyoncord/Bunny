@@ -1,7 +1,6 @@
 import { formatString, Strings } from "@core/i18n";
 import Card, { CardWrapper } from "@core/ui/components/Card";
 import { getAssetIDByName } from "@lib/api/assets";
-import { BundleUpdaterManager } from "@lib/api/native/modules";
 import { useProxy } from "@lib/api/storage";
 import { applyTheme, fetchTheme, removeTheme, selectTheme, Theme, themes } from "@lib/managers/themes";
 import { settings } from "@lib/settings";
@@ -50,18 +49,18 @@ export default function ThemeCard({ item: theme, index }: CardWrapper<Theme>) {
                     label: Strings.REFETCH,
                     onPress: () => {
                         fetchTheme(theme.id, theme.selected).then(() => {
-                            if (theme.selected) {
-                                showConfirmationAlert({
-                                    title: Strings.MODAL_THEME_REFETCHED,
-                                    content: Strings.MODAL_THEME_REFETCHED_DESC,
-                                    confirmText: Strings.RELOAD,
-                                    cancelText: Strings.CANCEL,
-                                    confirmColor: ButtonColors.RED,
-                                    onConfirm: () => BundleUpdaterManager.reload(),
-                                });
-                            } else {
-                                showToast(Strings.THEME_REFETCH_SUCCESSFUL, getAssetIDByName("toast_image_saved"));
-                            }
+                            // if (theme.selected) {
+                            //     showConfirmationAlert({
+                            //         title: Strings.MODAL_THEME_REFETCHED,
+                            //         content: Strings.MODAL_THEME_REFETCHED_DESC,
+                            //         confirmText: Strings.RELOAD,
+                            //         cancelText: Strings.CANCEL,
+                            //         confirmColor: ButtonColors.RED,
+                            //         onConfirm: () => BundleUpdaterManager.reload(),
+                            //     });
+                            // } else {
+                            showToast(Strings.THEME_REFETCH_SUCCESSFUL, getAssetIDByName("toast_image_saved"));
+                            // }
                         }).catch(() => {
                             showToast(Strings.THEME_REFETCH_FAILED, getAssetIDByName("Small"));
                         });
