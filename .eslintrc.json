@@ -5,23 +5,9 @@
     "plugins": [
         "@typescript-eslint",
         "simple-import-sort",
-        "path-alias",
-        "unused-imports"
+        "unused-imports",
+        "import-alias"
     ],
-    "settings": {
-        "import/resolver": {
-            "alias": {
-                "map": [
-                    [ "@lib/*", "./src/lib/*" ],
-                    [ "@core/*", "./src/core/*" ],
-                    [ "@metro/*", "src/lib/metro/*"],
-                    [ "@ui/*", "src/lib/ui/*"],
-                    [ "@types", "src/lib/utils/types.ts"]
-                ],
-                "extensions": [".ts", ".js", ".jsx", ".tsx", ".json"]
-            }
-        }
-    },
     "rules": {
         "quotes": [ "error", "double", { "avoidEscape": true } ],
         "jsx-quotes": [ "error", "prefer-double" ],
@@ -71,7 +57,19 @@
         "prefer-spread": "error",
         "simple-import-sort/imports": "error",
         "simple-import-sort/exports": "error",
-        "path-alias/no-relative": "error",
-        "unused-imports/no-unused-imports": "error"
+        "unused-imports/no-unused-imports": "error",
+        "import-alias/import-alias": [
+            "error",
+            {
+                "relativeDepth": 0,
+                "aliases": [
+                    { "alias": "@lib", "matcher": "^src/lib" },
+                    { "alias": "@metro", "matcher": "^src/lib/metro" }, 
+                    { "alias": "@core", "matcher": "^src/core" },
+                    { "alias": "@ui", "matcher": "^src/lib/ui" },
+                    { "alias": "@types", "matcher": "^src/lib/utils/types.ts" }
+                ]
+            }
+        ]
     }
 }
