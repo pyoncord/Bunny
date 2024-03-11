@@ -1,4 +1,7 @@
-// TODO: rewrite most of this
+/**
+ * Theming system in Bunny is currently a prototype, expect an unreadable theme implementation below
+ */
+
 import { getStoredTheme, getThemeFilePath } from "@lib/api/native/loader";
 import { ThemeManager } from "@lib/api/native/modules";
 import { after, before, instead } from "@lib/api/patcher";
@@ -41,6 +44,7 @@ export const color = findByProps("SemanticColor");
 const appearanceManager = findByProps("updateTheme");
 const mmkvStorage = findByProps("storage");
 const ThemeStore = findByStoreName("ThemeStore");
+const formDividerModule = findByProps("DIVIDER_COLORS");
 
 export const themes = wrapSync(createStorage<Record<string, Theme>>(createMMKVBackend("VENDETTA_THEMES")));
 
@@ -169,7 +173,10 @@ export async function fetchTheme(id: string, selected = false) {
     };
 
     // TODO: Should we prompt when the selected theme is updated?
-    if (selected) writeTheme(themes[id]);
+    if (selected) {
+        writeTheme(themes[id]);
+        applyTheme(themes[id], vdThemeFallback, true);
+    }
 }
 
 export async function installTheme(id: string) {
@@ -212,7 +219,7 @@ const origRawColor = { ...color.RawColor };
 let inc = 0;
 let vdKey = "vd-theme";
 
-let vdThemeFallback = "darker";
+let vdThemeFallback = "dark";
 let enabled = false;
 let currentTheme: Theme | null;
 
@@ -220,6 +227,13 @@ const discordThemes = new Set(["darker", "midnight", "dark", "light"]);
 function isDiscordTheme(name: string) {
     return discordThemes.has(name);
 }
+
+const dMapThemeType = {
+    dark: "dark",
+    darker: "dark",
+    midnight: "dark",
+    light: "light"
+};
 
 function patchColor() {
     const isThemeModule = find(m => m.isThemeDark && Object.getOwnPropertyDescriptor(m, "isThemeDark")?.value);
@@ -338,18 +352,23 @@ function getDefaultFallbackTheme(fallback: string = vdThemeFallback) {
 
 export function applyTheme(appliedTheme: Theme | null, fallbackTheme?: string, update = true) {
     if (!fallbackTheme) fallbackTheme = getDefaultFallbackTheme();
+    fallbackTheme = (dMapThemeType as any)[fallbackTheme] ?? "dark";
 
     currentTheme = appliedTheme;
-    vdThemeFallback = fallbackTheme;
+    vdThemeFallback = fallbackTheme!!;
     vdKey = `vd-theme-${inc++}-${fallbackTheme}`;
 
     if (appliedTheme) {
         color.Theme[vdKey.toUpperCase()] = vdKey;
 
-        Object.keys(color.Shadow).forEach(k => color.Shadow[k][vdKey] = color.Shadow[k][fallbackTheme!!]);
+        formDividerModule.DIVIDER_COLORS = new Proxy(formDividerModule.DIVIDER_COLORS, {
+            get: (t, p, r) => p === vdKey ? t[vdThemeFallback] : Reflect.get(t, p, r)
+        });
+
+        Object.keys(color.Shadow).forEach(k => color.Shadow[k][vdKey] = color.Shadow[k][vdThemeFallback]);
         Object.keys(color.SemanticColor).forEach(k => {
             color.SemanticColor[k][vdKey] = {
-                ...color.SemanticColor[k][fallbackTheme!!],
+                ...color.SemanticColor[k][vdThemeFallback],
                 override: appliedTheme?.data?.semanticColors?.[k]?.[0]
             };
         });
