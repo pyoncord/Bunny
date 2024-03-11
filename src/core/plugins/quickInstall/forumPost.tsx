@@ -1,20 +1,20 @@
-import { formatString, Strings } from "@core/i18n";
+import { Strings } from "@core/i18n";
 import { getAssetIDByName } from "@lib/api/assets";
 import { isThemeSupported } from "@lib/api/native/loader";
 import { after } from "@lib/api/patcher";
 import { useProxy } from "@lib/api/storage";
 import { installPlugin, plugins, removePlugin } from "@lib/managers/plugins";
 import { installTheme, removeTheme, themes } from "@lib/managers/themes";
+import { ErrorBoundary } from "@lib/ui/components";
 import { Button } from "@lib/ui/components/discord/Redesign";
-import { findInReactTree } from "@lib/utils";
 import { DISCORD_SERVER_ID, HTTP_REGEX_MULTI, PLUGINS_CHANNEL_ID, PROXY_PREFIX, THEMES_CHANNEL_ID } from "@lib/utils/constants";
-import { findByName, findByProps } from "@metro/filters";
+import { findByProps } from "@metro/filters";
 import { showToast } from "@ui/toasts";
 
 type PostType = "Plugin" | "Theme";
 
-const ForumPostLongPressActionSheet = findByName("ForumPostLongPressActionSheet", false);
-const { ActionSheetRow } = findByProps("ActionSheetRow");
+// const ForumPostLongPressActionSheet = findByName("ForumPostLongPressActionSheet", false);
+// const { ActionSheetRow } = findByProps("ActionSheetRow");
 const { useFirstForumPostMessage } = findByProps("useFirstForumPostMessage");
 const forumReactions = findByProps("MostCommonForumPostReaction");
 
@@ -85,22 +85,23 @@ function useInstaller(thread: any, firstMessage = null, actionSheet = false): [t
     return [false, postType, isInstalled, isInstalling, installOrRemove];
 }
 
-const actionSheetPatch = () => after("default", ForumPostLongPressActionSheet, ([{ thread }], res) => {
-    const [shouldReturn, postType, installed, loading, installOrRemove] = useInstaller(thread);
-    if (shouldReturn) return;
+// // apparently broken???
+// const actionSheetPatch = () => after("default", ForumPostLongPressActionSheet, ([{ thread }], res) => {
+//     const [shouldReturn, postType, installed, loading, installOrRemove] = useInstaller(thread);
+//     if (shouldReturn) return;
 
-    const actions = findInReactTree(res, t => t?.[0]?.key);
-    const ActionsSection = actions[0].type;
+//     const actions = findInReactTree(res, t => t?.[0]?.key);
+//     const ActionsSection = actions[0].type;
 
-    actions.unshift(<ActionsSection key="install">
-        <ActionSheetRow
-            icon={<ActionSheetRow.Icon source={getAssetIDByName(installed ? "ic_message_delete" : "DownloadIcon")} />}
-            label={formatString(installed ? "UNINSTALL_TITLE" : "INSTALL_TITLE", { title: postType })}
-            disabled={loading}
-            onPress={installOrRemove}
-        />
-    </ActionsSection>);
-});
+//     actions.unshift(<ActionsSection key="install">
+//         <ActionSheetRow
+//             icon={<ActionSheetRow.Icon source={getAssetIDByName(installed ? "ic_message_delete" : "DownloadIcon")} />}
+//             label={formatString(installed ? "UNINSTALL_TITLE" : "INSTALL_TITLE", { title: postType })}
+//             disabled={loading}
+//             onPress={installOrRemove}
+//         />
+//     </ActionsSection>);
+// });
 
 const installButtonPatch = () => after("MostCommonForumPostReaction", forumReactions, ([{ thread, firstMessage }], res) => {
     const [shouldReturn, _, installed, loading, installOrRemove] = useInstaller(thread, firstMessage, true);
@@ -108,22 +109,25 @@ const installButtonPatch = () => after("MostCommonForumPostReaction", forumReact
 
     return <>
         {res}
-        <Button
-            size="sm"
-            loading={loading}
-            disabled={loading}
-            variant={installed ? "danger" : "primary"}
-            text={installed ? Strings.UNINSTALL : Strings.INSTALL}
-            onPress={installOrRemove}
-            icon={getAssetIDByName(installed ? "ic_message_delete" : "DownloadIcon")}
-            style={{ marginLeft: 8 }}
-        />
+        <ErrorBoundary>
+            <Button
+                size="sm"
+                loading={loading}
+                disabled={loading}
+                // variant={installed ? "destructive" : "primary"} crashes older version because "destructive" was renamed from "danger" and there's no sane way for compat check horror
+                variant={installed ? "secondary" : "primary"}
+                text={installed ? Strings.UNINSTALL : Strings.INSTALL}
+                onPress={installOrRemove}
+                icon={getAssetIDByName(installed ? "ic_message_delete" : "DownloadIcon")}
+                style={{ marginLeft: 8 }}
+            />
+        </ErrorBoundary>
     </>;
 });
 
 export default () => {
     const patches = [
-        actionSheetPatch(),
+        // actionSheetPatch(),
         installButtonPatch()
     ];
 
