@@ -1,5 +1,5 @@
-\source ./dist/index.d.ts
-\import ./index
+\source ./dist/wrap.ts
+\import ./wrap
 
 @bunny from BunnyObject {
 	api {

@@ -4,7 +4,7 @@ import { createEmitter, Emitter } from "@lib/utils/emitter";
 const emitterSymbol = Symbol.for("vendetta.storage.emitter");
 const syncAwaitSymbol = Symbol.for("vendetta.storage.accessor");
 
-export function createProxy(target: any = {}): { proxy: any; emitter: Emitter } {
+export function createProxy(target: any = {}): { proxy: any; emitter: Emitter; } {
     const emitter = createEmitter();
 
     function createProxy(target: any, path: string[]): any {
@@ -113,4 +113,8 @@ export function wrapSync<T extends Promise<any>>(store: T): Awaited<T> {
 
 export const awaitSyncWrapper = (store: any) => new Promise<void>(res => store[syncAwaitSymbol](res));
 
-export * from "@lib/api/storage/backends";
+export {
+    createFileBackend,
+    createMMKVBackend,
+    purgeStorage
+} from "@lib/api/storage/backends";
