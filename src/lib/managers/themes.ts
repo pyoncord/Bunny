@@ -41,6 +41,7 @@ export const color = findByProps("SemanticColor");
 const appearanceManager = findByProps("updateTheme");
 const mmkvStorage = findByProps("storage");
 const ThemeStore = findByStoreName("ThemeStore");
+const formDividerModule = findByProps("DIVIDER_COLORS");
 
 export const themes = wrapSync(createStorage<Record<string, Theme>>(createMMKVBackend("VENDETTA_THEMES")));
 
@@ -345,6 +346,10 @@ export function applyTheme(appliedTheme: Theme | null, fallbackTheme?: string, u
 
     if (appliedTheme) {
         color.Theme[vdKey.toUpperCase()] = vdKey;
+
+        formDividerModule.DIVIDER_COLORS = new Proxy(formDividerModule.DIVIDER_COLORS, {
+            get: (t, p, r) => p === vdKey && fallbackTheme ? t[fallbackTheme] : Reflect.get(t, p, r)
+        });
 
         Object.keys(color.Shadow).forEach(k => color.Shadow[k][vdKey] = color.Shadow[k][fallbackTheme!!]);
         Object.keys(color.SemanticColor).forEach(k => {
