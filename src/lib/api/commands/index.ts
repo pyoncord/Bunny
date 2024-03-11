@@ -4,7 +4,10 @@ import { commands as commandsModule } from "@metro/common";
 
 let commands: ApplicationCommand[] = [];
 
-export function _patchCommands() {
+/**
+ * @internal
+ */
+export function patchCommands() {
     const unpatch = after("getBuiltInCommands", commandsModule, ([type], res: ApplicationCommand[]) => {
         if (type === ApplicationCommandType.CHAT) return res.concat(commands);
     });

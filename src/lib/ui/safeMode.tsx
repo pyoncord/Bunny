@@ -1,7 +1,7 @@
 import { Strings } from "@core/i18n";
 import { DeviceManager } from "@lib/api/native/modules";
 import { after } from "@lib/api/patcher";
-import { _toggleSafeMode } from "@lib/debug";
+import { toggleSafeMode } from "@lib/debug";
 import { settings } from "@lib/settings";
 import { ButtonColors } from "@lib/utils/types";
 import { findByName, findByProps } from "@metro/filters";
@@ -78,7 +78,7 @@ export default () => after("render", ErrorBoundary.prototype, function (this: an
     // This is in the patch and not outside of it so that we can use `this`, e.g. for setting state
     const buttons: Button[] = [
         { text: Strings.RELOAD_DISCORD, onPress: this.handleReload },
-        ...!settings.safeMode?.enabled ? [{ text: Strings.RELOAD_IN_SAFE_MODE, onPress: _toggleSafeMode }] : [],
+        ...!settings.safeMode?.enabled ? [{ text: Strings.RELOAD_IN_SAFE_MODE, onPress: toggleSafeMode }] : [],
         { text: Strings.RETRY_RENDER, color: ButtonColors.RED, onPress: () => this.setState({ info: null, error: null }) },
     ];
 

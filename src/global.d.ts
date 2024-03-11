@@ -2,7 +2,7 @@ import { MetroModules } from "@lib/metro/filters";
 import { BunnyObject } from "@lib/windowObject";
 
 declare global {
-    type React = typeof import("react");
+    var React: typeof import("react");
 
     interface Window {
         [key: string]: any;

@@ -69,7 +69,10 @@ async function writeTheme(theme: Theme | {}) {
     await createFileBackend(getThemeFilePath() || "theme.json").set(theme);
 }
 
-export function _patchChatBackground() {
+/**
+ * @internal
+ */
+export function patchChatBackground() {
     const MessagesWrapperConnected = findByName("MessagesWrapperConnected", false);
     if (!MessagesWrapperConnected) return;
     const { MessagesWrapper } = findByProps("MessagesWrapper");
@@ -204,13 +207,16 @@ export async function removeTheme(id: string) {
     return theme.selected;
 }
 
-export function _getThemeFromLoader(): Theme | null {
+/**
+ * @internal
+ */
+export function getThemeFromLoader(): Theme | null {
     return getStoredTheme();
 }
 
 export async function updateThemes() {
     await awaitSyncWrapper(themes);
-    const currentTheme = _getThemeFromLoader();
+    const currentTheme = getThemeFromLoader();
     await Promise.allSettled(Object.keys(themes).map(id => fetchTheme(id, currentTheme?.id === id)));
 }
 
@@ -380,8 +386,11 @@ export function applyTheme(appliedTheme: Theme | null, fallbackTheme?: string, u
     }
 }
 
-export async function _initThemes() {
-    const currentTheme = _getThemeFromLoader();
+/**
+ * @internal
+ */
+export async function initThemes() {
+    const currentTheme = getThemeFromLoader();
     enabled = !!currentTheme;
 
     patchColor();

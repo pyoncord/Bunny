@@ -9,7 +9,10 @@ export const dispatcher = FluxDispatcher;
 type Intercept = (payload: Record<string, any> & { type: string; }) => any;
 let intercepts: Intercept[] = [];
 
-export function _injectFluxInterceptor() {
+/**
+ * @internal
+ */
+export function injectFluxInterceptor() {
     const cb = (payload: any) => {
         for (const intercept of intercepts) {
             const res = intercept(payload);

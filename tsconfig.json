@@ -12,6 +12,7 @@
         "esModuleInterop": true,
         "jsx": "react",
         "strict": true,
+        "stripInternal": true,
         "forceConsistentCasingInFileNames": true,
         "resolveJsonModule": true,
         "skipLibCheck": true,

@@ -1,12 +1,6 @@
+import { LiteralUnion } from "type-fest";
 
-export type StringUnion<T> = T | (string & {});
-export type OptionalKeys<T extends Array<string>> = StringUnion<T[number]>;
-
-export type ExcludeInternalProperties<T> =
-    T extends (...args: any[]) => any
-    ? T : {
-        [K in keyof T as K extends `_${string}` ? never : K]: T[K] extends object ? ExcludeInternalProperties<T[K]> : T[K];
-    };
+export type OptionalKeys<T extends Array<string>> = LiteralUnion<T[number], string>;
 
 export interface Author {
     name: string;

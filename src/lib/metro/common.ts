@@ -1,8 +1,6 @@
 import { find, findByProps } from "@metro/filters";
 import { Dispatcher } from "@metro/types";
 
-const colorModule = findByProps("colors", "unsafe_rawColors");
-
 // Discord
 export const constants = findByProps("Fonts", "Permissions");
 export const channels = findByProps("getVoiceChannelId");

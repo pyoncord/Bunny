@@ -6,8 +6,9 @@ export type PropIntellisense<P extends string | symbol> = Record<P, any> & Recor
 export type PropsFinder = <T extends string | symbol>(...props: T[]) => PropIntellisense<T>;
 export type PropsFinderAll = <T extends string | symbol>(...props: T[]) => PropIntellisense<T>[];
 
-// Metro require
-declare const __r: (moduleId: string) => any;
+// Metro global vars
+declare var __r: (moduleId: string) => any;
+declare var modules: MetroModules;
 
 // Function to blacklist a module, preventing it from being searched again
 const blacklist = (id: string) => Object.defineProperty(window.modules, id, {
@@ -102,7 +103,6 @@ const filterModules = (modules: MetroModules, single = false) => (filter: (m: an
     if (!single) return found;
 };
 
-export const { modules } = window;
 export const find = filterModules(modules, true);
 export const findAll = filterModules(modules);
 

@@ -1,4 +1,5 @@
 // Good luck reading this!
+import { lazy } from "react";
 import type { ImageURISource } from "react-native";
 
 import { patchPanelUI } from "./patches/panel";
@@ -8,7 +9,7 @@ export interface RowConfig {
     key: string;
     title: () => string;
     onPress?: () => any;
-    render?: Parameters<typeof React.lazy>[0];
+    render?: Parameters<typeof lazy>[0];
     icon?: ImageURISource | number;
     usePredicate?: () => boolean,
     rawTabsConfig?: Record<string, any>;
@@ -23,7 +24,10 @@ export function registerSection(section: { name: string; items: RowConfig[]; }) 
     return () => delete registeredSections[section.name];
 }
 
-export function _patchSettings() {
+/**
+ * @internal
+ */
+export function patchSettings() {
     const unpatches = new Array<() => boolean>;
 
     patchPanelUI(unpatches);

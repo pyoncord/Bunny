@@ -1,3 +1,8 @@
 {
-    "include": ["dist"]
+    "include": [
+        "dist"
+    ],
+    "compilerOptions": {
+        "stripInternal": true
+    }
 }

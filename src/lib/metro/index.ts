@@ -11,6 +11,5 @@ export {
     findByStoreName,
     findByTypeName,
     findByTypeNameAll,
-    modules
 } from "./filters";
 export * as filters from "./filters";

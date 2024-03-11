@@ -26,6 +26,9 @@ dependencies:
   spitroast:
     specifier: ^1.4.2
     version: 1.4.2
+  type-fest:
+    specifier: ^4.12.0
+    version: 4.12.0
 
 devDependencies:
   '@uwu/treetype':
@@ -4449,6 +4452,11 @@ packages:
   /type-fest@0.7.1:
     resolution: {integrity: sha512-Ne2YiiGN8bmrmJJEuTWTLJR32nh/JdL1+PSicowtNb0WFpn59GK8/lfD61bVtzguz7b3PBt74nxpv/Pw5po5Rg==}
     engines: {node: '>=8'}
+    dev: false
+
+  /type-fest@4.12.0:
+    resolution: {integrity: sha512-5Y2/pp2wtJk8o08G0CMkuFPCO354FGwk/vbidxrdhRGZfd0tFnb4Qb8anp9XxXriwBgVPjdWbKpGl4J9lJY2jQ==}
+    engines: {node: '>=16'}
     dev: false
 
   /typescript@5.3.3:
