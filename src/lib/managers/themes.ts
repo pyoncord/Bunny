@@ -7,11 +7,10 @@ import { ThemeManager } from "@lib/api/native/modules";
 import { after, before, instead } from "@lib/api/patcher";
 import { awaitSyncWrapper, createFileBackend, createMMKVBackend, createStorage, wrapSync } from "@lib/api/storage";
 import { findInReactTree, safeFetch } from "@lib/utils";
-import { logger } from "@lib/utils/logger";
 import { Author } from "@lib/utils/types";
 import { chroma } from "@metro/common";
 import { find, findByName, findByProps, findByStoreName } from "@metro/filters";
-import { ImageBackground, Platform, processColor, StyleSheet } from "react-native";
+import { ImageBackground, Platform, processColor } from "react-native";
 
 export interface ThemeData {
     name: string;
@@ -79,23 +78,27 @@ export function patchChatBackground() {
     if (!MessagesWrapper) return;
 
     const patches = [
-        after("default", MessagesWrapperConnected, (_, ret) => React.createElement(ImageBackground, {
+        after("default", MessagesWrapperConnected, (_, ret) => enabled ? React.createElement(ImageBackground, {
             style: { flex: 1, height: "100%" },
             source: currentTheme?.data?.background?.url && { uri: currentTheme.data.background.url } || 0,
             blurRadius: typeof currentTheme?.data?.background?.blur === "number" ? currentTheme?.data?.background?.blur : 0,
             children: ret,
-        })),
+        }) : ret),
         after("render", MessagesWrapper.prototype, (_, ret) => {
+            if (!enabled || !currentTheme?.data?.background?.url) return;
+
+            // HORRIBLE
             const Messages = findInReactTree(ret, x => x && "HACK_fixModalInteraction" in x.props && x?.props?.style);
-            if (Messages)
-                Messages.props.style = Object.assign(
-                    StyleSheet.flatten(Messages.props.style ?? {}),
+            if (Messages) {
+                Messages.props.style = [
+                    Messages.props.style,
                     {
-                        backgroundColor: "#0000"
-                    }
-                );
-            else
-                logger.error("Didn't find Messages when patching MessagesWrapper!");
+                        backgroundColor: chroma(Messages.props.style.backgroundColor || "black")
+                            .alpha(1 - (currentTheme?.data.background?.alpha ?? 1)).hex()
+                    },
+                ];
+            }
+            else console.error("Didn't find Messages when patching MessagesWrapper!");
         })
     ];
 
@@ -324,9 +327,6 @@ function patchColor() {
         const alternativeName = semanticAlternativeMap[name] ?? name;
 
         const semanticColorVal = (currentTheme.data?.semanticColors?.[name] ?? currentTheme.data?.semanticColors?.[alternativeName])?.[themeIndex];
-        if (name === "CHAT_BACKGROUND" && typeof currentTheme.data?.background?.alpha === "number") {
-            return chroma(semanticColorVal || "black").alpha(1 - currentTheme.data.background.alpha).hex();
-        }
 
         if (semanticColorVal) return semanticColorVal;
 
