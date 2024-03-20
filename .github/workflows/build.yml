@@ -1,7 +1,7 @@
 name: Build
 on:
     push:
-          branches: [main]
+          branches: [main, legacy]
 
 jobs:
     build:
@@ -9,36 +9,38 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
-            - uses: actions/checkout@v3
-            - uses: actions/checkout@v3
-              with:
-                  repository: "pyoncord/detta-builds"
-                  path: "builds"
-                  token: ${{ secrets.PYLIX_TOKEN }}
-            - uses: actions/setup-node@v3
-              with:
-                  node-version: 16
+          - name: Checkout
+            uses: actions/checkout@v4
+          - name: Checkout builds
+            uses: actions/checkout@v4
+            with:
+                repository: ${{ github.ref_name == 'legacy' && 'pyoncord/detta-builds' || 'pyoncord/builds' }}
+                path: "builds"
+                token: ${{ secrets.PYLIX_TOKEN }}
+          - uses: actions/setup-node@v4
+            with:
+                node-version: 20
 
-            - name: Install dependencies
-              run: |
-                  npm i -g pnpm
-                  pnpm i
+          - name: Install dependencies
+            run: |
+                npm i -g pnpm
+                pnpm i
 
-            - name: Build
-              run: pnpm build
+          - name: Build
+            run: pnpm build
 
-            - name: Push builds
-              run: |
-                  rm $GITHUB_WORKSPACE/builds/* || true
-                  cp -r dist/* $GITHUB_WORKSPACE/builds || true
-                  cd $GITHUB_WORKSPACE/builds
-                  git config --local user.email "actions@github.com"
-                  git config --local user.name "GitHub Actions"
-                  git add .
-                  git commit -m "Build $GITHUB_SHA" || exit 0
-                  git push
+          - name: Push builds
+            run: |
+                rm $GITHUB_WORKSPACE/builds/* || true
+                cp -r dist/* $GITHUB_WORKSPACE/builds || true
+                cd $GITHUB_WORKSPACE/builds
+                git config --local user.email "actions@github.com"
+                git config --local user.name "GitHub Actions"
+                git add .
+                git commit -m "Build $GITHUB_SHA" || exit 0
+                git push
 
-            - name: Purge CDN cache
-              run: |
-                  curl https://purge.jsdelivr.net/gh/pyoncord/detta-builds
-                  
+          - name: Purge CDN cache
+            run: |
+                curl https://purge.jsdelivr.net/gh/pyoncord/builds
+                
