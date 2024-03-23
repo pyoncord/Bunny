@@ -361,9 +361,7 @@ export function applyTheme(appliedTheme: Theme | null, fallbackTheme?: string, u
     if (appliedTheme) {
         color.Theme[vdKey.toUpperCase()] = vdKey;
 
-        formDividerModule.DIVIDER_COLORS = new Proxy(formDividerModule.DIVIDER_COLORS, {
-            get: (t, p, r) => p === vdKey ? t[vdThemeFallback] : Reflect.get(t, p, r)
-        });
+        formDividerModule.DIVIDER_COLORS[vdKey] = formDividerModule.DIVIDER_COLORS[vdThemeFallback];
 
         Object.keys(color.Shadow).forEach(k => color.Shadow[k][vdKey] = color.Shadow[k][vdThemeFallback]);
         Object.keys(color.SemanticColor).forEach(k => {
