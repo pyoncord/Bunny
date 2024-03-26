@@ -4,6 +4,7 @@ import { createFileBackend, createMMKVBackend, createStorage, wrapSync } from "@
 export interface Settings {
     debuggerUrl: string;
     developerSettings: boolean;
+    enableDiscordDeveloperSettings: boolean;
     safeMode?: {
         enabled: boolean;
         currentThemeId?: string;

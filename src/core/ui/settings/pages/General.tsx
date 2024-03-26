@@ -84,6 +84,18 @@ export default function General() {
                         }}
                     />
                 </TableRowGroup>
+                <TableRowGroup title={Strings.MISCELLANEOUS}>
+                    <TableSwitchRow
+                        label={Strings.SETTINGS_ACTIVATE_DISCORD_EXPERIMENTS}
+                        subLabel={Strings.SETTINGS_ACTIVATE_DISCORD_EXPERIMENTS_DESC}
+                        icon={<TableRow.Icon source={getAssetIDByName("ic_progress_wrench_24px")} />}
+                        value={settings.enableDiscordDeveloperSettings}
+                        onValueChange={(v: boolean) => {
+                            settings.enableDiscordDeveloperSettings = v;
+                        }}
+                    />
+                </TableRowGroup>
+
             </Stack>
         </ScrollView>
     );

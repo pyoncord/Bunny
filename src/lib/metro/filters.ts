@@ -1,6 +1,5 @@
 import { instead } from "@lib/api/patcher";
 
-
 export type MetroModules = { [id: string]: any; };
 export type PropIntellisense<P extends string | symbol> = Record<P, any> & Record<PropertyKey, any>;
 export type PropsFinder = <T extends string | symbol>(...props: T[]) => PropIntellisense<T>;
@@ -39,6 +38,20 @@ const onModuleCheck = (exports: any) => {
                 return orig(...args);
             } catch {
                 return args[0];
+            }
+        });
+    }
+
+    if (exports?.default?.constructor?.displayName === "DeveloperExperimentStore") {
+        exports.default = new Proxy(exports.default, {
+            get: (target, property, receiver) => {
+                if (property === "isDeveloper") {
+                    // Hopefully won't explode accessing it here :3
+                    const { settings } = require("@lib/settings");
+                    return settings.enableDiscordDeveloperSettings ?? false;
+                }
+
+                return Reflect.get(target, property, receiver);
             }
         });
     }
