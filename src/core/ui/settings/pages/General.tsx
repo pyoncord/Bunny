@@ -4,12 +4,18 @@ import { getAssetIDByName } from "@lib/api/assets";
 import { useProxy } from "@lib/api/storage";
 import { getDebugInfo, toggleSafeMode } from "@lib/debug";
 import { settings } from "@lib/settings";
+import { HelpMessage } from "@lib/ui/components/discord";
 import { Stack, TableRow, TableRowGroup, TableSwitchRow, useNavigation } from "@lib/ui/components/discord/Redesign";
 import { DISCORD_SERVER, GITHUB } from "@lib/utils/constants";
 import { url } from "@metro/common";
 import { NativeModules, ScrollView } from "react-native";
 
 import About from "./About";
+
+const PYONCORD_MESSAGE_NOTICE = '\
+Most parts of Bunny are being rewritten, and the project is \
+undergoing a rebranding to Pyoncord. "Bunny" has entered maintenance mode, and support for it will \
+be discontinued soon in favor of Pyoncord. For more details, refer to the #rebrand channel on our Discord server.';
 
 export default function General() {
     useProxy(settings);
@@ -20,6 +26,7 @@ export default function General() {
     return (
         <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 38 }}>
             <Stack style={{ paddingVertical: 24, paddingHorizontal: 12 }} spacing={24}>
+                <HelpMessage messageType={1}>{PYONCORD_MESSAGE_NOTICE}</HelpMessage>
                 <TableRowGroup title={Strings.INFO}>
                     <TableRow
                         label={Strings.BUNNY}
