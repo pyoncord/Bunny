@@ -192,6 +192,7 @@ export async function installTheme(id: string) {
 }
 
 export function selectTheme(theme: Theme | null) {
+    if (theme) theme.selected = true;
     Object.keys(themes).forEach(
         k => themes[k].selected = themes[k].id === theme?.id
     );
