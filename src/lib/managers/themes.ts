@@ -2,6 +2,7 @@
  * Theming system in Bunny is currently a prototype, expect an unreadable theme implementation below
  */
 
+import { allSettled } from "@core/polyfills";
 import { getStoredTheme, getThemeFilePath } from "@lib/api/native/loader";
 import { ThemeManager } from "@lib/api/native/modules";
 import { after, before, instead } from "@lib/api/patcher";
@@ -220,7 +221,7 @@ export function getThemeFromLoader(): Theme | null {
 export async function updateThemes() {
     await awaitSyncWrapper(themes);
     const currentTheme = getThemeFromLoader();
-    await Promise.allSettled(Object.keys(themes).map(id => fetchTheme(id, currentTheme?.id === id)));
+    await allSettled(Object.keys(themes).map(id => fetchTheme(id, currentTheme?.id === id)));
 }
 
 const origRawColor = { ...color.RawColor };
@@ -267,10 +268,12 @@ function patchColor() {
     after("get", mmkvStorage, ([a], ret) => {
         if (a === "SelectivelySyncedUserSettingsStore") {
             if (ret?._state?.appearance?.settings?.theme && enabled) {
+                vdThemeFallback = ret._state.appearance.settings.theme;
                 ret._state.appearance.settings.theme = vdKey;
             }
         } else if (a === "ThemeStore") {
             if (ret?._state?.theme && enabled) {
+                vdThemeFallback = ret._state.theme;
                 ret._state.theme = vdKey;
             }
         }
