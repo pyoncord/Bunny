@@ -15,6 +15,9 @@ A mod for Discord's mobile apps, a fork of Vendetta.
     3. Point "Module location" to the downloaded PyonXposed's path (e.g. `/storage/emulated/0/Download/app-release.apk`)
     4. Return to main screen and install!
 
+> [!IMPORTANT]
+> You may need to allow the Vendetta Manager to install apps. To do this, tab and hold the app icon, open the app info and in the advanced section, enable the option to install unknown apps.
+
 ## iOS
 > [!NOTE]
 > At the time of writing, iOS support has a lower priority than Android. This is due to the fact that developing for iOS is very demanding.\
