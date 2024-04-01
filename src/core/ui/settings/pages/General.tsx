@@ -63,17 +63,6 @@ export default function General() {
                         onPress={() => url.openURL(GITHUB)}
                     />
                 </TableRowGroup>
-                <TableRowGroup title={"???"}>
-                    <TableSwitchRow
-                        label={"Whatever this does"}
-                        subLabel={"A mystery toggle with a calendar icon, hmm..."}
-                        icon={<TableRow.Icon source={getAssetIDByName("CalendarIcon")} />}
-                        value={settings.__unfunnyJoke24 !== false}
-                        onValueChange={(v: boolean) => {
-                            settings.__unfunnyJoke24 = v;
-                        }}
-                    />
-                </TableRowGroup>
                 <TableRowGroup title={Strings.ACTIONS}>
                     <TableRow
                         label={Strings.RELOAD_DISCORD}

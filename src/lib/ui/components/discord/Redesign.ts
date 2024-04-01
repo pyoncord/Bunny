@@ -1,5 +1,4 @@
 import { find, findByProps } from "@lib/metro";
-import { settings } from "@lib/settings";
 import { RedesignModuleKeys } from "@lib/ui/types";
 
 const findSingular = (prop: string) => find(m => m[prop] && Object.keys(m).length === 1)?.[prop];
@@ -14,20 +13,6 @@ export const CompatfulRedesign = findByProps("ActionSheetRow") as unknown as {
 export const FormSwitch = findSingular("FormSwitch");
 export const FormRadio = findSingular("FormRadio");
 export const FormCheckbox = findSingular("FormCheckbox");
-
-export function TableRowGroup(...args: any[]) {
-    if (settings.__unfunnyJoke24 !== false && Array.isArray(args[0]?.children)) {
-        args[0].children = args[0].children.reverse();
-    }
-    return Redesign.TableRowGroup(...args);
-}
-
-export function Stack(...args: any[]) {
-    if (settings.__unfunnyJoke24 !== false && Array.isArray(args[0]?.children)) {
-        args[0].children = args[0].children.reverse();
-    }
-    return Redesign.Stack(...args);
-}
 
 export const {
     AlertActionButton,
@@ -75,7 +60,7 @@ export const {
     SegmentedControl,
     SegmentedControlPages,
     Slider,
-    // Stack,
+    Stack,
     StepModal,
     StickyContext,
     StickyHeader,
@@ -84,7 +69,7 @@ export const {
     TableRadioGroup,
     TableRadioRow,
     TableRow,
-    // TableRowGroup,
+    TableRowGroup,
     TableRowGroupTitle,
     TableRowIcon,
     TableSwitchRow,

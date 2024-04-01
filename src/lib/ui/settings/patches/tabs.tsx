@@ -1,6 +1,5 @@
 import { findByName, findByProps } from "@lib/metro";
 import { i18n } from "@lib/metro/common";
-import { settings } from "@lib/settings";
 import { registeredSections } from "@lib/ui/settings";
 import { findInReactTree } from "@lib/utils";
 import { after } from "spitroast";
@@ -58,12 +57,10 @@ export function patchTabsUI(unpatches: (() => void | boolean)[]) {
         const { sections } = findInReactTree(ret, i => i.props?.sections).props;
         let index = -~sections.findIndex((i: any) => i.label === i18n.Messages.ACCOUNT_SETTINGS) || 1;
 
-        const reverseIfNeeded = (arr: any[]) => settings.__unfunnyJoke24 !== false ? arr.reverse() : arr;
-
         Object.keys(registeredSections).forEach(sect => {
             sections.splice(index++, 0, {
                 label: sect,
-                settings: reverseIfNeeded(registeredSections[sect].map(a => a.key))
+                settings: registeredSections[sect].map(a => a.key)
             });
         });
     }));
