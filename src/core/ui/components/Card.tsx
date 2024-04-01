@@ -1,4 +1,5 @@
 import { getAssetIDByName } from "@lib/api/assets";
+import { settings } from "@lib/settings";
 import { FormRow } from "@lib/ui/components/discord/Forms";
 import { FormCheckbox, FormSwitch, IconButton } from "@lib/ui/components/discord/Redesign";
 import { createStyles, TextStyleSheet } from "@lib/ui/styles";
@@ -11,7 +12,7 @@ const { hideActionSheet } = findByProps("openLazy", "hideActionSheet");
 const { showSimpleActionSheet } = findByProps("showSimpleActionSheet");
 
 // TODO: These styles work weirdly. iOS has cramped text, Android with low DPI probably does too. Fix?
-const useStyles = createStyles({
+const useStyles = createStyles(() => ({
     card: {
         backgroundColor: semanticColors?.CARD_SECONDARY_BG,
         borderRadius: 12,
@@ -57,7 +58,7 @@ const useStyles = createStyles({
         right: "30%",
         top: "-10%"
     }
-});
+}));
 
 interface Action {
     icon: string;
@@ -89,6 +90,8 @@ interface CardProps {
     overflowActions?: OverflowAction[];
 }
 
+const reverseIfNeeded = (arr: any[]) => settings.__unfunnyJoke24 !== false ? arr.reverse() : arr;
+
 export default function Card(props: CardProps) {
     const styles = useStyles();
 
@@ -99,66 +102,70 @@ export default function Card(props: CardProps) {
                 resizeMode="cover"
                 imageStyle={styles.iconStyle}
             >
-                <FormRow
-                    style={styles.header}
-                    label={
-                        <View style={styles.headerLeading}>
-                            <RN.Text style={styles.headerLabel}>{props.headerLabel}</RN.Text>
-                            {props.headerSublabel && (
-                                <RN.Text style={styles.headerSubtitle}>{props.headerSublabel}</RN.Text>
-                            )}
-                        </View>
-                    }
-                    trailing={
-                        <View style={styles.headerTrailing}>
-                            <View style={styles.actions}>
-                                {props.overflowActions &&
-                                    <IconButton
-                                        onPress={() => showSimpleActionSheet({
-                                            key: "CardOverflow",
-                                            header: {
-                                                title: props.overflowTitle,
-                                                icon: props.headerIcon && <FormRow.Icon style={{ marginRight: 8 }} source={getAssetIDByName(props.headerIcon)} />,
-                                                onClose: () => hideActionSheet(),
-                                            },
-                                            options: props.overflowActions?.map(i => ({ ...i, icon: getAssetIDByName(i.icon) })),
-                                        })}
-                                        size="sm"
-                                        variant="secondary"
-                                        icon={getAssetIDByName("CircleInformationIcon")}
-                                    />}
-                                {props.actions?.map(({ icon, onPress, disabled }) => (
-                                    <IconButton
-                                        onPress={onPress}
-                                        disabled={disabled}
-                                        size="sm"
-                                        variant="secondary"
-                                        icon={getAssetIDByName(icon)}
-                                    />
-                                ))}
-                            </View>
-                            {props.toggleType && (props.toggleType === "switch" ?
-                                <FormSwitch
-                                    value={props.toggleValue}
-                                    onValueChange={props.onToggleChange}
-                                />
-                                :
-                                <RN.Pressable onPress={() => {
-                                    props.onToggleChange?.(!props.toggleValue);
-                                }}>
-                                    <FormCheckbox checked={props.toggleValue} />
-                                </RN.Pressable>
-                            )}
-                        </View>
-                    }
-                />
-                <FormRow
-                    label={
-                        <RN.View>
-                            <RN.Text style={styles.descriptionLabel}>{props.descriptionLabel}</RN.Text>
-                        </RN.View>
-                    }
-                />
+                {
+                    reverseIfNeeded([
+                        <FormRow
+                            style={styles.header}
+                            label={
+                                <View style={styles.headerLeading}>
+                                    <RN.Text style={styles.headerLabel}>{props.headerLabel}</RN.Text>
+                                    {props.headerSublabel && (
+                                        <RN.Text style={styles.headerSubtitle}>{props.headerSublabel}</RN.Text>
+                                    )}
+                                </View>
+                            }
+                            trailing={
+                                <View style={styles.headerTrailing}>
+                                    <View style={styles.actions}>
+                                        {props.overflowActions &&
+                                            <IconButton
+                                                onPress={() => showSimpleActionSheet({
+                                                    key: "CardOverflow",
+                                                    header: {
+                                                        title: props.overflowTitle,
+                                                        icon: props.headerIcon && <FormRow.Icon style={{ marginRight: 8 }} source={getAssetIDByName(props.headerIcon)} />,
+                                                        onClose: () => hideActionSheet(),
+                                                    },
+                                                    options: props.overflowActions?.map(i => ({ ...i, icon: getAssetIDByName(i.icon) })),
+                                                })}
+                                                size="sm"
+                                                variant="secondary"
+                                                icon={getAssetIDByName("CircleInformationIcon")}
+                                            />}
+                                        {props.actions?.map(({ icon, onPress, disabled }) => (
+                                            <IconButton
+                                                onPress={onPress}
+                                                disabled={disabled}
+                                                size="sm"
+                                                variant="secondary"
+                                                icon={getAssetIDByName(icon)}
+                                            />
+                                        ))}
+                                    </View>
+                                    {props.toggleType && (props.toggleType === "switch" ?
+                                        <FormSwitch
+                                            value={props.toggleValue}
+                                            onValueChange={props.onToggleChange}
+                                        />
+                                        :
+                                        <RN.Pressable onPress={() => {
+                                            props.onToggleChange?.(!props.toggleValue);
+                                        }}>
+                                            <FormCheckbox checked={props.toggleValue} />
+                                        </RN.Pressable>
+                                    )}
+                                </View>
+                            }
+                        />,
+                        <FormRow
+                            label={
+                                <RN.View>
+                                    <RN.Text style={styles.descriptionLabel}>{props.descriptionLabel}</RN.Text>
+                                </RN.View>
+                            }
+                        />,
+                    ])
+                }
             </ImageBackground>
         </RN.View>
     );

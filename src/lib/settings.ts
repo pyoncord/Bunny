@@ -5,6 +5,7 @@ export interface Settings {
     debuggerUrl: string;
     developerSettings: boolean;
     enableDiscordDeveloperSettings: boolean;
+    __unfunnyJoke24?: boolean;
     safeMode?: {
         enabled: boolean;
         currentThemeId?: string;
