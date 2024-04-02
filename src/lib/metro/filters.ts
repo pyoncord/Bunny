@@ -1,5 +1,6 @@
 import { after, instead } from "@lib/api/patcher";
 
+
 export type MetroModules = { [id: string]: any; };
 export type PropIntellisense<P extends string | symbol> = Record<P, any> & Record<PropertyKey, any>;
 export type PropsFinder = <T extends string | symbol>(...props: T[]) => PropIntellisense<T>;
@@ -28,7 +29,6 @@ for (const id in window.modules) {
         });
     }
 }
-
 
 // Blacklist any "bad-actor" modules, e.g. the dreaded null proxy, the window itself, or undefined modules
 for (const id in window.modules) {
@@ -96,13 +96,19 @@ function requireModule(id: string) {
     return exports;
 }
 
+function* getModules() {
+    yield require("./polyfills/redesign");
+
+    for (const id in modules) {
+        yield requireModule(id);
+    }
+}
+
 // Function to filter through modules
 const filterModules = (modules: MetroModules, single = false) => (filter: (m: any) => boolean) => {
     const found = [];
 
-    for (const id in modules) {
-        const exports = requireModule(id);
-
+    for (const exports of getModules()) {
         if (exports.default && exports.__esModule && filter(exports.default)) {
             if (single) return exports.default;
             found.push(exports.default);

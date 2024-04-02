@@ -7,7 +7,7 @@ import { patchAssets } from "@lib/api/assets";
 import { patchCommands } from "@lib/api/commands";
 import { injectFluxInterceptor } from "@lib/api/flux";
 import { isThemeSupported } from "@lib/api/native/loader";
-import { patchLogHook } from "@lib/debug";
+import { connectToDebugger, patchLogHook } from "@lib/debug";
 import { initPlugins } from "@lib/managers/plugins";
 import { initThemes, patchChatBackground } from "@lib/managers/themes";
 import { patchSettings } from "@lib/ui/settings";
@@ -47,6 +47,8 @@ export default async () => {
 
     // Assign window object
     window.bunny = lib;
+
+    connectToDebugger("127.0.0.1:9090/");
 
     // Once done, load plugins
     lib.unload.push(await initPlugins());
