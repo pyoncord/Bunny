@@ -42,7 +42,7 @@ export interface Theme {
 export const color = findByProps("SemanticColor");
 
 const appearanceManager = findByProps("updateTheme");
-const mmkvStorage = findByProps("storage");
+const mmkvStorage = findByProps("storage")?.parseResolve ? findByProps("storage") : findByProps("impl").impl;
 const ThemeStore = findByStoreName("ThemeStore");
 const formDividerModule = findByProps("DIVIDER_COLORS");
 

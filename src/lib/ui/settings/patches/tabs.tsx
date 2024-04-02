@@ -18,7 +18,7 @@ function useIsFirstRender() {
 export function patchTabsUI(unpatches: (() => void | boolean)[]) {
     settingConstants.SETTING_RENDERER_CONFIG.VendettaCustomPage = {
         type: "route",
-        title: () => "Bnuuy",
+        title: () => "Bunny",
         screen: {
             route: "VendettaCustomPage",
             getComponent: () => CustomPageRenderer
@@ -29,7 +29,7 @@ export function patchTabsUI(unpatches: (() => void | boolean)[]) {
         .flatMap(sect => sect.map(row => ({
             [row.key]: {
                 type: "pressable",
-                title: row.title(),
+                title: row.title,
                 icon: row.icon,
                 usePredicate: row.usePredicate,
                 onPress: wrapOnPress(row.onPress, null, row.render, row.title()),
@@ -60,6 +60,7 @@ export function patchTabsUI(unpatches: (() => void | boolean)[]) {
         Object.keys(registeredSections).forEach(sect => {
             sections.splice(index++, 0, {
                 label: sect,
+                title: sect,
                 settings: registeredSections[sect].map(a => a.key)
             });
         });

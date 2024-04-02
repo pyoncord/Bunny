@@ -29,14 +29,28 @@ export const initVendettaObject = (): any => {
             modules: window.modules,
             find: (filter: (m: any) => boolean) => metro.find(filter),
             findAll: (filter: (m: any) => boolean) => metro.findAll(filter),
-            findByProps: (...props: any) => metro.findByProps(...props),
+            findByProps: (...props: any) => {
+                // TypingAvatars polyfill
+                if (props.length === 1 && props[0] === "KeyboardAwareScrollView") {
+                    props.push("listenToKeyboardEvents");
+                }
+
+                return metro.findByProps(...props);
+            },
             findByPropsAll: (...props: any) => metro.findByPropsAll(...props),
-            findByName: (name: string, defaultExp?: boolean | undefined) => metro.findByName(name, defaultExp),
-            findByNameAll: (name: string, defaultExp?: boolean | undefined) => metro.findByNameAll(name, defaultExp),
-            findByDisplayName: (displayName: string, defaultExp?: boolean | undefined) => metro.findByDisplayName(displayName, defaultExp),
-            findByDisplayNameAll: (displayName: string, defaultExp?: boolean | undefined) => metro.findByDisplayNameAll(displayName, defaultExp),
-            findByTypeName: (typeName: string, defaultExp?: boolean | undefined) => metro.findByTypeName(typeName, defaultExp),
-            findByTypeNameAll: (typeName: string, defaultExp?: boolean | undefined) => metro.findByTypeNameAll(typeName, defaultExp),
+            findByName: (name: string, defaultExp?: boolean | undefined) => {
+                // Decor polyfill
+                if (name === "create" && typeof defaultExp === "undefined") {
+                    return metro.findByName("create", false).default;
+                }
+
+                return metro.findByName(name, defaultExp ?? true);
+            },
+            findByNameAll: (name: string, defaultExp: boolean = true) => metro.findByNameAll(name, defaultExp),
+            findByDisplayName: (displayName: string, defaultExp: boolean = true) => metro.findByDisplayName(displayName, defaultExp),
+            findByDisplayNameAll: (displayName: string, defaultExp: boolean = true) => metro.findByDisplayNameAll(displayName, defaultExp),
+            findByTypeName: (typeName: string, defaultExp: boolean = true) => metro.findByTypeName(typeName, defaultExp),
+            findByTypeNameAll: (typeName: string, defaultExp: boolean = true) => metro.findByTypeNameAll(typeName, defaultExp),
             findByStoreName: (name: string) => metro.findByStoreName(name),
             common: {
                 constants: common.constants,
@@ -79,7 +93,7 @@ export const initVendettaObject = (): any => {
             findInReactTree: (tree: { [key: string]: any; }, filter: any) => utils.findInReactTree(tree, filter),
             findInTree: (tree: any, filter: any, options: any) => utils.findInTree(tree, filter, options),
             safeFetch: (input: RequestInfo | URL, options?: RequestInit | undefined, timeout?: number | undefined) => utils.safeFetch(input, options, timeout),
-            unfreeze: (obj: object) => ({ ...obj }),
+            unfreeze: (obj: object) => Object.isFrozen(obj) ? ({ ...obj }) : obj,
             without: (object: any, ...keys: any) => utils.without(object, ...keys)
         },
         debug: {

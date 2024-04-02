@@ -18,7 +18,7 @@ export const semanticColors = (color?.default?.colors ?? constants?.ThemeColorMa
 export const rawColors = (color?.default?.unsafe_rawColors ?? constants?.Colors) as Record<string, string>;
 
 const ThemeStore = findByStoreName("ThemeStore");
-const colorResolver = color.default.internal ??= color.default.meta;
+const colorResolver = color.default.meta ??= color.default.internal;
 
 export function isSemanticColor(sym: any): boolean {
     return colorResolver.isSemanticColor(sym);

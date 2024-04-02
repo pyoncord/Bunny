@@ -52,7 +52,15 @@ function polyfillVendettaLoaderIdentity() {
         };
 
         Object.defineProperty(globalThis, "__vendetta_theme", {
-            get: () => getStoredTheme(),
+            // get: () => getStoredTheme(),
+            get: () => {
+                // PyonXposed only returns keys it parses, making custom keys like Themes+' to gone
+                const id = getStoredTheme()?.id;
+                if (!id) return null;
+
+                const { themes } = require("@lib/managers/themes");
+                return themes[id] ?? getStoredTheme() ?? null;
+            },
             configurable: true
         });
     }

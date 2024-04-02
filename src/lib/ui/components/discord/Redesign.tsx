@@ -1,5 +1,7 @@
 import { find, findByProps } from "@lib/metro";
 import { RedesignModuleKeys } from "@lib/ui/types";
+import { useEffect } from "react";
+import { View } from "react-native";
 
 const findSingular = (prop: string) => find(m => m[prop] && Object.keys(m).length === 1)?.[prop];
 
@@ -8,6 +10,13 @@ export const Redesign = findByProps("TableRow") as Record<RedesignModuleKeys, an
 export const CompatfulRedesign = findByProps("ActionSheetRow") as unknown as {
     TextStyleSheet: typeof import("@ui/styles").TextStyleSheet;
     [key: string]: any;
+};
+
+// Funny polyfill, hopefully same props :3
+CompatfulRedesign.ActionSheetTitleHeader ??= CompatfulRedesign.BottomSheetTitleHeader;
+CompatfulRedesign.ActionSheetContentContainer ??= ({ children }: any) => {
+    useEffect(() => console.warn("Discord has removed 'ActionSheetContentContainer', please move into something else. It has been temporarily replaced with View"), []);
+    return <View>{children}</View>;
 };
 
 export const FormSwitch = findSingular("FormSwitch");
@@ -111,12 +120,10 @@ export const {
     AccessibilityViewAnimated,
     ActionSheet,
     ActionSheetCloseButton,
-    ActionSheetContentContainer,
     ActionSheetIconHeader,
     ActionSheetPresenter,
     ActionSheetRow,
     ActionSheetSwitchRow,
-    ActionSheetTitleHeader,
     AnimatedEnterExitItem,
     BottomSheetTextInput,
     Dialog,

@@ -47,4 +47,10 @@ export default function initSettings() {
             }
         ]
     });
+
+    // Compat for plugins which injects into the settings
+    registerSection({
+        name: "Vendetta",
+        items: []
+    });
 }
