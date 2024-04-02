@@ -1,4 +1,4 @@
-import { instead } from "@lib/api/patcher";
+import { after, instead } from "@lib/api/patcher";
 
 export type MetroModules = { [id: string]: any; };
 export type PropIntellisense<P extends string | symbol> = Record<P, any> & Record<PropertyKey, any>;
@@ -17,21 +17,33 @@ const blacklist = (id: string) => Object.defineProperty(window.modules, id, {
     writable: true
 });
 
+const functionToString = Function.prototype.toString;
+
+for (const id in window.modules) {
+    const moduleDefinition = window.modules[id];
+
+    if (moduleDefinition.factory) {
+        after("factory", moduleDefinition, ({ 4: moduleObject }) => {
+            if (moduleObject.exports) onModuleRequire(moduleObject.exports);
+        });
+    }
+}
+
+
 // Blacklist any "bad-actor" modules, e.g. the dreaded null proxy, the window itself, or undefined modules
 for (const id in window.modules) {
-    const module = window.modules[id]?.publicModule?.exports;
+    const module = requireModule(id);
 
-    if (!module || module === window || module.proxygone === null) {
+    if (!module || module === window || module["Revenge EOL when?"] === null) {
         blacklist(id);
         continue;
     }
 }
 
-const checked = new WeakSet();
-const onModuleCheck = (exports: any) => {
-    if (typeof exports !== "object" || checked.has(exports)) return;
-    checked.add(exports);
+let patchedInspectSource = false;
 
+function onModuleRequire(exports: any) {
+    // There are modules registering the same native component
     if (exports?.default?.name === "requireNativeComponent") {
         instead("default", exports, (args, orig) => {
             try {
@@ -42,6 +54,7 @@ const onModuleCheck = (exports: any) => {
         });
     }
 
+    // Hook DeveloperExperimentStore
     if (exports?.default?.constructor?.displayName === "DeveloperExperimentStore") {
         exports.default = new Proxy(exports.default, {
             get: (target, property, receiver) => {
@@ -55,35 +68,32 @@ const onModuleCheck = (exports: any) => {
             }
         });
     }
-};
 
-function maybeInitializeModule(id: string) {
-    if (modules[id].isInitialized) return;
+    // Funny infinity recursion caused by a race condition
+    if (!patchedInspectSource && window["__core-js_shared__"]) {
+        const inspect = (f: Function) => typeof f === "function" && functionToString.apply(f, []);
+        window["__core-js_shared__"].inspectSource = inspect;
+        patchedInspectSource = true;
+    }
+}
+
+function requireModule(id: string) {
+    if (modules[id].isInitialized) return __r(id);
+
+    // Disable Internal Metro error reporting logic
+    const originalHandler = window.ErrorUtils.getGlobalHandler();
+    window.ErrorUtils.setGlobalHandler(null);
 
     try {
-        // There's a dum Function.prototype.toString polyfill somewhere in Discord's codebase
-        const orig = Function.prototype.toString;
-        Object.defineProperty(Function.prototype, "toString", {
-            value: orig,
-            configurable: true,
-            writable: false
-        });
+        var exports = __r(id); // metroRequire(id);
+    } catch {
+        var exports = undefined;
+    }
 
-        // Disable Internal Metro error reporting logic
-        const originalHandler = window.ErrorUtils.getGlobalHandler();
-        window.ErrorUtils.setGlobalHandler(null);
+    // Done initializing! Now, revert our hacks
+    window.ErrorUtils.setGlobalHandler(originalHandler);
 
-        __r(id); // metroRequire(id);
-
-        // Done initializing! Now, revert our hacks
-        window.ErrorUtils.setGlobalHandler(originalHandler);
-        Object.defineProperty(Function.prototype, "toString", {
-            value: orig,
-            configurable: true,
-            writable: true
-        });
-    } catch { }
-
+    return exports;
 }
 
 // Function to filter through modules
@@ -91,25 +101,16 @@ const filterModules = (modules: MetroModules, single = false) => (filter: (m: an
     const found = [];
 
     for (const id in modules) {
-        const module = modules[id]?.publicModule?.exports;
+        const exports = requireModule(id);
 
-        maybeInitializeModule(id);
-
-        if (!module) {
-            blacklist(id);
-            continue;
+        if (exports.default && exports.__esModule && filter(exports.default)) {
+            if (single) return exports.default;
+            found.push(exports.default);
         }
 
-        onModuleCheck(module);
-
-        if (module.default && module.__esModule && filter(module.default)) {
-            if (single) return module.default;
-            found.push(module.default);
-        }
-
-        if (filter(module)) {
-            if (single) return module;
-            else found.push(module);
+        if (filter(exports)) {
+            if (single) return exports;
+            else found.push(exports);
         }
     }
 

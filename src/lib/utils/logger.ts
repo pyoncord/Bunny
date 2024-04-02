@@ -1,4 +1,4 @@
-import { findByProps } from "@metro/filters";
+import { findByName } from "@metro/filters";
 
 export type LoggerFunction = (...messages: any[]) => void;
 export interface Logger {
@@ -11,5 +11,5 @@ export interface Logger {
     verbose: LoggerFunction;
 }
 
-export const logModule = findByProps("setLogFn").default;
+export const logModule = findByName("Logger");
 export const logger: Logger = new logModule("Bunny");
