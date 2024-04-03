@@ -8,8 +8,8 @@ A mod for Discord's mobile apps, a fork of Vendetta.
 
 ### Android
 
-- **Root** - [PyonXposed v0.1.0](https://github.com/pyoncord/PyoncordXposed/releases/tag/0.1.0) 
-- **Non-root** - Inject [PyonXposed v0.1.0](https://github.com/pyoncord/PyoncordXposed/releases/tag/0.1.0) through [Vendetta Manager](https://github.com/vendetta-mod/VendettaManager):
+- **Root** - [PyonXposed v0.1.2](https://github.com/pyoncord/PyoncordXposed/releases/tag/0.1.2) 
+- **Non-root** - Inject [PyonXposed v0.1.2](https://github.com/pyoncord/PyoncordXposed/releases/tag/0.1.2) through [Vendetta Manager](https://github.com/vendetta-mod/VendettaManager):
     1. In Vendetta Manager, go to Settings > About and pressing the version number 10 times to enable Developer Settings
     2. Press back and go to Settings > Developer
     3. Point "Module location" to the downloaded PyonXposed's path (e.g. `/storage/emulated/0/Download/app-release.apk`)
