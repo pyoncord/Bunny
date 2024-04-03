@@ -1,6 +1,7 @@
 import { ApplicationCommand, ApplicationCommandInputType, ApplicationCommandType } from "@lib/api/commands/types";
-import { after } from "@lib/api/patcher";
-import { commands as commandsModule } from "@metro/common";
+import { after, instead } from "@lib/api/patcher";
+import { logger } from "@lib/utils/logger";
+import { commands as commandsModule, messageUtil } from "@metro/common";
 
 let commands: ApplicationCommand[] = [];
 
@@ -47,6 +48,18 @@ export function registerCommand(command: ApplicationCommand): () => void {
         opt.displayName ??= opt.name;
         opt.displayDescription ??= opt.description;
     }
+
+    instead("execute", command, (args, orig) => {
+        Promise.resolve(
+            orig.apply(command, args)
+        ).then(ret => {
+            if (ret && typeof ret === "object") {
+                messageUtil.sendMessage(args[1].channel.id, ret);
+            }
+        }).catch(err => {
+            logger.error("Failed to execute command", err);
+        });
+    });
 
     // Add it to the commands array
     commands.push(command);
