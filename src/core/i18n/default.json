@@ -1,5 +1,7 @@
 {
     "ABOUT": "About",
+    "PLUGIN_REFETCH_SUCCESSFUL": "Successfully refetched plugin!",
+    "PLUGIN_REFETCH_FAILED": "Failed to refetch plugin!",
     "ACTIONS": "Actions",
     "ARE_YOU_SURE_TO_CLEAR_DATA": "Are you sure you wish to clear the data of {name}?",
     "ARE_YOU_SURE_TO_DELETE_PLUGIN": "Are you sure you wish to delete {name}? This will clear all of the plugin's data.",
@@ -63,6 +65,7 @@
     "OPEN_IN_BROWSER": "Open in Browser",
     "OPERATING_SYSTEM": "Operating System",
     "OVERFLOW_PLUGIN_SETTINGS": "Plugin settings",
+    "TOASTS_PLUGIN_UPDATE": "{update, select, true {Enabled} false {Disabled}} updates for {name}.",
     "PLATFORM": "Platform",
     "PLUGINS": "Plugins",
     "REFETCH": "Refetch",

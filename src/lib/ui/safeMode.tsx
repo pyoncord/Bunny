@@ -49,7 +49,7 @@ const styles = createThemedStyleSheet({
 
 interface Tab {
     id: string;
-    title: string;
+    title: () => string;
     trimWhitespace?: boolean;
 }
 
@@ -62,9 +62,9 @@ interface Button {
 }
 
 const tabs: Tab[] = [
-    { id: "message", title: Strings.MESSAGE },
-    { id: "stack", title: Strings.STACK_TRACE },
-    { id: "componentStack", title: Strings.COMPONENT, trimWhitespace: true },
+    { id: "message", title: () => Strings.MESSAGE },
+    { id: "stack", title: () => Strings.STACK_TRACE },
+    { id: "componentStack", title: () => Strings.COMPONENT, trimWhitespace: true },
 ];
 
 export default () => after("render", ErrorBoundary.prototype, function (this: any, _, ret) {
@@ -96,7 +96,7 @@ export default () => after("render", ErrorBoundary.prototype, function (this: an
                     <View style={{ paddingBottom: 8 }}>
                         {/* Are errors caught by ErrorBoundary guaranteed to have the component stack? */}
                         <BadgableTabBar
-                            tabs={tabs}
+                            tabs={tabs.map(t => ({ ...t, title: t.title() }))}
                             activeTab={this.state.activeTab}
                             onTabSelected={(tab: string) => { this.setState({ activeTab: tab }); }}
                         />

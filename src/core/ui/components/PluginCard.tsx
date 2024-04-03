@@ -66,9 +66,9 @@ export default function PluginCard({ item: plugin, index }: CardWrapper<BunnyPlu
                     onPress: async () => {
                         stopThenStart(plugin, () => {
                             fetchPlugin(plugin.id).then(async () => {
-                                showToast("Successfully refetched plugin.", getAssetIDByName("toast_image_saved"));
+                                showToast(Strings.PLUGIN_REFETCH_SUCCESSFUL, getAssetIDByName("toast_image_saved"));
                             }).catch(() => {
-                                showToast("Failed to refetch plugin!", getAssetIDByName("Small"));
+                                showToast(Strings.PLUGIN_REFETCH_FAILED, getAssetIDByName("Small"));
                             });
                         });
                     },
@@ -86,7 +86,7 @@ export default function PluginCard({ item: plugin, index }: CardWrapper<BunnyPlu
                     label: plugin.update ? Strings.DISABLE_UPDATES : Strings.ENABLE_UPDATES,
                     onPress: () => {
                         plugin.update = !plugin.update;
-                        showToast(`${plugin.update ? "Enabled" : "Disabled"} updates for ${plugin.manifest.name}.`, getAssetIDByName("toast_image_saved"));
+                        showToast(formatString("TOASTS_PLUGIN_UPDATE", { update: plugin.update, name: plugin.manifest.name }), getAssetIDByName("toast_image_saved"));
                     }
                 },
                 {
