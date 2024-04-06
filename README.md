@@ -26,6 +26,7 @@ A mod for Discord's mobile apps, a fork of Vendetta.
     8. Select start patch and DO NOT CLICK INSTALL
     9. Uninstall base discord, then reopen LSPatch and click install
     10. Back up your plugins and repeat to update
+
 ## iOS
 > [!NOTE]
 > At the time of writing, iOS support has a lower priority than Android. This is due to the fact that developing for iOS is very demanding.\
