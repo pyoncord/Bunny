@@ -14,7 +14,18 @@ A mod for Discord's mobile apps, a fork of Vendetta.
     2. Press back and go to Settings > Developer
     3. Point "Module location" to the downloaded PyonXposed's path (e.g. `/storage/emulated/0/Download/app-release.apk`)
     4. Return to main screen and install!
-
+ - **Non-root** (Method 2) - Install through [LSPatch]() for those struggling with the Vendetta Manager method. **NOTE:** Auto-updates won't work through this method, you must manually check for updates
+    1. Install base discord from Google Play or [Aurora Store](https://gitlab.com/AuroraOSS/AuroraStore)
+    1. Set up [LSPatch](https://github.com/LSPosed/LSPatch) and [Shizuku](https://shizuku.rikka.app/)
+    2. After setting up Shizuku, open LSPatch and click the notice at the top to grant Shizuku permissions
+    3. On the "Manage" tab (directly left of home), click the plus floating button
+    4. Select "Select an installed app"
+    5. Find discord on the installed app list
+    6. Select "Integrated" patch mode, and optionally "Override version code" if you want to be able to downgrade later
+    7. Click "Embed Modules", "Select from storage", and select the PyoncordXposed apk
+    8. Select start patch and DO NOT CLICK INSTALL
+    9. Uninstall base discord, then reopen LSPatch and click install
+    10. Back up your plugins and repeat to update
 ## iOS
 > [!NOTE]
 > At the time of writing, iOS support has a lower priority than Android. This is due to the fact that developing for iOS is very demanding.\
