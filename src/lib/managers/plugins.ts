@@ -2,6 +2,7 @@ import { allSettled } from "@core/polyfills";
 import { awaitSyncWrapper, createMMKVBackend, createStorage, purgeStorage, wrapSync } from "@lib/api/storage";
 import { settings } from "@lib/settings";
 import { safeFetch } from "@lib/utils";
+import { BUNNY_PROXY_PREFIX, PROXY_PREFIX } from "@lib/utils/constants";
 import { logger, logModule } from "@lib/utils/logger";
 import { Author } from "@lib/utils/types";
 
@@ -35,6 +36,14 @@ export interface BunnyPlugin {
 export const plugins = wrapSync(createStorage<Record<string, BunnyPlugin>>(createMMKVBackend("VENDETTA_PLUGINS")));
 const loadedPlugins: Record<string, EvaledPlugin> = {};
 
+async function pluginFetch(url: string) {
+    if (url.startsWith(PROXY_PREFIX)) {
+        url = url.replace(PROXY_PREFIX, BUNNY_PROXY_PREFIX);
+    }
+
+    return await safeFetch(url, { cache: "no-store" });
+}
+
 export async function fetchPlugin(id: string) {
     if (!id.endsWith("/")) id += "/";
     const existingPlugin = plugins[id];
@@ -42,7 +51,7 @@ export async function fetchPlugin(id: string) {
     let pluginManifest: PluginManifest;
 
     try {
-        pluginManifest = await (await safeFetch(id + "manifest.json", { cache: "no-store" })).json();
+        pluginManifest = await (await pluginFetch(id + "manifest.json")).json();
     } catch {
         throw new Error(`Failed to fetch manifest for ${id}`);
     }
@@ -52,7 +61,7 @@ export async function fetchPlugin(id: string) {
     if (existingPlugin?.manifest.hash !== pluginManifest.hash) {
         try {
             // by polymanifest spec, plugins should always specify their main file, but just in case
-            pluginJs = await (await safeFetch(id + (pluginManifest.main || "index.js"), { cache: "no-store" })).text();
+            pluginJs = await (await pluginFetch(id + (pluginManifest.main || "index.js"))).text();
         } catch { } // Empty catch, checked below
     }
 
