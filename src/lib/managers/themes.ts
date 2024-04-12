@@ -182,7 +182,7 @@ export async function fetchTheme(id: string, selected = false) {
     // TODO: Should we prompt when the selected theme is updated?
     if (selected) {
         writeTheme(themes[id]);
-        applyTheme(themes[id], vdThemeFallback, true);
+        applyTheme(themes[id], vdThemeFallback);
     }
 }
 
@@ -233,6 +233,7 @@ let vdKey = "vd-theme";
 let vdThemeFallback = "darker";
 let enabled = false;
 let currentTheme: Theme | null;
+let storageResolved = false;
 
 const discordThemes = new Set(["darker", "midnight", "dark", "light"]);
 function isDiscordTheme(name: string) {
@@ -260,7 +261,8 @@ function patchColor() {
     ThemeStore.addChangeListener(() => {
         if (ThemeStore.theme) {
             enabled = ThemeStore.theme === vdKey;
-            if (ThemeStore.theme !== vdKey) {
+            if (!enabled) {
+                selectTheme(null);
                 vdThemeFallback = ThemeStore.theme;
             }
         }
@@ -268,11 +270,13 @@ function patchColor() {
 
     after("get", mmkvStorage, ([a], ret) => {
         if (a === "SelectivelySyncedUserSettingsStore") {
+            storageResolved = true;
             if (ret?._state?.appearance?.settings?.theme && enabled) {
                 vdThemeFallback = ret._state.appearance.settings.theme;
                 ret._state.appearance.settings.theme = vdKey;
             }
         } else if (a === "ThemeStore") {
+            storageResolved = true;
             if (ret?._state?.theme && enabled) {
                 vdThemeFallback = ret._state.theme;
                 ret._state.theme = vdKey;
@@ -302,7 +306,6 @@ function patchColor() {
                 if (value._state?.theme) {
                     const { theme } = value._state;
                     if (isDiscordTheme(theme)) {
-                        selectTheme(null);
                         vdThemeFallback = theme;
                     } else {
                         value._state.theme = vdThemeFallback;
@@ -348,14 +351,14 @@ function patchColor() {
 function getDefaultFallbackTheme(fallback: string = vdThemeFallback) {
     const theme = ThemeStore.theme.toLowerCase() as string;
 
-    if (theme === "darker" || theme === "midnight" || theme === "dark" || theme === "light") {
+    if (isDiscordTheme(theme)) {
         return theme;
     } else {
         return fallback;
     }
 }
 
-export function applyTheme(appliedTheme: Theme | null, fallbackTheme?: string, update = true) {
+export function applyTheme(appliedTheme: Theme | null, fallbackTheme?: string) {
     if (!fallbackTheme) fallbackTheme = getDefaultFallbackTheme();
 
     currentTheme = appliedTheme;
@@ -376,7 +379,7 @@ export function applyTheme(appliedTheme: Theme | null, fallbackTheme?: string, u
         });
     }
 
-    if (update) {
+    if (storageResolved) {
         appearanceManager.setShouldSyncAppearanceSettings(false);
         appearanceManager.updateTheme(appliedTheme ? vdKey : fallbackTheme);
     }
@@ -387,10 +390,10 @@ export function applyTheme(appliedTheme: Theme | null, fallbackTheme?: string, u
  */
 export async function initThemes() {
     const currentTheme = getThemeFromLoader();
-    enabled = !!currentTheme;
+    enabled = Boolean(currentTheme);
 
     patchColor();
-    applyTheme(currentTheme, vdThemeFallback, false);
+    applyTheme(currentTheme, vdThemeFallback);
 
     updateThemes().catch(e => console.error("Failed to update themes", e));
 }
