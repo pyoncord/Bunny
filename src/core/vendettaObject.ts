@@ -1,6 +1,6 @@
 import * as assets from "@lib/api/assets";
 import * as commands from "@lib/api/commands";
-import { getVendettaLoaderIdentity } from "@lib/api/native/loader";
+import { getVendettaLoaderIdentity, isPyonLoader } from "@lib/api/native/loader";
 import patcher from "@lib/api/patcher";
 import * as storage from "@lib/api/storage";
 import * as debug from "@lib/debug";
@@ -30,7 +30,7 @@ export const initVendettaObject = (): any => {
             find: (filter: (m: any) => boolean) => metro.find(filter),
             findAll: (filter: (m: any) => boolean) => metro.findAll(filter),
             findByProps: (...props: any) => {
-                // TypingAvatars polyfill
+                // Decor fix hack
                 if (props.length === 1 && props[0] === "KeyboardAwareScrollView") {
                     props.push("listenToKeyboardEvents");
                 }
@@ -39,7 +39,7 @@ export const initVendettaObject = (): any => {
             },
             findByPropsAll: (...props: any) => metro.findByPropsAll(...props),
             findByName: (name: string, defaultExp?: boolean | undefined) => {
-                // Decor polyfill
+                // Decor fix hack
                 if (name === "create" && typeof defaultExp === "undefined") {
                     return metro.findByName("create", false).default;
                 }
@@ -159,7 +159,14 @@ export const initVendettaObject = (): any => {
             wrapSync: (store: any) => storage.wrapSync(store),
             awaitSyncWrapper: (store: any) => storage.awaitSyncWrapper(store),
             createMMKVBackend: (store: string) => storage.createMMKVBackend(store),
-            createFileBackend: (file: string) => storage.createFileBackend(file)
+            createFileBackend: (file: string) => {
+                // Redirect path to vendetta_theme.json
+                if (isPyonLoader() && file === "vendetta_theme.json") {
+                    file = "pyoncord/current-theme.json";
+                }
+
+                return storage.createFileBackend(file);
+            }
         },
         settings,
         loader: {

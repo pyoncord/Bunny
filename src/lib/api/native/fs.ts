@@ -5,8 +5,9 @@ import { FileManager } from "./modules";
  * @param path Path to the file
  */
 export async function removeFile(path: string, prefix = "pyoncord/") {
+    if (typeof FileManager.removeFile !== "function") throw new Error("'fs.removeFile' is not supported");
     return void await FileManager.removeFile("documents", `${prefix}${path}`);
-}
+} // TODO: handle errors from native side properly (discord does not use Promise properly apparently)
 
 /**
  * Check if the file or directory given by the path exists

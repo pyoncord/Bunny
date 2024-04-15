@@ -388,7 +388,7 @@ export function applyTheme(appliedTheme: Theme | null, fallbackTheme?: string) {
 /**
  * @internal
  */
-export async function initThemes() {
+export function initThemes() {
     const currentTheme = getThemeFromLoader();
     enabled = Boolean(currentTheme);
 

@@ -6,7 +6,9 @@ import { initVendettaObject } from "@core/vendettaObject";
 import { patchAssets } from "@lib/api/assets";
 import { patchCommands } from "@lib/api/commands";
 import { injectFluxInterceptor } from "@lib/api/flux";
-import { isThemeSupported } from "@lib/api/native/loader";
+import { removeFile } from "@lib/api/native/fs";
+import { isPyonLoader, isThemeSupported } from "@lib/api/native/loader";
+import { FileManager } from "@lib/api/native/modules";
 import { patchLogHook } from "@lib/debug";
 import { initPlugins } from "@lib/managers/plugins";
 import { initThemes, patchChatBackground } from "@lib/managers/themes";
@@ -20,6 +22,9 @@ export default async () => {
     // Themes
     if (isThemeSupported()) {
         try {
+            if (isPyonLoader() && FileManager.removeFile != null) {
+                removeFile("vendetta_theme.json", "");
+            }
             initThemes();
         } catch (e) {
             console.error("[Bunny] Failed to initialize themes...", e);
