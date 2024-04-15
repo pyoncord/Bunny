@@ -141,6 +141,10 @@ function processData(data: ThemeData) {
         if (Platform.OS === "android") applyAndroidAlphaKeys(rawColors);
     }
 
+    // this field is required by the spec but vd seems to ignore this
+    // so are most vd themes
+    data.spec ??= 2;
+
     return data;
 }
 
@@ -191,17 +195,17 @@ export async function installTheme(id: string) {
     await fetchTheme(id);
 }
 
-export function selectTheme(theme: Theme | null) {
+export function selectTheme(theme: Theme | null, write = true) {
     if (theme) theme.selected = true;
     Object.keys(themes).forEach(
         k => themes[k].selected = themes[k].id === theme?.id
     );
 
-    if (theme === null) {
+    if (theme == null && write) {
         return writeTheme({});
+    } else if (theme) {
+        return writeTheme(theme);
     }
-
-    return writeTheme(theme);
 }
 
 export async function removeTheme(id: string) {
@@ -257,16 +261,6 @@ function patchColor() {
     before("isThemeDark", isThemeModule, callback);
     before("isThemeLight", isThemeModule, callback);
     before("updateTheme", ThemeManager, callback);
-
-    ThemeStore.addChangeListener(() => {
-        if (ThemeStore.theme) {
-            enabled = ThemeStore.theme === vdKey;
-            if (!enabled) {
-                selectTheme(null);
-                vdThemeFallback = ThemeStore.theme;
-            }
-        }
-    });
 
     after("get", mmkvStorage, ([a], ret) => {
         if (a === "SelectivelySyncedUserSettingsStore") {
@@ -362,6 +356,7 @@ export function applyTheme(appliedTheme: Theme | null, fallbackTheme?: string) {
     if (!fallbackTheme) fallbackTheme = getDefaultFallbackTheme();
 
     currentTheme = appliedTheme;
+    enabled = !!currentTheme;
     vdThemeFallback = fallbackTheme!!;
     vdKey = `vd-theme-${inc++}-${fallbackTheme}`;
 

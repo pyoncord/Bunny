@@ -6,7 +6,7 @@ import { initVendettaObject } from "@core/vendettaObject";
 import { patchAssets } from "@lib/api/assets";
 import { patchCommands } from "@lib/api/commands";
 import { injectFluxInterceptor } from "@lib/api/flux";
-import { removeFile } from "@lib/api/native/fs";
+import { removeFile, writeFile } from "@lib/api/native/fs";
 import { isPyonLoader, isThemeSupported } from "@lib/api/native/loader";
 import { FileManager } from "@lib/api/native/modules";
 import { patchLogHook } from "@lib/debug";
@@ -22,8 +22,12 @@ export default async () => {
     // Themes
     if (isThemeSupported()) {
         try {
-            if (isPyonLoader() && FileManager.removeFile != null) {
-                removeFile("vendetta_theme.json", "");
+            if (isPyonLoader()) {
+                if (FileManager.removeFile != null) {
+                    removeFile("vendetta_theme.json", "");
+                } else {
+                    writeFile("vendetta_theme.json", "null", "");
+                }
             }
             initThemes();
         } catch (e) {
