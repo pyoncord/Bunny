@@ -1,8 +1,7 @@
 import { formatString, Strings } from "@core/i18n";
 import Card, { CardWrapper } from "@core/ui/components/Card";
 import { getAssetIDByName } from "@lib/api/assets";
-import { MMKVManager } from "@lib/api/native/modules";
-import { useProxy } from "@lib/api/storage";
+import { purgeStorage, useProxy } from "@lib/api/storage";
 import { BunnyPlugin, fetchPlugin, getSettings, removePlugin, startPlugin, stopPlugin } from "@lib/managers/plugins";
 import { ButtonColors } from "@lib/utils/types";
 import { clipboard, NavigationNative } from "@metro/common";
@@ -102,7 +101,7 @@ export default function PluginCard({ item: plugin, index }: CardWrapper<BunnyPlu
                         onConfirm: () => {
                             stopThenStart(plugin, () => {
                                 try {
-                                    MMKVManager.removeItem(plugin.id);
+                                    purgeStorage(plugin.id);
                                     showToast(formatString("CLEAR_DATA_SUCCESSFUL", { name: plugin.manifest.name }), getAssetIDByName("trash"));
                                 } catch {
                                     showToast(formatString("CLEAR_DATA_FAILED", { name: plugin.manifest.name }), getAssetIDByName("Small"));

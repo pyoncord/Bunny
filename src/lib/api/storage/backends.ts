@@ -74,6 +74,7 @@ export const createFileBackend = (file: string, defaultData = {}, migratePromise
         get: async () => {
             await migratePromise;
             const path = `${FileManager.getConstants().DocumentsDirPath}/${file}`;
+
             if (await FileManager.fileExists(path)) {
                 const content = await FileManager.readFile(path, "utf8");
                 try {
