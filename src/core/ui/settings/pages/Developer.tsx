@@ -1,21 +1,25 @@
 import { Strings } from "@core/i18n";
 import AssetBrowser from "@core/ui/settings/pages/AssetBrowser";
 import { getAssetIDByName } from "@lib/api/assets";
-import { getReactDevToolsProp, getReactDevToolsVersion, isLoaderConfigSupported, isReactDevToolsPreloaded } from "@lib/api/native/loader";
+import { fileExists, removeFile, writeFile } from "@lib/api/native/fs";
+import { getReactDevToolsProp, getReactDevToolsVersion, isLoaderConfigSupported, isReactDevToolsPreloaded, isVendettaLoader } from "@lib/api/native/loader";
 import { useProxy } from "@lib/api/storage";
 import { connectToDebugger } from "@lib/debug";
 import { loaderConfig, settings } from "@lib/settings";
 import { FormText } from "@lib/ui/components/discord/Forms";
-import { Stack, TableRow, TableRowGroup, TableSwitchRow, TextInput } from "@lib/ui/components/discord/Redesign";
+import { Button, Stack, TableRow, TableRowGroup, TableSwitchRow, TextInput } from "@lib/ui/components/discord/Redesign";
 import { NavigationNative } from "@metro/common";
 import { findByProps } from "@metro/filters";
 import { semanticColors } from "@ui/color";
 import { ErrorBoundary } from "@ui/components";
 import { createStyles, TextStyleSheet } from "@ui/styles";
+import { useState } from "react";
 import { ScrollView, StyleSheet } from "react-native";
 
 const { hideActionSheet } = findByProps("openLazy", "hideActionSheet");
 const { showSimpleActionSheet } = findByProps("showSimpleActionSheet");
+
+const RDT_EMBED_LINK = "https://raw.githubusercontent.com/amsyarasyiq/rdt-embedder/main/dist.js";
 
 const useStyles = createStyles({
     leadingText: {
@@ -26,6 +30,16 @@ const useStyles = createStyles({
 });
 
 export default function Developer() {
+    const [rdtEmbedded, setRdtEmbedded] = useState(false);
+    const [rdtDownloading, setRdtDownloading] = useState(true);
+
+    React.useEffect(() => {
+        fileExists("preloads/reactDevtools.js").then(exists => {
+            setRdtEmbedded(exists);
+            setRdtDownloading(false);
+        });
+    }, []);
+
     const styles = useStyles();
     const navigation = NavigationNative.useNavigation();
 
@@ -79,7 +93,7 @@ export default function Developer() {
                                 placeholder="http://localhost:4040/vendetta.js"
                                 label={Strings.BUNNY_URL}
                             />} />}
-                            {isReactDevToolsPreloaded() && <TableSwitchRow
+                            {isReactDevToolsPreloaded() && isVendettaLoader() && <TableSwitchRow
                                 label={Strings.LOAD_REACT_DEVTOOLS}
                                 subLabel={`${Strings.VERSION}: ${getReactDevToolsVersion()}`}
                                 icon={<TableRow.Icon source={getAssetIDByName("ic_badge_staff")} />}
@@ -119,6 +133,37 @@ export default function Developer() {
                                     { label: "Discord", isDestructive: true, onPress: () => navigation.push("VendettaCustomPage", { noErrorBoundary: true }) },
                                 ],
                             })}
+                        />
+                        <TableRow
+                            label={Strings.INSTALL_REACT_DEVTOOLS}
+                            subLabel={Strings.RESTART_REQUIRED_TO_TAKE_EFFECT}
+                            icon={<TableRow.Icon source={getAssetIDByName("DownloadIcon")} />}
+                            trailing={
+                                <Button
+                                    size="sm"
+                                    loading={rdtDownloading}
+                                    disabled={rdtDownloading}
+                                    variant={rdtEmbedded ? "secondary" : "primary"}
+                                    text={rdtEmbedded ? Strings.UNINSTALL : Strings.INSTALL}
+                                    onPress={async () => {
+                                        if (!rdtEmbedded) {
+                                            setRdtDownloading(true);
+                                            const res = await fetch(RDT_EMBED_LINK);
+                                            const bundle = await res.text();
+                                            await writeFile("preloads/reactDevtools.js", bundle);
+                                            setRdtDownloading(false);
+                                            setRdtEmbedded(true);
+                                        } else {
+                                            setRdtDownloading(true);
+                                            await removeFile("preloads/reactDevtools.js");
+                                            setRdtEmbedded(false);
+                                            setRdtDownloading(false);
+                                        }
+                                    }}
+                                    icon={getAssetIDByName(rdtEmbedded ? "ic_message_delete" : "DownloadIcon")}
+                                    style={{ marginLeft: 8 }}
+                                />
+                            }
                         />
                     </TableRowGroup>
                 </Stack>
