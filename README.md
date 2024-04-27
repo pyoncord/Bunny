@@ -1,6 +1,3 @@
-> [!IMPORTANT]
-> Most parts of Bunny are being rewritten, and the project is undergoing a rebranding to **Pyoncord**. The `legacy` branch has entered maintenance mode, and support for it will be discontinued once Pyoncord achieves full functionality to replace Bunny. For more details, refer to the #rebrand channel on [Pyoncord's Discord server](https://discord.gg/XjYgWXHb9Q).
-
 # Bunny
 A mod for Discord's mobile apps, a fork of Vendetta.
 
