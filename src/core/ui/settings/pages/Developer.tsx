@@ -148,6 +148,15 @@ export default function Developer() {
                                 />
                             }
                         />
+                        <TableSwitchRow
+                            label={Strings.ENABLE_EVAL_COMMAND}
+                            subLabel={Strings.ENABLE_EVAL_COMMAND_DESC}
+                            icon={<TableRow.Icon source={getAssetIDByName("PencilIcon")} />}
+                            value={settings.enableEvalCommand}
+                            onValueChange={(v: boolean) => {
+                                settings.enableEvalCommand = v;
+                            }}
+                        />
                     </TableRowGroup>
                 </Stack>
             </ScrollView>

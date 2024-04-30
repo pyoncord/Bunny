@@ -17,7 +17,13 @@ export interface ApplicationCommand {
     displayDescription?: string;
     inputType?: ApplicationCommandInputType;
     type?: ApplicationCommandType;
-    __isBunny?: true;
+    __bunny?: {
+        shouldHide: () => boolean;
+    };
+}
+
+export interface BunnyApplicationCommand extends ApplicationCommand {
+    shouldHide: () => boolean;
 }
 
 export enum ApplicationCommandInputType {

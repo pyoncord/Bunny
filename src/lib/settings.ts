@@ -9,6 +9,7 @@ export interface Settings {
         enabled: boolean;
         currentThemeId?: string;
     };
+    enableEvalCommand?: boolean;
 }
 
 export interface LoaderConfig {

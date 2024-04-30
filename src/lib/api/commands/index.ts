@@ -1,4 +1,4 @@
-import { ApplicationCommand, ApplicationCommandInputType, ApplicationCommandType } from "@lib/api/commands/types";
+import { ApplicationCommand, ApplicationCommandInputType, ApplicationCommandType, BunnyApplicationCommand } from "@lib/api/commands/types";
 import { after, instead } from "@lib/api/patcher";
 import { logger } from "@lib/utils/logger";
 import { commands as commandsModule, messageUtil } from "@metro/common";
@@ -10,12 +10,14 @@ let commands: ApplicationCommand[] = [];
  */
 export function patchCommands() {
     const unpatch = after("getBuiltInCommands", commandsModule, ([type], res: ApplicationCommand[]) => {
-        if (type === ApplicationCommandType.CHAT) return res.concat(commands);
+        if (type === ApplicationCommandType.CHAT) {
+            return res.concat(commands.filter(c => c.__bunny?.shouldHide?.() !== false));
+        }
     });
 
     // Register core commands
     [
-        // require("@core/commands/eval"),
+        require("@core/commands/eval"),
         require("@core/commands/debug"),
         require("@core/commands/plugins")
     ].forEach(r => registerCommand(r.default()));
@@ -26,7 +28,7 @@ export function patchCommands() {
     };
 }
 
-export function registerCommand(command: ApplicationCommand): () => void {
+export function registerCommand(command: BunnyApplicationCommand): () => void {
     // Get built in commands
     const builtInCommands = commandsModule.getBuiltInCommands(ApplicationCommandType.CHAT, true, false);
     builtInCommands.sort((a: ApplicationCommand, b: ApplicationCommand) => parseInt(b.id!) - parseInt(a.id!));
@@ -37,7 +39,10 @@ export function registerCommand(command: ApplicationCommand): () => void {
     command.id = (parseInt(lastCommand.id, 10) - 1).toString();
 
     // Fill optional args
-    command.__isBunny = true;
+    command.__bunny = {
+        shouldHide: command.shouldHide
+    };
+
     command.applicationId ??= "-1";
     command.type ??= ApplicationCommandType.CHAT;
     command.inputType = ApplicationCommandInputType.BUILT_IN;

@@ -1,5 +1,6 @@
 import { Strings } from "@core/i18n";
 import { ApplicationCommand, ApplicationCommandOptionType } from "@lib/api/commands/types";
+import { settings } from "@lib/settings";
 import { messageUtil } from "@metro/common";
 import { findByProps } from "@metro/filters";
 
@@ -15,6 +16,7 @@ function wrapInJSCodeblock(resString: string) {
 export default () => <ApplicationCommand>{
     name: "eval",
     description: Strings.COMMAND_EVAL_DESC,
+    shouldHide: () => settings.enableEvalCommand === true,
     options: [
         {
             name: "code",
