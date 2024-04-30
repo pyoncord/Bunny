@@ -4,7 +4,7 @@ import { instead } from "spitroast";
 // @ts-ignore - shut up fr
 globalThis.window = globalThis;
 
-const init = (async () => {
+const init = () => {
     try {
         // This logs in the native logging implementation, e.g. logcat
         console.log("Hello from Bunny! Pyon!");
@@ -12,7 +12,7 @@ const init = (async () => {
         // Make 'freeze' and 'seal' do nothing
         Object.freeze = Object.seal = Object;
 
-        await import(".").then(m => m.default());
+        require(".").default();
     } catch (e) {
         const { ClientInfoManager } = require("@lib/api/native/modules");
         const stack = e instanceof Error ? e.stack : undefined;
@@ -25,7 +25,7 @@ const init = (async () => {
             stack || e?.toString?.(),
         ].join("\n"));
     }
-});
+};
 
 // @ts-ignore
 if (typeof globalThis.__r !== "undefined") {

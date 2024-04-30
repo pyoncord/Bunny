@@ -46,8 +46,8 @@ for (const id in window.modules) {
                 return importAll.default = exp, importAll;
             };
 
-            orig(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
-            if (moduleObject.exports) onModuleRequire(moduleObject.exports, id);
+            orig(...args);
+            if (moduleObject.exports) onModuleRequire(moduleObject.exports);
         });
     }
 }
@@ -64,7 +64,13 @@ for (const id in window.modules) {
 
 let patchedInspectSource = false;
 
-function onModuleRequire(exports: any, id: string) {
+function onModuleRequire(exports: any) {
+    // Temporary
+    exports.initSentry &&= () => { };
+    if (exports.default?.track && exports.default.trackMaker) {
+        exports.default.track = () => Promise.resolve();
+    }
+
     // There are modules registering the same native component
     if (exports?.default?.name === "requireNativeComponent") {
         instead("default", exports, (args, orig) => {
