@@ -1,6 +1,7 @@
 import { Strings } from "@core/i18n";
 import { PyoncordIcon } from "@core/ui/settings";
 import { getAssetIDByName } from "@lib/api/assets";
+import { getLoaderName, getLoaderVersion } from "@lib/api/native/loader";
 import { useProxy } from "@lib/api/storage";
 import { getDebugInfo, toggleSafeMode } from "@lib/debug";
 import { settings } from "@lib/settings";
@@ -24,7 +25,7 @@ export default function General() {
                     <TableRow
                         label={Strings.BUNNY}
                         icon={<TableRow.Icon source={{ uri: PyoncordIcon }} />}
-                        trailing={<TableRow.TrailingText text={debugInfo.bunny.version} />}
+                        trailing={<TableRow.TrailingText text={`${getLoaderName()} (${getLoaderVersion()})`} />}
                     />
                     <TableRow
                         label={"Discord"}
@@ -88,7 +89,6 @@ export default function General() {
                         }}
                     />
                 </TableRowGroup>
-
             </Stack>
         </ScrollView>
     );

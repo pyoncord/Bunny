@@ -1,5 +1,5 @@
 import { getAssetIDByName } from "@lib/api/assets";
-import { getLoaderName, isThemeSupported } from "@lib/api/native/loader";
+import { getLoaderName, getLoaderVersion, isThemeSupported } from "@lib/api/native/loader";
 import { BundleUpdaterManager, ClientInfoManager, DeviceManager } from "@lib/api/native/modules";
 import { after } from "@lib/api/patcher";
 import { getThemeFromLoader, selectTheme, themes } from "@lib/managers/themes";
@@ -105,7 +105,10 @@ export function getDebugInfo() {
         },
         bunny: {
             version: versionHash,
-            loader: getLoaderName(),
+            loader: {
+                name: getLoaderName(),
+                version: getLoaderVersion()
+            }
         },
         discord: {
             version: ClientInfoManager.Version,

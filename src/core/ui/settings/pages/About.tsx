@@ -1,5 +1,6 @@
 import { Strings } from "@core/i18n";
 import Version from "@core/ui/components/Version";
+import { getLoaderName, getLoaderVersion } from "@lib/api/native/loader";
 import { useProxy } from "@lib/api/storage";
 import { getDebugInfo } from "@lib/debug";
 import { settings } from "@lib/settings";
@@ -13,7 +14,7 @@ export default function About() {
     const versions = [
         {
             label: Strings.BUNNY,
-            version: debugInfo.bunny.version,
+            version: `${getLoaderName()} (${getLoaderVersion()})`,
             icon: "ic_progress_wrench_24px",
         },
         {
@@ -41,7 +42,7 @@ export default function About() {
     const platformInfo = [
         {
             label: Strings.LOADER,
-            version: debugInfo.bunny.loader,
+            version: debugInfo.bunny.loader.name,
             icon: "ic_download_24px",
         },
         {

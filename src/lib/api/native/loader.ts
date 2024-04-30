@@ -99,6 +99,11 @@ export function getLoaderName() {
     return "Unknown";
 }
 
+export function getLoaderVersion(): string | null {
+    if (isPyonLoader()) return pyonLoaderIdentity.loaderVersion;
+    return null;
+}
+
 export function isLoaderConfigSupported() {
     if (isPyonLoader()) {
         return true;
