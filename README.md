@@ -5,8 +5,8 @@ A mod for Discord's mobile apps, a fork of [Vendetta](https://github.com/vendett
 
 ### Android
 
-- **Root** with Xposed - [BunnyXposed](https://github.com/pyoncord/PyoncordXposed/releases/tag/latest)
-- **Non-root** - [BunnyManager](https://github.com/pyoncord/PyoncordXposed/releases/latest)
+- **Root** with Xposed - [BunnyXposed](https://github.com/pyoncord/BunnyXposed/releases/latest)
+- **Non-root** - [BunnyManager](https://github.com/pyoncord/BunnyManager/releases/latest)
 
 ### iOS
 - [**BunnyTweak**](https://github.com/pyoncord/BunnyTweak) - Get prebuilt rootful and rootless `.deb` files or the prepatched `.ipa `
