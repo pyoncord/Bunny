@@ -1,7 +1,7 @@
 import { Strings } from "@core/i18n";
+import { CheckState, useFileExists } from "@core/ui/settings/hooks/useFS";
 import AssetBrowser from "@core/ui/settings/pages/AssetBrowser";
 import { getAssetIDByName } from "@lib/api/assets";
-import { fileExists, removeFile, writeFile } from "@lib/api/native/fs";
 import { getReactDevToolsProp, getReactDevToolsVersion, isLoaderConfigSupported, isReactDevToolsPreloaded, isVendettaLoader } from "@lib/api/native/loader";
 import { useProxy } from "@lib/api/storage";
 import { connectToDebugger } from "@lib/debug";
@@ -13,7 +13,6 @@ import { findByProps } from "@metro/filters";
 import { semanticColors } from "@ui/color";
 import { ErrorBoundary } from "@ui/components";
 import { createStyles, TextStyleSheet } from "@ui/styles";
-import { useState } from "react";
 import { ScrollView, StyleSheet } from "react-native";
 
 const { hideActionSheet } = findByProps("openLazy", "hideActionSheet");
@@ -30,15 +29,7 @@ const useStyles = createStyles({
 });
 
 export default function Developer() {
-    const [rdtEmbedded, setRdtEmbedded] = useState(false);
-    const [rdtDownloading, setRdtDownloading] = useState(true);
-
-    React.useEffect(() => {
-        fileExists("preloads/reactDevtools.js").then(exists => {
-            setRdtEmbedded(exists);
-            setRdtDownloading(false);
-        });
-    }, []);
+    const [rdtFileExists, fs] = useFileExists("preloads/reactDevtools.js");
 
     const styles = useStyles();
     const navigation = NavigationNative.useNavigation();
@@ -141,26 +132,18 @@ export default function Developer() {
                             trailing={
                                 <Button
                                     size="sm"
-                                    loading={rdtDownloading}
-                                    disabled={rdtDownloading}
-                                    variant={rdtEmbedded ? "secondary" : "primary"}
-                                    text={rdtEmbedded ? Strings.UNINSTALL : Strings.INSTALL}
+                                    loading={rdtFileExists === CheckState.LOADING}
+                                    disabled={rdtFileExists === CheckState.LOADING}
+                                    variant={rdtFileExists === CheckState.TRUE ? "secondary" : "primary"}
+                                    text={rdtFileExists === CheckState.TRUE ? Strings.UNINSTALL : Strings.INSTALL}
                                     onPress={async () => {
-                                        if (!rdtEmbedded) {
-                                            setRdtDownloading(true);
-                                            const res = await fetch(RDT_EMBED_LINK);
-                                            const bundle = await res.text();
-                                            await writeFile("preloads/reactDevtools.js", bundle);
-                                            setRdtDownloading(false);
-                                            setRdtEmbedded(true);
-                                        } else {
-                                            setRdtDownloading(true);
-                                            await removeFile("preloads/reactDevtools.js");
-                                            setRdtEmbedded(false);
-                                            setRdtDownloading(false);
+                                        if (rdtFileExists === CheckState.FALSE) {
+                                            fs.downloadFile(RDT_EMBED_LINK, "preloads/reactDevtools.js");
+                                        } else if (rdtFileExists === CheckState.TRUE) {
+                                            fs.removeFile("preloads/reactDevtools.js");
                                         }
                                     }}
-                                    icon={getAssetIDByName(rdtEmbedded ? "ic_message_delete" : "DownloadIcon")}
+                                    icon={getAssetIDByName(rdtFileExists === CheckState.TRUE ? "ic_message_delete" : "DownloadIcon")}
                                     style={{ marginLeft: 8 }}
                                 />
                             }
