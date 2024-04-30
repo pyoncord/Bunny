@@ -2,10 +2,8 @@
 import swc from "@swc/core";
 import { execSync } from "child_process";
 import esbuild from "esbuild";
-import { copyFileSync } from "fs";
 import { readFile } from "fs/promises";
 import { createServer } from "http";
-import path from "path";
 import { argv } from "process";
 
 const isFlag = (s, l) => argv.slice(2).some(c => c === `-${s}` || c === `--${l}`);
@@ -73,7 +71,6 @@ try {
 
                     build.onEnd(result => {
                         const { outfile } = build.initialOptions;
-                        copyFileSync(outfile, path.resolve(outfile, "..", "pyondetta.js"));
                         console.log(`Built with ${result.errors?.length} errors!`);
                     });
                 }

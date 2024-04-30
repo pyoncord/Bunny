@@ -1,7 +1,5 @@
 name: Build
-on:
-    push:
-          branches: [main, legacy]
+on: [push]
 
 jobs:
     build:
@@ -14,7 +12,7 @@ jobs:
           - name: Checkout builds
             uses: actions/checkout@v4
             with:
-                repository: ${{ github.ref_name == 'legacy' && 'pyoncord/detta-builds' || 'pyoncord/builds' }}
+                repository: 'pyoncord/detta-builds'
                 path: "builds"
                 token: ${{ secrets.PYLIX_TOKEN }}
           - uses: actions/setup-node@v4
