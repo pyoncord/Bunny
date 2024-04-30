@@ -1,13 +1,18 @@
-import { after, instead } from "@lib/api/patcher";
-
+import { instead } from "@lib/api/patcher";
 
 export type MetroModules = { [id: string]: any; };
 export type PropIntellisense<P extends string | symbol> = Record<P, any> & Record<PropertyKey, any>;
 export type PropsFinder = <T extends string | symbol>(...props: T[]) => PropIntellisense<T>;
 export type PropsFinderAll = <T extends string | symbol>(...props: T[]) => PropIntellisense<T>[];
 
+interface MetroRequire {
+    (moduleId: string): any;
+    importDefault(moduleId: string): any;
+    importAll(moduleId: string): any;
+}
+
 // Metro global vars
-declare var __r: (moduleId: string) => any;
+declare var __r: MetroRequire;
 declare var modules: MetroModules;
 
 // Function to blacklist a module, preventing it from being searched again
@@ -24,8 +29,25 @@ for (const id in window.modules) {
     const moduleDefinition = window.modules[id];
 
     if (moduleDefinition.factory) {
-        after("factory", moduleDefinition, ({ 4: moduleObject }) => {
-            if (moduleObject.exports) onModuleRequire(moduleObject.exports);
+        instead("factory", moduleDefinition, (args, orig) => {
+            const { 1: metroRequire, 4: moduleObject } = args;
+
+            args[2 /* metroImportDefault */] = (id: string) => {
+                const exp = metroRequire(id);
+                return exp && exp.__esModule ? exp.default : exp;
+            };
+
+            args[3 /* metroImportAll */] = (id: string) => {
+                const exp = metroRequire(id);
+                if (exp && exp.__esModule) return exp;
+
+                const importAll: Record<string, any> = {};
+                if (exp) Object.assign(importAll, exp);
+                return importAll.default = exp, importAll;
+            };
+
+            orig(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
+            if (moduleObject.exports) onModuleRequire(moduleObject.exports, id);
         });
     }
 }
@@ -42,7 +64,7 @@ for (const id in window.modules) {
 
 let patchedInspectSource = false;
 
-function onModuleRequire(exports: any) {
+function onModuleRequire(exports: any, id: string) {
     // There are modules registering the same native component
     if (exports?.default?.name === "requireNativeComponent") {
         instead("default", exports, (args, orig) => {
