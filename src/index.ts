@@ -10,6 +10,7 @@ import { removeFile, writeFile } from "@lib/api/native/fs";
 import { isPyonLoader, isThemeSupported } from "@lib/api/native/loader";
 import { FileManager } from "@lib/api/native/modules";
 import { patchLogHook } from "@lib/debug";
+import { updateFonts } from "@lib/managers/fonts";
 import { initPlugins } from "@lib/managers/plugins";
 import { initThemes, patchChatBackground } from "@lib/managers/themes";
 import { patchSettings } from "@lib/ui/settings";
@@ -59,6 +60,9 @@ export default async () => {
 
     // Once done, load plugins
     lib.unload.push(await initPlugins());
+
+    // Update the fonts
+    updateFonts();
 
     // We good :)
     logger.log("Bunny is ready!");
