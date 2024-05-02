@@ -4,7 +4,8 @@ import { safeFetch } from "@lib/utils";
 
 type FontMap = Record<string, string>;
 
-interface FontDefinition {
+export interface FontDefinition {
+    id: string;
     name: string;
     description: string;
     hash: string;
@@ -45,7 +46,7 @@ export async function fetchFont(id: string, selected = false) {
 
     fonts[id] = {
         // @ts-expect-error
-        __source: id,
+        id,
         ...fontDefJson
     };
 

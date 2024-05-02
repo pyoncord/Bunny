@@ -1,6 +1,6 @@
 import { Strings } from "@core/i18n";
 import { getAssetIDByName } from "@lib/api/assets";
-import { isThemeSupported } from "@lib/api/native/loader";
+import { isFontSupported, isThemeSupported } from "@lib/api/native/loader";
 import { useProxy } from "@lib/api/storage";
 import { settings } from "@lib/settings";
 import { registerSection } from "@lib/ui/settings";
@@ -37,6 +37,13 @@ export default function initSettings() {
                 icon: getAssetIDByName("PaintPaletteIcon"),
                 render: () => import("@core/ui/settings/pages/Themes"),
                 usePredicate: () => isThemeSupported()
+            },
+            {
+                key: "BUNNY_FONTS",
+                title: () => Strings.FONTS,
+                icon: getAssetIDByName("ic_add_text"),
+                render: () => import("@core/ui/settings/pages/Fonts"),
+                usePredicate: () => isFontSupported()
             },
             {
                 key: "BUNNY_DEVELOPER",

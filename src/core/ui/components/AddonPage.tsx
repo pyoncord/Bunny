@@ -69,7 +69,7 @@ export default function AddonPage<T>({ floatingButtonText, fetchFunction, items,
                 }}
                 style={{ paddingHorizontal: 10, paddingTop: 10 }}
                 contentContainerStyle={{ paddingBottom: 90, paddingHorizontal: 5 }}
-                data={getItemsByQuery(Object.values(items), search)}
+                data={getItemsByQuery(Object.values(items).filter(i => typeof i === "object"), search)}
                 renderItem={({ item, index }) => <CardComponent item={item} index={index} />}
             />
             <FloatingActionButton
