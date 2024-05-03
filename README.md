@@ -1,4 +1,4 @@
-# Bunny ![Discord](https://img.shields.io/discord/1196075698301968455?style=social&logo=discord&label=%20&link=https%3A%2F%2Fdiscord.gg%2FXjYgWXHb9Q)
+# Bunny [![Discord](https://img.shields.io/discord/1196075698301968455?style=social&logo=discord&label=Pyoncord)](https://discord.gg/XjYgWXHb9Q)
 A mod for Discord's mobile apps, a fork of [Vendetta](https://github.com/vendetta-mod/Vendetta/).
 
 ## Installing
