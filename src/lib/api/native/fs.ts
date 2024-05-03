@@ -6,7 +6,7 @@ import { FileManager } from "./modules";
  */
 export async function clearFolder(path: string, prefix = "pyoncord/") {
     if (typeof FileManager.clearFolder !== "function") throw new Error("'fs.clearFolder' is not supported");
-    return void await FileManager.removeFile("documents", `${prefix}${path}`);
+    return void await FileManager.clearFolder("documents", `${prefix}${path}`);
 }
 
 /**

@@ -5,10 +5,10 @@ import { safeFetch } from "@lib/utils";
 type FontMap = Record<string, string>;
 
 export interface FontDefinition {
-    id: string;
+    /** @internal */
+    __source: string;
     name: string;
-    description: string;
-    hash: string;
+    description?: string;
     spec: 1;
     main: FontMap;
 }
@@ -25,6 +25,17 @@ async function writeFont(font: FontDefinition | null) {
     }
 }
 
+export async function validateFont(font: FontDefinition) {
+    if (!font || typeof font !== "object") throw new Error("URL returned a nul/non-object JSON");
+    if (typeof font.spec !== "number") throw new Error("Invalid font 'spec' number");
+    if (font.spec !== 1) throw new Error("Only fonts which follows spec:1 are supported");
+
+    const requiredFields = ["name", "main"] as const;
+    if (requiredFields.some(f => !font[f])) {
+        throw new Error(`Font is missing one of the fields: ${requiredFields}`);
+    }
+}
+
 export async function fetchFont(id: string, selected = false) {
     let fontDefJson: FontDefinition;
 
@@ -33,6 +44,8 @@ export async function fetchFont(id: string, selected = false) {
     } catch (e) {
         throw new Error(`Failed to fetch theme at ${id}`, { cause: e });
     }
+
+    validateFont(fontDefJson);
 
     try {
         await Promise.all(Object.entries(fontDefJson.main).map(async ([font, url]) => {
@@ -46,7 +59,7 @@ export async function fetchFont(id: string, selected = false) {
 
     fonts[id] = {
         // @ts-expect-error
-        id,
+        __source: id,
         ...fontDefJson
     };
 
@@ -72,8 +85,8 @@ export async function selectFont(id: string | null) {
 export async function removeFont(id: string) {
     const selected = fonts.__selected === id;
     if (selected) await selectFont(null);
-    await clearFolder(`downloads/fonts/${fonts[id].name}`);
     delete fonts[id];
+    await clearFolder(`downloads/fonts/${fonts[id].name}`);
 }
 
 export async function updateFonts() {
