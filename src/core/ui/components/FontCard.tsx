@@ -12,19 +12,19 @@ export default function FontCard({ item: font, index }: CardWrapper<FontDefiniti
     useProxy(fonts);
 
     const removeMode = useContext(RemoveModeContext);
-    const selected = fonts.__selected === font.__source;
+    const selected = fonts.__selected === font.name;
 
     return <TableRowGroup key={index}>
         <TableRow
             label={font.name}
             subLabel={font.description}
             trailing={
-                <Pressable onPress={() => selectFont(selected ? null : font.__source)}>
+                <Pressable onPress={() => selectFont(selected ? null : font.name)}>
                     {!removeMode ? <FormCheckbox checked={selected} /> : <IconButton
                         size="sm"
                         variant="secondary"
                         icon={getAssetIDByName("TrashIcon")}
-                        onPress={() => removeFont(font.__source)}
+                        onPress={() => removeFont(font.name)}
                     />}
                 </Pressable>
             }

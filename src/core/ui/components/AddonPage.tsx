@@ -19,7 +19,7 @@ interface AddonPageProps<T> {
     title: string;
     floatingButtonText: string;
     fetchFunction: (url: string) => Promise<void>;
-    items: Record<string, T & ({ id: string; } | { __source: string; })>;
+    items: Record<string, T & ({ id: string; } | { name: string; })>;
     safeModeMessage: string;
     safeModeExtras?: JSX.Element | JSX.Element[];
     card: React.ComponentType<CardWrapper<T>>;
@@ -32,7 +32,7 @@ function getItemsByQuery<T extends AddonPageProps<unknown>["items"][string]>(ite
     return fuzzysort.go(query, items, {
         keys: [
             "id",
-            "__source",
+            "name",
             "manifest.name",
             "manifest.description",
             "manifest.authors.0.name",

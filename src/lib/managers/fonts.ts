@@ -5,8 +5,6 @@ import { safeFetch } from "@lib/utils";
 type FontMap = Record<string, string>;
 
 export interface FontDefinition {
-    /** @internal */
-    __source: string;
     name: string;
     description?: string;
     spec: 1;
@@ -31,18 +29,19 @@ export async function validateFont(font: FontDefinition) {
     if (font.spec !== 1) throw new Error("Only fonts which follows spec:1 are supported");
 
     const requiredFields = ["name", "main"] as const;
-    if (requiredFields.some(f => !font[f])) {
-        throw new Error(`Font is missing one of the fields: ${requiredFields}`);
-    }
+
+    if (requiredFields.some(f => !font[f])) throw new Error(`Font is missing one of the fields: ${requiredFields}`);
+    if (font.name.startsWith("__")) throw new Error("Font names cannot start with __");
+    if (font.name in fonts) throw new Error(`There is already a font named ${font.name} installed`);
 }
 
-export async function fetchFont(id: string, selected = false) {
+export async function fetchFont(url: string, selected = false) {
     let fontDefJson: FontDefinition;
 
     try {
-        fontDefJson = await (await safeFetch(id, { cache: "no-store" })).json();
+        fontDefJson = await (await safeFetch(url, { cache: "no-store" })).json();
     } catch (e) {
-        throw new Error(`Failed to fetch theme at ${id}`, { cause: e });
+        throw new Error(`Failed to fetch theme at ${url}`, { cause: e });
     }
 
     validateFont(fontDefJson);
@@ -57,29 +56,25 @@ export async function fetchFont(id: string, selected = false) {
         throw new Error("Failed to download font assets", { cause: e });
     }
 
-    fonts[id] = {
-        // @ts-expect-error
-        __source: id,
-        ...fontDefJson
-    };
+    fonts[url] = fontDefJson;
 
     // TODO: Should we prompt when the selected font is updated?
-    if (selected) writeFont(fonts[id]);
+    if (selected) writeFont(fonts[url]);
 }
 
-export async function installFont(id: string, selected = true) {
-    if (typeof id !== "string" || id in fonts) {
+export async function installFont(name: string, selected = true) {
+    if (typeof name !== "string" || name in fonts) {
         throw new Error("Invalid id or font was already installed");
     }
 
-    await fetchFont(id);
-    if (selected) await selectFont(id);
+    await fetchFont(name);
+    if (selected) await selectFont(name);
 }
 
-export async function selectFont(id: string | null) {
-    if (id) fonts.__selected = id;
+export async function selectFont(name: string | null) {
+    if (name) fonts.__selected = name;
     else delete fonts.__selected;
-    await writeFont(id == null ? null : fonts[id]);
+    await writeFont(name == null ? null : fonts[name]);
 }
 
 export async function removeFont(id: string) {
@@ -93,7 +88,7 @@ export async function updateFonts() {
     await awaitSyncWrapper(fonts);
     await Promise.allSettled(
         Object.keys(fonts).map(
-            id => fetchFont(id, fonts.__selected === id)
+            name => fetchFont(name, fonts.__selected === name)
         )
     );
 }
