@@ -104,6 +104,7 @@ try {
                                     "transform-classes"
                                 ],
                                 exclude: [
+                                    "transform-async-to-generator",
                                     "transform-exponentiation-operator",
                                     "transform-named-capturing-groups-regex",
                                     "transform-nullish-coalescing-operator",
