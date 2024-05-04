@@ -1,4 +1,4 @@
-export * as common from "./common";
+export * from "./utils";
 export {
     find,
     findAll,
@@ -10,6 +10,7 @@ export {
     findByPropsAll,
     findByStoreName,
     findByTypeName,
-    findByTypeNameAll,
+    findByTypeNameAll
 } from "./filters";
 export * as filters from "./filters";
+export * as common from "./common";

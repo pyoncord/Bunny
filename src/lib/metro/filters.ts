@@ -1,81 +1,67 @@
 import { instead } from "@lib/api/patcher";
+import type { Metro } from "@metro/types";
+import { metroRequire, modules } from "@metro/utils";
 
-export type MetroModules = { [id: string]: any; };
-export type PropIntellisense<P extends string | symbol> = Record<P, any> & Record<PropertyKey, any>;
-export type PropsFinder = <T extends string | symbol>(...props: T[]) => PropIntellisense<T>;
-export type PropsFinderAll = <T extends string | symbol>(...props: T[]) => PropIntellisense<T>[];
+export type PropIntellisense<P extends PropertyKey> = Record<P, any> & Record<PropertyKey, any>;
+export type PropsFinder = <T extends PropertyKey>(...props: T[]) => PropIntellisense<T>;
+export type PropsFinderAll = <T extends PropertyKey>(...props: T[]) => PropIntellisense<T>[];
 
-interface MetroRequire {
-    (moduleId: string): any;
-    importDefault(moduleId: string): any;
-    importAll(moduleId: string): any;
+/** Makes the module associated with the specified ID non-enumberable. */
+function blacklistModule(id: Metro.ModuleID) {
+    Object.defineProperty(modules, id, { enumerable: false });
 }
-
-// Metro global vars
-declare var __r: MetroRequire;
-declare var modules: MetroModules;
-
-// Function to blacklist a module, preventing it from being searched again
-const blacklist = (id: string) => Object.defineProperty(window.modules, id, {
-    value: window.modules[id],
-    enumerable: false,
-    configurable: true,
-    writable: true
-});
 
 const functionToString = Function.prototype.toString;
 
-for (const id in window.modules) {
-    const moduleDefinition = window.modules[id];
+for (const id in modules) {
+    const metroModule = modules[id];
 
-    if (moduleDefinition.factory) {
-        instead("factory", moduleDefinition, (args, orig) => {
+    if (metroModule!.factory) {
+        instead("factory", metroModule, ((args: Parameters<Metro.FactoryFn>, origFunc: Metro.FactoryFn) => {
             const { 1: metroRequire, 4: moduleObject } = args;
 
-            args[2 /* metroImportDefault */] = (id: string) => {
-                const exp = metroRequire(id);
-                return exp && exp.__esModule ? exp.default : exp;
+            args[2 /* metroImportDefault */] = id => {
+                const exps = metroRequire(id);
+                return exps && exps.__esModule ? exps.default : exps;
             };
 
-            args[3 /* metroImportAll */] = (id: string) => {
-                const exp = metroRequire(id);
-                if (exp && exp.__esModule) return exp;
+            args[3 /* metroImportAll */] = id => {
+                const exps = metroRequire(id);
+                if (exps && exps.__esModule) return exps;
 
                 const importAll: Record<string, any> = {};
-                if (exp) Object.assign(importAll, exp);
-                return importAll.default = exp, importAll;
+                if (exps) Object.assign(importAll, exps);
+                importAll.default = exps;
+                return importAll;
             };
 
-            orig(...args);
+            origFunc(...args);
             if (moduleObject.exports) onModuleRequire(moduleObject.exports);
-        });
+        }) as any); // If only spitroast had better types
     }
 }
 
 // Blacklist any "bad-actor" modules, e.g. the dreaded null proxy, the window itself, or undefined modules
-for (const id in window.modules) {
-    const module = requireModule(id);
+for (const id in modules) {
+    const moduleExports = requireModule(id);
 
-    if (!module || module === window || module["Revenge EOL when?"] === null) {
-        blacklist(id);
-        continue;
-    }
+    if (!moduleExports || moduleExports === window || moduleExports["Revenge EOL when?"] === null)
+        blacklistModule(id);
 }
 
 let patchedInspectSource = false;
 
-function onModuleRequire(exports: any) {
+function onModuleRequire(moduleExports: any) {
     // Temporary
-    exports.initSentry &&= () => { };
-    if (exports.default?.track && exports.default.trackMaker) {
-        exports.default.track = () => Promise.resolve();
-    }
+    moduleExports.initSentry &&= () => undefined;
+    if (moduleExports.default?.track && moduleExports.default.trackMaker)
+        moduleExports.default.track = () => Promise.resolve();
 
     // There are modules registering the same native component
-    if (exports?.default?.name === "requireNativeComponent") {
-        instead("default", exports, (args, orig) => {
+    if (moduleExports?.default?.name === "requireNativeComponent") {
+        instead("default", moduleExports, (args, origFunc) => {
             try {
-                return orig(...args);
+                return origFunc(...args);
             } catch {
                 return args[0];
             }
@@ -83,9 +69,9 @@ function onModuleRequire(exports: any) {
     }
 
     // Hook DeveloperExperimentStore
-    if (exports?.default?.constructor?.displayName === "DeveloperExperimentStore") {
-        exports.default = new Proxy(exports.default, {
-            get: (target, property, receiver) => {
+    if (moduleExports?.default?.constructor?.displayName === "DeveloperExperimentStore") {
+        moduleExports.default = new Proxy(moduleExports.default, {
+            get(target, property, receiver) {
                 if (property === "isDeveloper") {
                     // Hopefully won't explode accessing it here :3
                     const { settings } = require("@lib/settings");
@@ -99,66 +85,90 @@ function onModuleRequire(exports: any) {
 
     // Funny infinity recursion caused by a race condition
     if (!patchedInspectSource && window["__core-js_shared__"]) {
-        const inspect = (f: Function) => typeof f === "function" && functionToString.apply(f, []);
+        const inspect = (f: unknown) => typeof f === "function" && functionToString.apply(f, []);
         window["__core-js_shared__"].inspectSource = inspect;
         patchedInspectSource = true;
     }
 }
 
-function requireModule(id: string) {
-    if (modules[id].isInitialized) return __r(id);
+const noopHandler = () => undefined;
+
+function requireModule(id: Metro.ModuleID) {
+    if (modules[id]!.isInitialized) return metroRequire(id);
 
     // Disable Internal Metro error reporting logic
-    const originalHandler = window.ErrorUtils.getGlobalHandler();
-    window.ErrorUtils.setGlobalHandler(null);
+    const originalHandler = ErrorUtils.getGlobalHandler();
+    ErrorUtils.setGlobalHandler(noopHandler);
 
+    let moduleExports;
     try {
-        var exports = __r(id); // metroRequire(id);
+        moduleExports = metroRequire(id);
     } catch {
-        var exports = undefined;
+        moduleExports = undefined;
     }
 
     // Done initializing! Now, revert our hacks
-    window.ErrorUtils.setGlobalHandler(originalHandler);
+    ErrorUtils.setGlobalHandler(originalHandler);
 
-    return exports;
+    return moduleExports;
 }
 
-function* getModules() {
-    yield require("./polyfills/redesign");
+function* getModuleExports() {
+    yield require("@metro/polyfills/redesign");
 
     for (const id in modules) {
         yield requireModule(id);
     }
 }
 
-// Function to filter through modules
-const filterModules = (modules: MetroModules, single = false) => (filter: (m: any) => boolean) => {
-    const found = [];
+type ExportsFilter = (moduleExports: any) => unknown;
 
-    for (const exports of getModules()) {
-        if (exports.default && exports.__esModule && filter(exports.default)) {
-            if (single) return exports.default;
-            found.push(exports.default);
-        }
+function testExports(moduleExports: any, filter: ExportsFilter) {
+    if (moduleExports.default && moduleExports.__esModule && filter(moduleExports.default))
+        return moduleExports.default;
+    if (filter(moduleExports))
+        return moduleExports;
+}
 
-        if (filter(exports)) {
-            if (single) return exports;
-            else found.push(exports);
-        }
+/**
+ * Returns the exports of the first module where filter returns truthy, and undefined otherwise.
+ * @param filter find calls filter once for each enumerable module's exports until it finds one where filter returns a thruthy value.
+ */
+export function find(filter: ExportsFilter) {
+    for (const moduleExports of getModuleExports()) {
+        const testedExports = testExports(moduleExports, filter);
+        if (testedExports !== undefined)
+            return testedExports;
     }
+}
 
-    if (!single) return found;
-};
+/**
+ * Returns the exports of all modules where filter returns truthy.
+ * @param filter findAll calls filter once for each enumerable module's exports, adding the exports to the returned array when filter returns a thruthy value.
+ */
+export function findAll(filter: ExportsFilter) {
+    const foundExports: any[] = [];
+    for (const moduleExports of getModuleExports()) {
+        const testedExports = testExports(moduleExports, filter);
+        if (testedExports !== undefined)
+            foundExports.push(testedExports);
+    }
+    return foundExports;
+}
 
-export const find = filterModules(modules, true);
-export const findAll = filterModules(modules);
-
-const propsFilter = (props: (string | symbol)[]) => (m: any) => props.every(p => m[p] !== undefined);
-const nameFilter = (name: string, defaultExp: boolean) => (defaultExp ? (m: any) => m?.name === name : (m: any) => m?.default?.name === name);
-const dNameFilter = (displayName: string, defaultExp: boolean) => (defaultExp ? (m: any) => m?.displayName === displayName : (m: any) => m?.default?.displayName === displayName);
-const tNameFilter = (typeName: string, defaultExp: boolean) => (defaultExp ? (m: any) => m?.type?.name === typeName : (m: any) => m?.default?.type?.name === typeName);
-const storeFilter = (name: string) => (m: any) => m.getName && m.getName.length === 0 && m.getName() === name;
+const propsFilter = (props: PropertyKey[]) =>
+    (exps: any) => props.every(p => exps[p] !== undefined);
+const nameFilter = (name: string, defaultExp: boolean) => defaultExp
+    ? (exps: any) => exps?.name === name
+    : (exps: any) => exps?.default?.name === name;
+const dNameFilter = (displayName: string, defaultExp: boolean) => defaultExp
+    ? (exps: any) => exps?.displayName === displayName
+    : (exps: any) => exps?.default?.displayName === displayName;
+const tNameFilter = (typeName: string, defaultExp: boolean) => defaultExp
+    ? (exps: any) => exps?.type?.name === typeName
+    : (exps: any) => exps?.default?.type?.name === typeName;
+const storeFilter = (name: string) =>
+    (exps: any) => exps.getName && exps.getName.length === 0 && exps.getName() === name;
 
 export const findByProps: PropsFinder = (...props) => find(propsFilter(props));
 export const findByPropsAll: PropsFinderAll = (...props) => findAll(propsFilter(props));

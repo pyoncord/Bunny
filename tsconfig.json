@@ -1,31 +1,35 @@
 {
-    "include": ["src"],
-    "exclude": ["node_modules"],
+    "exclude": ["dist"],
+
     "compilerOptions": {
-        "baseUrl": ".",
-        "sourceMap": true,
-        "module": "ESNext",
-        "target": "ESNext",
-        "declaration": true,
-        "emitDeclarationOnly": true,
-        "moduleResolution": "node",
-        "esModuleInterop": true,
-        "jsx": "react",
         "strict": true,
-        "stripInternal": true,
-        "forceConsistentCasingInFileNames": true,
-        "resolveJsonModule": true,
-        "skipLibCheck": true,
+
         "paths": {
-            "@lib/*": ["src/lib/*"],
-            "@core/*": ["src/core/*"],
-            "@metro/*": ["src/lib/metro/*"],
-            "@ui/*": ["src/lib/ui/*"],
-            "@types": ["src/lib/utils/types.ts"],
-            "bunny-build": ["src/modules.d.ts"]
+            "@core/*": ["./src/core/*"],
+            "@lib": ["./src/lib"],
+            "@lib/*": ["./src/lib/*"],
+            "@metro": ["./src/lib/metro"],
+            "@metro/*": ["./src/lib/metro/*"],
+            "@ui": ["./src/lib/ui"],
+            "@ui/*": ["./src/lib/ui/*"],
+            "@types": ["./src/lib/utils/types.ts"],
+            "bunny-build": ["./src/modules.d.ts"]
         },
+
+        "module": "esnext",
+        "moduleResolution": "bundler",
+        "resolveJsonModule": true,
+
+        "noEmit": true,
+
+        "allowJs": true,
+        "checkJs": true,
+
         "plugins": [
             { "transform": "typescript-transform-paths", "afterDeclarations": true }
-        ]
+        ],
+
+        "jsx": "react",
+        "target": "esnext"
     }
 }
