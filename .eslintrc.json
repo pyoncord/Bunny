@@ -9,6 +9,10 @@
         "import-alias"
     ],
     "rules": {
+        "no-restricted-syntax": [ "error", {
+            "selector": "AwaitExpression:not(:function *)",
+            "message": "Hermes does not support top-level await, and SWC cannot transform it."
+        } ],
         "quotes": [ "error", "double", { "avoidEscape": true } ],
         "jsx-quotes": [ "error", "prefer-double" ],
         "no-mixed-spaces-and-tabs": "error",

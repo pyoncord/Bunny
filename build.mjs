@@ -94,9 +94,12 @@ try {
                                     }
                                 },
                             },
+                            // https://github.com/facebook/hermes/blob/3815fec63d1a6667ca3195160d6e12fee6a0d8d5/doc/Features.md
+                            // https://github.com/facebook/hermes/issues/696#issuecomment-1396235791
                             env: {
                                 targets: "fully supports es6",
                                 include: [
+                                    "transform-arrow-functions",
                                     "transform-block-scoping",
                                     "transform-classes"
                                 ],

@@ -1,5 +1,6 @@
 import type { Nullish } from "@types";
 
+/** @see {@link https://github.com/facebook/metro/blob/c2d7539dfc10aacb2f99fcc2f268a3b53e867a90/packages/metro-runtime/src/polyfills/require.js} */
 export namespace Metro {
     export interface DependencyMap {
         readonly [indexer: number]: ModuleID;
