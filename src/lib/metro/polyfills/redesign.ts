@@ -1,4 +1,4 @@
-import "@metro/index";
+import { metroRequire, modules } from "@metro";
 
 import { LiteralUnion } from "type-fest";
 
@@ -103,25 +103,23 @@ type Keys = LiteralUnion<typeof redesignProps extends Set<infer U> ? U : string,
 const redesignPropSource = {} as Record<Keys, any>;
 const redesignModule = {} as Record<Keys, any>;
 
-for (const id in window.modules) {
-    const exports = window.__r(id);
-    polyfillRedesignModule(exports);
+for (const id in modules) {
+    const moduleExports = metroRequire(id);
+    polyfillRedesignModule(moduleExports);
 }
 
-function polyfillRedesignModule(exports: any) {
+function polyfillRedesignModule(moduleExports: any) {
     const propMap = new Map<string, string | null>();
 
     for (const prop of redesignProps) {
-        if (exports?.[prop]) {
+        if (moduleExports?.[prop])
             propMap.set(prop, null);
-        }
-        else if (exports?.default?.[prop]) {
+        else if (moduleExports?.default?.[prop])
             propMap.set(prop, "default");
-        }
     }
 
     for (const [prop, defaultKey] of propMap) {
-        const exportsForProp = defaultKey ? exports[defaultKey] : exports;
+        const exportsForProp = defaultKey ? moduleExports[defaultKey] : moduleExports;
 
         if (redesignModule[prop]) {
             if (Object.keys(exportsForProp).length < Object.keys(redesignPropSource[prop]).length) {

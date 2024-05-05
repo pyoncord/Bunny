@@ -1,5 +1,7 @@
 import { LiteralUnion } from "type-fest";
 
+export type Nullish = null | undefined;
+
 export type OptionalKeys<T extends Array<string>> = LiteralUnion<T[number], string>;
 
 export interface Author {

@@ -1,3 +1,96 @@
+import type { Nullish } from "@types";
+
+/** @see {@link https://github.com/facebook/metro/blob/c2d7539dfc10aacb2f99fcc2f268a3b53e867a90/packages/metro-runtime/src/polyfills/require.js} */
+export namespace Metro {
+    export interface DependencyMap {
+        readonly [indexer: number]: ModuleID;
+        readonly paths?: Readonly<Record<ModuleID, string>> | undefined;
+    }
+
+    export type InverseDependencyMap = Record<ModuleID, ModuleID[]>;
+
+    export type FactoryFn = (
+        global: object,
+        require: RequireFn,
+        metroImportDefault: RequireFn,
+        metroImportAll: RequireFn,
+        moduleObject: {
+            exports: any;
+        },
+        exports: any,
+        dependencyMap: DependencyMap | Nullish,
+    ) => void;
+
+    export interface HotModuleReloadingData {
+        _acceptCallback: (() => void) | Nullish;
+        _disposeCallback: (() => void) | Nullish;
+        _didAccept: boolean;
+        accept: (callback?: (() => void) | undefined) => void;
+        dispose: (callback?: (() => void) | undefined) => void;
+    }
+
+    export type ModuleID = string | number;
+
+    export interface Module {
+        id?: ModuleID | undefined;
+        exports: any;
+        hot?: HotModuleReloadingData | undefined;
+    }
+
+    export interface ModuleDefinition {
+        dependencyMap: DependencyMap | Nullish;
+        error?: any;
+        factory: FactoryFn | undefined;
+        hasError: boolean;
+        hot?: HotModuleReloadingData | undefined;
+        importedAll: any;
+        importedDefault: any;
+        isInitialized: boolean;
+        path?: string | undefined;
+        publicModule: Module;
+        verboseName?: string | undefined;
+    }
+
+    export type ModuleList = Record<ModuleID, ModuleDefinition | Nullish>;
+
+    export type RequireFn = (id: ModuleID) => any;
+
+    export type DefineFn = (
+        factory: FactoryFn,
+        moduleId: ModuleID,
+        dependencyMap?: DependencyMap | undefined,
+        verboseName?: string | undefined,
+        inverseDependencies?: InverseDependencyMap | undefined
+    ) => void;
+
+    export type ModuleDefiner = (moduleId: ModuleID) => void;
+
+    export type ClearFn = () => ModuleList;
+
+    export type RegisterSegmentFn = (
+        segmentId: number,
+        moduleDefiner: ModuleDefiner,
+        moduleIds: Readonly<ModuleID[]> | Nullish
+    ) => void;
+
+    export interface Require extends RequireFn {
+        importDefault: RequireFn;
+        importAll: RequireFn;
+        /** @throws {Error} */
+        context: () => never;
+        /** @throws {Error} */
+        resolveWeak: () => never;
+        unpackModuleId: (moduleId: ModuleID) => {
+            localId: number;
+            segmentId: number;
+        };
+        packModuleId: (value: {
+            localId: number;
+            segmentId: number;
+        }) => ModuleID;
+    }
+}
+
 export interface Dispatcher {
     _actionHandlers: unknown;
     _interceptors?: ((payload: any) => void | boolean)[];
@@ -16,4 +109,3 @@ export interface Dispatcher {
     unsubscribe(actionType: string, callback: (payload: any) => void): void;
     wait(cb: () => void): void;
 }
-
