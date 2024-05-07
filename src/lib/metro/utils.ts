@@ -1,5 +1,6 @@
 import type { Metro } from "@metro/types";
 
+// eslint-disable-next-line prefer-destructuring
 export const modules: Metro.ModuleList = window.modules;
 
 export const metroRequire: Metro.Require = window.__r;

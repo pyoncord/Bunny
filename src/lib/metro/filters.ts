@@ -6,9 +6,12 @@ export type PropIntellisense<P extends PropertyKey> = Record<P, any> & Record<Pr
 export type PropsFinder = <T extends PropertyKey>(...props: T[]) => PropIntellisense<T>;
 export type PropsFinderAll = <T extends PropertyKey>(...props: T[]) => PropIntellisense<T>[];
 
+const blacklistedIds = new Set<String>();
+
 /** Makes the module associated with the specified ID non-enumberable. */
 function blacklistModule(id: Metro.ModuleID) {
     Object.defineProperty(modules, id, { enumerable: false });
+    blacklistedIds.add(String(id));
 }
 
 const functionToString = Function.prototype.toString;
@@ -36,22 +39,24 @@ for (const id in modules) {
             };
 
             origFunc(...args);
-            if (moduleObject.exports) onModuleRequire(moduleObject.exports);
+            if (moduleObject.exports) onModuleRequire(moduleObject.exports, id);
         }) as any); // If only spitroast had better types
     }
 }
 
 // Blacklist any "bad-actor" modules, e.g. the dreaded null proxy, the window itself, or undefined modules
 for (const id in modules) {
+    if (blacklistedIds.has(id)) continue;
     const moduleExports = requireModule(id);
 
-    if (!moduleExports || moduleExports === window || moduleExports["Revenge EOL when?"] === null)
+    if (!moduleExports || moduleExports === window || moduleExports["i think pyoncord eol tomorrow idk tho"] === null)
         blacklistModule(id);
 }
 
+const noopHandler = () => undefined;
 let patchedInspectSource = false;
 
-function onModuleRequire(moduleExports: any) {
+function onModuleRequire(moduleExports: any, id: Metro.ModuleID) {
     // Temporary
     moduleExports.initSentry &&= () => undefined;
     if (moduleExports.default?.track && moduleExports.default.trackMaker)
@@ -89,9 +94,17 @@ function onModuleRequire(moduleExports: any) {
         window["__core-js_shared__"].inspectSource = inspect;
         patchedInspectSource = true;
     }
-}
 
-const noopHandler = () => undefined;
+    // Explosion (no, I can't explain this, don't ask) ((hi rosie))
+    if (moduleExports.findHostInstance_DEPRECATED) {
+        const numberedId = Number(id);
+        const prevExports = modules[numberedId - 1]?.publicModule.exports;
+        const inc = prevExports.default?.reactProfilingEnabled ? 1 : -1;
+        if (!modules[numberedId + inc]?.isInitialized) {
+            blacklistModule(numberedId + inc);
+        }
+    }
+}
 
 function requireModule(id: Metro.ModuleID) {
     if (modules[id]!.isInitialized) return metroRequire(id);
