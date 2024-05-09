@@ -97,7 +97,7 @@ export async function evalPlugin(plugin: BunnyPlugin) {
         },
         logger: new logModule(`Bunny » ${plugin.manifest.name}`),
     };
-    const pluginString = `vendetta=>{return ${plugin.js}}\n//# sourceURL=${plugin.id}`;
+    const pluginString = `vendetta=>{return ${plugin.js}}\n//# sourceURL=${plugin.id}?hash=${plugin.manifest.hash}`;
 
     const raw = (0, eval)(pluginString)(vendettaForPlugins);
     const ret = typeof raw === "function" ? raw() : raw;

@@ -3,7 +3,6 @@ import { initFetchI18nStrings } from "@core/i18n";
 import { initCorePlugins } from "@core/plugins";
 import initSettings from "@core/ui/settings";
 import { initVendettaObject } from "@core/vendettaObject";
-import { patchAssets } from "@lib/api/assets";
 import { patchCommands } from "@lib/api/commands";
 import { injectFluxInterceptor } from "@lib/api/flux";
 import { removeFile, writeFile } from "@lib/api/native/fs";
@@ -41,7 +40,6 @@ export default async () => {
         injectFluxInterceptor(),
         patchSettings(),
         patchLogHook(),
-        patchAssets(),
         patchCommands(),
         patchChatBackground(),
         initVendettaObject(),
