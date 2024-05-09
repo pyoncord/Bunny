@@ -4,13 +4,12 @@ import { instead } from "spitroast";
 // @ts-ignore - shut up fr
 globalThis.window = globalThis;
 
-const init = () => {
+async function initializeBunny() {
     try {
-        // This logs in the native logging implementation, e.g. logcat
-        console.log("Hello from Bunny! Pyon!");
-
         // Make 'freeze' and 'seal' do nothing
         Object.freeze = Object.seal = Object;
+
+        await require("@metro/caches").initMetroCache();
 
         require(".").default();
     } catch (e) {
@@ -25,18 +24,18 @@ const init = () => {
             stack || e?.toString?.(),
         ].join("\n"));
     }
-};
+}
 
 // @ts-ignore
 if (typeof globalThis.__r !== "undefined") {
-    init();
+    initializeBunny();
 } else {
     // We hold calls from the native side
     function onceIndexRequired(originalRequire: any) {
         const batchedBridge = window.__fbBatchedBridge;
 
         const callQueue = new Array<any>;
-        const unpatch = instead("callFunctionReturnFlushedQueue", batchedBridge, (args, orig) => {
+        const unpatchHook = instead("callFunctionReturnFlushedQueue", batchedBridge, (args, orig) => {
             if (args[0] === "AppRegistry" || !batchedBridge.getCallableModule(args[0])) {
                 callQueue.push(args);
                 return batchedBridge.flushedQueue();
@@ -45,9 +44,9 @@ if (typeof globalThis.__r !== "undefined") {
             return orig.apply(batchedBridge, args);
         });
 
-        const startDiscord = () => {
-            init();
-            unpatch();
+        const startDiscord = async () => {
+            await initializeBunny();
+            unpatchHook();
             originalRequire(0);
 
             callQueue.forEach(arg =>

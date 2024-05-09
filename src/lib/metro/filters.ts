@@ -2,16 +2,24 @@ import { instead } from "@lib/api/patcher";
 import type { Metro } from "@metro/types";
 import { metroRequire, modules } from "@metro/utils";
 
+import { getFuncUniqCall, getMetroCache, registerModuleFindCacheId } from "./caches";
+
 export type PropIntellisense<P extends PropertyKey> = Record<P, any> & Record<PropertyKey, any>;
 export type PropsFinder = <T extends PropertyKey>(...props: T[]) => PropIntellisense<T>;
 export type PropsFinderAll = <T extends PropertyKey>(...props: T[]) => PropIntellisense<T>[];
 
+metroRequire(0);
+
 const blacklistedIds = new Set<String>();
 
 /** Makes the module associated with the specified ID non-enumberable. */
-function blacklistModule(id: Metro.ModuleID) {
+function blacklistModule(id: string) {
     Object.defineProperty(modules, id, { enumerable: false });
-    blacklistedIds.add(String(id));
+    blacklistedIds.add(id);
+}
+
+function isBadExports(exports: any) {
+    return !exports || exports === window || exports["<!@ pylix was here :fuyusquish: !@>"] === null;
 }
 
 const functionToString = Function.prototype.toString;
@@ -39,18 +47,13 @@ for (const id in modules) {
             };
 
             origFunc(...args);
-            if (moduleObject.exports) onModuleRequire(moduleObject.exports, id);
+            if (!isBadExports(moduleObject.exports)) {
+                onModuleRequire(moduleObject.exports, id);
+            } else {
+                blacklistModule(id);
+            }
         }) as any); // If only spitroast had better types
     }
-}
-
-// Blacklist any "bad-actor" modules, e.g. the dreaded null proxy, the window itself, or undefined modules
-for (const id in modules) {
-    if (blacklistedIds.has(id)) continue;
-    const moduleExports = requireModule(id);
-
-    if (!moduleExports || moduleExports === window || moduleExports["i think pyoncord eol tomorrow idk tho"] === null)
-        blacklistModule(id);
 }
 
 const noopHandler = () => undefined;
@@ -101,13 +104,26 @@ function onModuleRequire(moduleExports: any, id: Metro.ModuleID) {
         const prevExports = modules[numberedId - 1]?.publicModule.exports;
         const inc = prevExports.default?.reactProfilingEnabled ? 1 : -1;
         if (!modules[numberedId + inc]?.isInitialized) {
-            blacklistModule(numberedId + inc);
+            blacklistModule(String(numberedId + inc));
         }
+    }
+
+    // Hindi timestamps moment
+    if (moduleExports.isMoment) {
+        instead("defineLocale", moduleExports, (args, orig) => {
+            const origLocale = moduleExports.locale();
+            orig(...args);
+            moduleExports.locale(origLocale);
+        });
     }
 }
 
-function requireModule(id: Metro.ModuleID) {
-    if (modules[id]!.isInitialized) return metroRequire(id);
+export function requireModule(id: Metro.ModuleID) {
+    if (blacklistedIds.has(String(id))) return undefined;
+
+    if (modules[id]?.isInitialized && !modules[id]?.hasError) {
+        return metroRequire(id);
+    }
 
     // Disable Internal Metro error reporting logic
     const originalHandler = ErrorUtils.getGlobalHandler();
@@ -117,6 +133,7 @@ function requireModule(id: Metro.ModuleID) {
     try {
         moduleExports = metroRequire(id);
     } catch {
+        blacklistModule(String(id));
         moduleExports = undefined;
     }
 
@@ -126,11 +143,16 @@ function requireModule(id: Metro.ModuleID) {
     return moduleExports;
 }
 
-function* getModuleExports() {
-    yield require("@metro/polyfills/redesign");
+function* getModules(uniqueId: string, all: boolean) {
+    yield [-1, require("@metro/polyfills/redesign")];
 
-    for (const id in modules) {
-        yield requireModule(id);
+    let cache = getMetroCache().findCache[uniqueId];
+    if (all && !cache?._) cache = undefined;
+
+    for (const id in cache ?? modules) {
+        const exports = requireModule(id);
+        if (isBadExports(exports)) continue;
+        yield [id, exports];
     }
 }
 
@@ -148,10 +170,14 @@ function testExports(moduleExports: any, filter: ExportsFilter) {
  * @param filter find calls filter once for each enumerable module's exports until it finds one where filter returns a thruthy value.
  */
 export function find(filter: ExportsFilter) {
-    for (const moduleExports of getModuleExports()) {
+    const uniqueId = getFuncUniqCall();
+
+    for (const [id, moduleExports] of getModules(uniqueId, false)) {
         const testedExports = testExports(moduleExports, filter);
-        if (testedExports !== undefined)
+        if (testedExports !== undefined) {
+            if (id !== -1) registerModuleFindCacheId(uniqueId, Number(id), false);
             return testedExports;
+        }
     }
 }
 
@@ -161,10 +187,14 @@ export function find(filter: ExportsFilter) {
  */
 export function findAll(filter: ExportsFilter) {
     const foundExports: any[] = [];
-    for (const moduleExports of getModuleExports()) {
+    const uniqueId = getFuncUniqCall();
+
+    for (const [id, moduleExports] of getModules(uniqueId, true)) {
         const testedExports = testExports(moduleExports, filter);
-        if (testedExports !== undefined)
+        if (testedExports !== undefined) {
+            if (id !== -1) registerModuleFindCacheId(uniqueId, Number(id), true);
             foundExports.push(testedExports);
+        }
     }
     return foundExports;
 }

@@ -1,5 +1,6 @@
 /* eslint-disable no-restricted-syntax */
 // eslint-disable-next-line simple-import-sort/imports
+// todo: rewrite aaaaaaaaa
 import swc from "@swc/core";
 import { execSync } from "child_process";
 import esbuild from "esbuild";
@@ -122,7 +123,7 @@ try {
                 }
             }
         ],
-        external: ["commit-hash"]
+        external: []
     });
 
     if (shouldWatch) {

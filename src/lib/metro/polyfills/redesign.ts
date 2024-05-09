@@ -1,5 +1,5 @@
-import { metroRequire, modules } from "@metro";
-
+import { getMetroCache, registerPolyfillCacheId } from "@lib/metro/caches";
+import { modules, requireModule } from "@metro";
 import { LiteralUnion } from "type-fest";
 
 const redesignProps = new Set([
@@ -103,19 +103,23 @@ type Keys = LiteralUnion<typeof redesignProps extends Set<infer U> ? U : string,
 const redesignPropSource = {} as Record<Keys, any>;
 const redesignModule = {} as Record<Keys, any>;
 
-for (const id in modules) {
-    const moduleExports = metroRequire(id);
-    polyfillRedesignModule(moduleExports);
+const cache = getMetroCache().polyfillCache.redesign_module;
+for (const id in cache ?? modules) {
+    const moduleExports = requireModule(id);
+    polyfillRedesignModule(moduleExports, Number(id));
 }
 
-function polyfillRedesignModule(moduleExports: any) {
+function polyfillRedesignModule(moduleExports: any, id: number) {
     const propMap = new Map<string, string | null>();
 
     for (const prop of redesignProps) {
-        if (moduleExports?.[prop])
+        if (moduleExports?.[prop]) {
+            registerPolyfillCacheId("redesign_module", id);
             propMap.set(prop, null);
-        else if (moduleExports?.default?.[prop])
+        } else if (moduleExports?.default?.[prop]) {
+            registerPolyfillCacheId("redesign_module", id);
             propMap.set(prop, "default");
+        }
     }
 
     for (const [prop, defaultKey] of propMap) {
