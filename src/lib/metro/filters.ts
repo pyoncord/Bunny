@@ -11,6 +11,11 @@ export type PropsFinderAll = <T extends PropertyKey>(...props: T[]) => PropIntel
 metroRequire(0);
 
 const blacklistedIds = new Set<String>();
+const noopHandler = () => undefined;
+const functionToString = Function.prototype.toString;
+
+let patchedInspectSource = false;
+let _importingModuleId: string | null = null;
 
 /** Makes the module associated with the specified ID non-enumberable. */
 function blacklistModule(id: string) {
@@ -22,13 +27,12 @@ function isBadExports(exports: any) {
     return !exports || exports === window || exports["<!@ pylix was here :fuyusquish: !@>"] === null;
 }
 
-const functionToString = Function.prototype.toString;
-
 for (const id in modules) {
     const metroModule = modules[id];
 
     if (metroModule!.factory) {
         instead("factory", metroModule, ((args: Parameters<Metro.FactoryFn>, origFunc: Metro.FactoryFn) => {
+            _importingModuleId = id;
             const { 1: metroRequire, 4: moduleObject } = args;
 
             args[2 /* metroImportDefault */] = id => {
@@ -52,18 +56,20 @@ for (const id in modules) {
             } else {
                 blacklistModule(id);
             }
+            _importingModuleId = null;
         }) as any); // If only spitroast had better types
     }
 }
-
-const noopHandler = () => undefined;
-let patchedInspectSource = false;
 
 function onModuleRequire(moduleExports: any, id: Metro.ModuleID) {
     // Temporary
     moduleExports.initSentry &&= () => undefined;
     if (moduleExports.default?.track && moduleExports.default.trackMaker)
         moduleExports.default.track = () => Promise.resolve();
+
+    if (moduleExports.registerAsset) {
+        require("@lib/api/assets").patchAssets(moduleExports);
+    }
 
     // There are modules registering the same native component
     if (moduleExports?.default?.name === "requireNativeComponent") {
@@ -116,6 +122,10 @@ function onModuleRequire(moduleExports: any, id: Metro.ModuleID) {
             moduleExports.locale(origLocale);
         });
     }
+}
+
+export function getImportingModuleId() {
+    return _importingModuleId;
 }
 
 export function requireModule(id: Metro.ModuleID) {
