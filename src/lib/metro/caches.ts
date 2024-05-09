@@ -34,19 +34,23 @@ function buildInitCache() {
         assetsCache: {}
     } as const;
 
-    // Make sure all assets are cached
-    for (const id in window.modules) {
-        require("@metro/filters").requireModule(id);
-    }
+    // Make sure all assets are cached (delay by a second
+    // because force loading all of it crashes for some reason (it shouldn't))
+    setTimeout(() => {
+        for (const id in window.modules) {
+            require("@metro/filters").requireModule(id);
+        }
+    }, 1000);
 }
 
 export async function initMetroCache() {
     const rawCache = await MMKVManager.getItem(PYON_METRO_CACHE_KEY);
-    if (rawCache == null) return buildInitCache();
+    if (rawCache == null) return void buildInitCache();
 
     try {
         metroCache = JSON.parse(rawCache);
         if (metroCache.buildNumber !== ClientInfoManager.Build) {
+            metroCache = null!;
             throw "cache invalidated; version mismatch";
         }
     } catch {
