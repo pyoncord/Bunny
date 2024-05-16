@@ -6,6 +6,7 @@ import { readFile } from "fs/promises";
 import { createServer } from "http";
 import { argv } from "process";
 
+// @ts-ignore
 const isFlag = (s, l) => argv.slice(2).some(c => c === `-${s}` || c === `--${l}`);
 
 const isRelease = isFlag("r", "release");
@@ -16,7 +17,7 @@ const commitHash = execSync("git rev-parse --short HEAD").toString().trim();
 
 try {
     const ctx = await esbuild.context({
-        entryPoints: ["src/entry.js"],
+        entryPoints: ["./src/entry.js"],
         bundle: true,
         minify: isRelease,
         format: "iife",
@@ -33,13 +34,6 @@ try {
         },
         loader: { ".png": "dataurl" },
         legalComments: "none",
-        alias: {
-            "@lib/*": "src/lib/*",
-            "@core/*": "src/core/*",
-            "@metro/*": "src/lib/metro/*",
-            "@ui/*": "src/lib/ui/*",
-            "@types": "src/utils/types.ts",
-        },
         plugins: [
             {
                 name: "runtimeGlobalAlias",
@@ -55,6 +49,7 @@ try {
                             namespace: "glob-" + key, path: args.path
                         }));
                         build.onLoad({ filter, namespace: "glob-" + key }, () => ({
+                            // @ts-ignore
                             contents: `Object.defineProperty(module, 'exports', { get: () => ${globalMap[key]} })`,
                             resolveDir: "src",
                         }));
@@ -99,16 +94,22 @@ try {
                                     }
                                 },
                             },
+                            // https://github.com/facebook/hermes/blob/3815fec63d1a6667ca3195160d6e12fee6a0d8d5/doc/Features.md
+                            // https://github.com/facebook/hermes/issues/696#issuecomment-1396235791
                             env: {
-                                targets: "defaults",
+                                targets: "fully supports es6",
                                 include: [
-                                    "transform-classes",
                                     "transform-arrow-functions",
                                     "transform-block-scoping",
-                                    "transform-class-properties"
+                                    "transform-classes"
                                 ],
                                 exclude: [
-                                    "transform-parameters"
+                                    "transform-async-to-generator",
+                                    "transform-exponentiation-operator",
+                                    "transform-named-capturing-groups-regex",
+                                    "transform-nullish-coalescing-operator",
+                                    "transform-object-rest-spread",
+                                    "transform-optional-chaining"
                                 ]
                             },
                         });
