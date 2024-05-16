@@ -81,7 +81,11 @@ export async function removeFont(name: string) {
     const selected = fonts.__selected === name;
     if (selected) await selectFont(null);
     delete fonts[name];
-    await clearFolder(`downloads/fonts/${name}`);
+    try {
+        await clearFolder(`downloads/fonts/${name}`);
+    } catch {
+        // ignore
+    }
 }
 
 export async function updateFonts() {

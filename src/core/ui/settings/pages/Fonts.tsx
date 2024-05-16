@@ -34,7 +34,7 @@ export default function Plugins() {
     return (
         <AddonPage<FontDefinition>
             title={Strings.FONTS}
-            floatingButtonText={Strings.INSTALL_PLUGIN}
+            floatingButtonText={Strings.INSTALL_FONT}
             fetchFunction={installFont}
             items={fonts as Record<string, FontDefinition>}
             safeModeMessage={Strings.SAFE_MODE_NOTICE_FONTS}
