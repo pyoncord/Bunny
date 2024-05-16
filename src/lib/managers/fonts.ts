@@ -56,10 +56,10 @@ export async function fetchFont(url: string, selected = false) {
         throw new Error("Failed to download font assets", { cause: e });
     }
 
-    fonts[url] = fontDefJson;
+    fonts[fontDefJson.name] = fontDefJson;
 
     // TODO: Should we prompt when the selected font is updated?
-    if (selected) writeFont(fonts[url]);
+    if (selected) writeFont(fonts[fontDefJson.name]);
 }
 
 export async function installFont(name: string, selected = true) {
@@ -77,11 +77,11 @@ export async function selectFont(name: string | null) {
     await writeFont(name == null ? null : fonts[name]);
 }
 
-export async function removeFont(id: string) {
-    const selected = fonts.__selected === id;
+export async function removeFont(name: string) {
+    const selected = fonts.__selected === name;
     if (selected) await selectFont(null);
-    delete fonts[id];
-    await clearFolder(`downloads/fonts/${fonts[id].name}`);
+    delete fonts[name];
+    await clearFolder(`downloads/fonts/${name}`);
 }
 
 export async function updateFonts() {
