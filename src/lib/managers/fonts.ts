@@ -1,4 +1,4 @@
-import { clearFolder, downloadFile, removeFile, writeFile } from "@lib/api/native/fs";
+import { clearFolder, downloadFile, fileExists, removeFile, writeFile } from "@lib/api/native/fs";
 import { awaitSyncWrapper, createMMKVBackend, createStorage, wrapSync } from "@lib/api/storage";
 import { safeFetch } from "@lib/utils";
 
@@ -7,7 +7,7 @@ type FontMap = Record<string, string>;
 export interface FontDefinition {
     spec: 1;
     name: string;
-    description?: string;
+    previewText?: string;
     main: FontMap;
     __source?: string;
 }
@@ -24,8 +24,8 @@ async function writeFont(font: FontDefinition | null) {
     }
 }
 
-export async function validateFont(font: FontDefinition) {
-    if (!font || typeof font !== "object") throw new Error("URL returned a nul/non-object JSON");
+export function validateFont(font: FontDefinition) {
+    if (!font || typeof font !== "object") throw new Error("URL returned a null/non-object JSON");
     if (typeof font.spec !== "number") throw new Error("Invalid font 'spec' number");
     if (font.spec !== 1) throw new Error("Only fonts which follows spec:1 are supported");
 
@@ -58,7 +58,8 @@ export async function saveFont(data: string | FontDefinition, selected = false) 
         await Promise.all(Object.entries(fontDefJson.main).map(async ([font, url]) => {
             let ext = url.split(".").pop();
             if (ext !== "ttf" && ext !== "otf") ext = "ttf";
-            await downloadFile(url, `downloads/fonts/${fontDefJson.name}/${font}.${ext}`);
+            const path = `downloads/fonts/${fontDefJson.name}/${font}.${ext}`;
+            if (!await fileExists(path)) await downloadFile(url, path);
         }));
     } catch (e) {
         throw new Error("Failed to download font assets", { cause: e });
@@ -66,21 +67,24 @@ export async function saveFont(data: string | FontDefinition, selected = false) 
 
     fonts[fontDefJson.name] = fontDefJson;
 
-    // TODO: Should we prompt when the selected font is updated?
     if (selected) writeFont(fonts[fontDefJson.name]);
+    return fontDefJson;
 }
 
-export async function installFont(name: string, selected = true) {
-    if (typeof name !== "string" || name in fonts) {
-        throw new Error("Invalid id or font was already installed");
+export async function installFont(url: string, selected = false) {
+    if (typeof url !== "string" || Object.values(fonts).some(f => typeof f === "object" && f.__source === url)
+    ) {
+        throw new Error("Invalid source or font was already installed");
     }
 
-    await saveFont(name);
-    if (selected) await selectFont(name);
+    const font = await saveFont(url);
+    if (selected) await selectFont(font.name);
 }
 
 export async function selectFont(name: string | null) {
-    if (name && typeof name === "string") {
+    if (name && !(name in fonts)) throw new Error("Selected font does not exist!");
+
+    if (name) {
         fonts.__selected = name;
     } else {
         delete fonts.__selected;
@@ -103,7 +107,7 @@ export async function updateFonts() {
     await awaitSyncWrapper(fonts);
     await Promise.allSettled(
         Object.keys(fonts).map(
-            name => saveFont(name, fonts.__selected === name)
+            name => saveFont(fonts[name], fonts.__selected === name)
         )
     );
 }
