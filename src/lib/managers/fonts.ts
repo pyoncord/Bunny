@@ -5,10 +5,11 @@ import { safeFetch } from "@lib/utils";
 type FontMap = Record<string, string>;
 
 export interface FontDefinition {
+    spec: 1;
     name: string;
     description?: string;
-    spec: 1;
     main: FontMap;
+    __source?: string;
 }
 
 type FontStorage = Record<string, FontDefinition> & { __selected?: string; };
@@ -35,13 +36,20 @@ export async function validateFont(font: FontDefinition) {
     if (font.name in fonts) throw new Error(`There is already a font named ${font.name} installed`);
 }
 
-export async function fetchFont(url: string, selected = false) {
+export async function saveFont(data: string | FontDefinition, selected = false) {
     let fontDefJson: FontDefinition;
 
-    try {
-        fontDefJson = await (await safeFetch(url, { cache: "no-store" })).json();
-    } catch (e) {
-        throw new Error(`Failed to fetch theme at ${url}`, { cause: e });
+    if (typeof data === "object" && data.__source) data = data.__source;
+
+    if (typeof data === "string") {
+        try {
+            fontDefJson = await (await safeFetch(data, { cache: "no-store" })).json();
+            fontDefJson.__source = data;
+        } catch (e) {
+            throw new Error(`Failed to fetch theme at ${data}`, { cause: e });
+        }
+    } else {
+        fontDefJson = data;
     }
 
     validateFont(fontDefJson);
@@ -67,13 +75,16 @@ export async function installFont(name: string, selected = true) {
         throw new Error("Invalid id or font was already installed");
     }
 
-    await fetchFont(name);
+    await saveFont(name);
     if (selected) await selectFont(name);
 }
 
 export async function selectFont(name: string | null) {
-    if (name) fonts.__selected = name;
-    else delete fonts.__selected;
+    if (name && typeof name === "string") {
+        fonts.__selected = name;
+    } else {
+        delete fonts.__selected;
+    }
     await writeFont(name == null ? null : fonts[name]);
 }
 
@@ -92,7 +103,7 @@ export async function updateFonts() {
     await awaitSyncWrapper(fonts);
     await Promise.allSettled(
         Object.keys(fonts).map(
-            name => fetchFont(name, fonts.__selected === name)
+            name => saveFont(name, fonts.__selected === name)
         )
     );
 }

@@ -125,6 +125,7 @@ export const {
     ActionSheetRow,
     ActionSheetSwitchRow,
     AnimatedEnterExitItem,
+    BottomSheetTitleHeader,
     BottomSheetTextInput,
     Dialog,
     DisableCustomTheme,

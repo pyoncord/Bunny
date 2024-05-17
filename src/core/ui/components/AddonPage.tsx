@@ -23,7 +23,8 @@ interface AddonPageProps<T> {
     safeModeMessage: string;
     safeModeExtras?: JSX.Element | JSX.Element[];
     card: React.ComponentType<CardWrapper<T>>;
-    isRemoveMode: boolean;
+    isRemoveMode?: boolean;
+    headerComponent?: JSX.Element;
 }
 
 function getItemsByQuery<T extends AddonPageProps<unknown>["items"][string]>(items: T[], query: string): T[] {
@@ -44,7 +45,7 @@ function getItemsByQuery<T extends AddonPageProps<unknown>["items"][string]>(ite
 const reanimated = findByProps("useSharedValue");
 const { FloatingActionButton } = findByProps("FloatingActionButton");
 
-export default function AddonPage<T>({ floatingButtonText, fetchFunction, items, safeModeMessage, safeModeExtras, card: CardComponent, isRemoveMode }: AddonPageProps<T>) {
+export default function AddonPage<T>({ floatingButtonText, fetchFunction, items, safeModeMessage, safeModeExtras, card: CardComponent, isRemoveMode, headerComponent }: AddonPageProps<T>) {
     useProxy(items);
     useProxy(settings);
 
@@ -66,6 +67,7 @@ export default function AddonPage<T>({ floatingButtonText, fetchFunction, items,
                         onChangeText={(v: string) => setSearch(v.toLowerCase())}
                         placeholder={Strings.SEARCH}
                     />
+                    {headerComponent}
                 </>}
                 onScroll={e => {
                     if (e.nativeEvent.contentOffset.y <= 0) return;
