@@ -50,7 +50,6 @@ export interface FileManager {
     readFile(path: string, encoding: "base64" | "utf8"): Promise<string>;
     saveFileToGallery?(uri: string, fileName: string, fileType: "PNG" | "JPEG"): Promise<string>;
     /**
-     * Beware! This function has differing functionality on iOS and Android.
      * @param storageDir Either `cache` or `documents`.
      * @param path Path in `storageDir`, parents are recursively created.
      * @param data The data to write to the file
@@ -58,7 +57,21 @@ export interface FileManager {
      * @returns Promise that resolves to path of the file once it got written
      */
     writeFile(storageDir: "cache" | "documents", path: string, data: string, encoding: "base64" | "utf8"): Promise<string>;
+    /**
+     * Removes a file from the path given.
+     * (!) On Android, this always returns false, regardless if it fails or not!
+     * @param storageDir Either `cache` or `documents`
+     * @param path Path to the file to be removed
+     */
     removeFile(storageDir: "cache" | "documents", path: string): Promise<unknown>;
+    /**
+     * Clear the folder from the path given
+     * (!) On Android, this only clears all *files* and not subdirectories!
+     * @param storageDir Either `cache` or `documents`
+     * @param path Path to the folder to be cleared
+     * @returns Whether the clearance succeeded
+     */
+    clearFolder(storageDir: "cache" | "documents", path: string): Promise<boolean>;
     getConstants: () => {
         /**
          * The path the `documents` storage dir (see {@link writeFile}) represents.
