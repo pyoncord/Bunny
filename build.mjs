@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 // eslint-disable-next-line simple-import-sort/imports
 import swc from "@swc/core";
 import { execSync } from "child_process";
@@ -32,6 +33,9 @@ try {
         footer: {
             js: "//# sourceURL=bunny"
         },
+        define: {
+            __DEV__: String(!isRelease)
+        },
         loader: { ".png": "dataurl" },
         legalComments: "none",
         plugins: [
@@ -65,7 +69,6 @@ try {
                     });
 
                     build.onEnd(result => {
-                        const { outfile } = build.initialOptions;
                         console.log(`Built with ${result.errors?.length} errors!`);
                     });
                 }

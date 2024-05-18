@@ -14,7 +14,7 @@ export const PyoncordIcon = _PyoncordIcon as string;
 
 export default function initSettings() {
     registerSection({
-        name: "Bunny",
+        name: "Bunny" + (__DEV__ ? " (DEV)" : ""),
         items: [
             {
                 key: "BUNNY",
@@ -56,6 +56,7 @@ export default function initSettings() {
     });
 
     // Compat for plugins which injects into the settings
+    // Flaw: in the old UI, this will be displayed anyway with no items
     registerSection({
         name: "Vendetta",
         items: []
