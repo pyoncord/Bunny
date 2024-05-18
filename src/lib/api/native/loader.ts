@@ -215,3 +215,9 @@ export function getLoaderConfigPath() {
 
     return "loader.json";
 }
+
+export function isFontSupported() {
+    if (isPyonLoader()) return pyonLoaderIdentity.fontPatch === 2;
+
+    return false;
+}

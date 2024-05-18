@@ -10,24 +10,30 @@ import { clipboard } from "@metro/common";
 import { showInputAlert } from "@ui/alerts";
 import { ErrorBoundary, Search } from "@ui/components";
 import fuzzysort from "fuzzysort";
+import { createContext } from "react";
 import { FlatList, View } from "react-native";
+
+export const RemoveModeContext = createContext(false);
 
 interface AddonPageProps<T> {
     title: string;
     floatingButtonText: string;
     fetchFunction: (url: string) => Promise<void>;
-    items: Record<string, T & { id: string; }>;
+    items: Record<string, T & ({ id: string; } | { name: string; })>;
     safeModeMessage: string;
     safeModeExtras?: JSX.Element | JSX.Element[];
     card: React.ComponentType<CardWrapper<T>>;
+    isRemoveMode?: boolean;
+    headerComponent?: JSX.Element;
 }
 
-function getItemsByQuery<T extends { id?: string; }>(items: T[], query: string): T[] {
+function getItemsByQuery<T extends AddonPageProps<unknown>["items"][string]>(items: T[], query: string): T[] {
     if (!query) return items;
 
     return fuzzysort.go(query, items, {
         keys: [
             "id",
+            "name",
             "manifest.name",
             "manifest.description",
             "manifest.authors.0.name",
@@ -39,9 +45,9 @@ function getItemsByQuery<T extends { id?: string; }>(items: T[], query: string):
 const reanimated = findByProps("useSharedValue");
 const { FloatingActionButton } = findByProps("FloatingActionButton");
 
-export default function AddonPage<T>({ floatingButtonText, fetchFunction, items, safeModeMessage, safeModeExtras, card: CardComponent }: AddonPageProps<T>) {
-    useProxy(settings);
+export default function AddonPage<T>({ floatingButtonText, fetchFunction, items, safeModeMessage, safeModeExtras, card: CardComponent, isRemoveMode, headerComponent }: AddonPageProps<T>) {
     useProxy(items);
+    useProxy(settings);
 
     const collapseText = reanimated.useSharedValue(0);
     const yOffset = React.useRef<number>(0);
@@ -61,6 +67,7 @@ export default function AddonPage<T>({ floatingButtonText, fetchFunction, items,
                         onChangeText={(v: string) => setSearch(v.toLowerCase())}
                         placeholder={Strings.SEARCH}
                     />
+                    {headerComponent}
                 </>}
                 onScroll={e => {
                     if (e.nativeEvent.contentOffset.y <= 0) return;
@@ -69,8 +76,10 @@ export default function AddonPage<T>({ floatingButtonText, fetchFunction, items,
                 }}
                 style={{ paddingHorizontal: 10, paddingTop: 10 }}
                 contentContainerStyle={{ paddingBottom: 90, paddingHorizontal: 5 }}
-                data={getItemsByQuery(Object.values(items), search)}
-                renderItem={({ item, index }) => <CardComponent item={item} index={index} />}
+                data={getItemsByQuery(Object.values(items).filter(i => typeof i === "object"), search)}
+                renderItem={({ item, index }) => <RemoveModeContext.Provider value={!!isRemoveMode}>
+                    <CardComponent item={item} index={index} />
+                </RemoveModeContext.Provider>}
             />
             <FloatingActionButton
                 text={floatingButtonText}

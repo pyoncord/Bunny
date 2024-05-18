@@ -229,6 +229,10 @@ export async function updateThemes() {
     await allSettled(Object.keys(themes).map(id => fetchTheme(id, currentTheme?.id === id)));
 }
 
+export function getCurrentTheme() {
+    return currentTheme;
+}
+
 const origRawColor = { ...color.RawColor };
 
 let inc = 0;
