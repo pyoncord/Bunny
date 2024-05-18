@@ -3,7 +3,7 @@ name: Sync with I18n repository
 on:
   push:
     branches:
-      - 'legacy'
+      - 'main'
     paths:
       - 'src/core/i18n/default.json'
   workflow_dispatch:
