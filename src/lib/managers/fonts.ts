@@ -33,7 +33,7 @@ export function validateFont(font: FontDefinition) {
 
     if (requiredFields.some(f => !font[f])) throw new Error(`Font is missing one of the fields: ${requiredFields}`);
     if (font.name.startsWith("__")) throw new Error("Font names cannot start with __");
-    if (font.name in fonts) throw new Error(`There is already a font named ${font.name} installed`);
+    if (font.name in fonts) throw new Error(`There is already a font named '${font.name}' installed`);
 }
 
 export async function saveFont(data: string | FontDefinition, selected = false) {
@@ -46,7 +46,7 @@ export async function saveFont(data: string | FontDefinition, selected = false) 
             fontDefJson = await (await safeFetch(data, { cache: "no-store" })).json();
             fontDefJson.__source = data;
         } catch (e) {
-            throw new Error(`Failed to fetch theme at ${data}`, { cause: e });
+            throw new Error(`Failed to fetch fonts at ${data}`, { cause: e });
         }
     } else {
         fontDefJson = data;
