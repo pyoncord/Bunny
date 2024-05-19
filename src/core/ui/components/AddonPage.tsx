@@ -25,6 +25,7 @@ interface AddonPageProps<T> {
     card: React.ComponentType<CardWrapper<T>>;
     isRemoveMode?: boolean;
     headerComponent?: JSX.Element;
+    onFABPress?: () => void;
 }
 
 function getItemsByQuery<T extends AddonPageProps<unknown>["items"][string]>(items: T[], query: string): T[] {
@@ -45,7 +46,7 @@ function getItemsByQuery<T extends AddonPageProps<unknown>["items"][string]>(ite
 const reanimated = findByProps("useSharedValue");
 const { FloatingActionButton } = findByProps("FloatingActionButton");
 
-export default function AddonPage<T>({ floatingButtonText, fetchFunction, items, safeModeMessage, safeModeExtras, card: CardComponent, isRemoveMode, headerComponent }: AddonPageProps<T>) {
+export default function AddonPage<T>({ floatingButtonText, fetchFunction, items, safeModeMessage, safeModeExtras, card: CardComponent, isRemoveMode, headerComponent, onFABPress }: AddonPageProps<T>) {
     useProxy(items);
     useProxy(settings);
 
@@ -83,9 +84,9 @@ export default function AddonPage<T>({ floatingButtonText, fetchFunction, items,
             />
             <FloatingActionButton
                 text={floatingButtonText}
-                icon={getAssetIDByName("DownloadIcon")}
+                icon={getAssetIDByName("PlusLargeIcon")}
                 state={{ collapseText }}
-                onPress={() => {
+                onPress={onFABPress ?? (() => {
                     // from ./InstallButton.tsx
                     clipboard.getString().then(content =>
                         showInputAlert({
@@ -97,7 +98,7 @@ export default function AddonPage<T>({ floatingButtonText, fetchFunction, items,
                             cancelText: Strings.CANCEL,
                         })
                     );
-                }}
+                })}
             />
         </ErrorBoundary>
     );

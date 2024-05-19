@@ -34,7 +34,7 @@ export default function General() {
                     <TableRow
                         arrow
                         label={Strings.ABOUT}
-                        icon={<TableRow.Icon source={getAssetIDByName("CircleInformationIcon")} />}
+                        icon={<TableRow.Icon source={getAssetIDByName("CircleInformationIcon-primary")} />}
                         trailing={TableRow.Arrow}
                         onPress={() => navigation.push("VendettaCustomPage", {
                             title: Strings.ABOUT,

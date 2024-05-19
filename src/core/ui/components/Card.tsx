@@ -125,7 +125,7 @@ export default function Card(props: CardProps) {
                                         })}
                                         size="sm"
                                         variant="secondary"
-                                        icon={getAssetIDByName("CircleInformationIcon")}
+                                        icon={getAssetIDByName("CircleInformationIcon-primary")}
                                     />}
                                 {props.actions?.map(({ icon, onPress, disabled }) => (
                                     <IconButton

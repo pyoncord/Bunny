@@ -72,7 +72,9 @@ export async function saveFont(data: string | FontDefinition, selected = false) 
 }
 
 export async function installFont(url: string, selected = false) {
-    if (typeof url !== "string" || Object.values(fonts).some(f => typeof f === "object" && f.__source === url)
+    if (
+        typeof url !== "string"
+        || Object.values(fonts).some(f => typeof f === "object" && f.__source === url)
     ) {
         throw new Error("Invalid source or font was already installed");
     }
