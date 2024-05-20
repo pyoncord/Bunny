@@ -1,6 +1,6 @@
 import { Asset } from "@lib/api/assets";
-import { FormRow } from "@lib/ui/components/discord/Forms";
 import { clipboard } from "@metro/common";
+import { FormRow } from "@ui/components/discord/Forms";
 import { showToast } from "@ui/toasts";
 import { Image } from "react-native";
 

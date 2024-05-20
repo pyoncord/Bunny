@@ -7,15 +7,15 @@ import * as debug from "@lib/debug";
 import * as plugins from "@lib/managers/plugins";
 import * as themes from "@lib/managers/themes";
 import { loaderConfig, settings } from "@lib/settings";
-import { Forms } from "@lib/ui/components/discord/Forms";
-import { CompatfulRedesign } from "@lib/ui/components/discord/Redesign";
-import { createThemedStyleSheet } from "@lib/ui/styles";
 import * as utils from "@lib/utils";
 import * as common from "@metro/common";
-import * as metro from "@metro/filters";
+import * as metro from "@metro/utils";
 import * as alerts from "@ui/alerts";
 import * as color from "@ui/color";
 import * as components from "@ui/components";
+import { Forms } from "@ui/components/discord/Forms";
+import { CompatfulRedesign } from "@ui/components/discord/Redesign";
+import { createThemedStyleSheet } from "@ui/styles";
 import * as toasts from "@ui/toasts";
 
 export const initVendettaObject = (): any => {

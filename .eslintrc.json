@@ -67,11 +67,11 @@
             {
                 "relativeDepth": 0,
                 "aliases": [
-                    { "alias": "@lib", "matcher": "^src/lib" },
                     { "alias": "@metro", "matcher": "^src/lib/metro" }, 
                     { "alias": "@core", "matcher": "^src/core" },
                     { "alias": "@ui", "matcher": "^src/lib/ui" },
-                    { "alias": "@types", "matcher": "^src/lib/utils/types.ts" }
+                    { "alias": "@types", "matcher": "^src/lib/utils/types.ts" },
+                    { "alias": "@lib", "matcher": "^src/lib" }
                 ]
             }
         ]

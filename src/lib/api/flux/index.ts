@@ -1,5 +1,5 @@
 // shelter-mod inspired
-import { FluxDispatcher } from "@lib/metro/common";
+import { FluxDispatcher } from "@metro/common";
 
 const blockedSym = Symbol.for("bunny.flux.blocked");
 const modifiedSym = Symbol.for("bunny.flux.modified");

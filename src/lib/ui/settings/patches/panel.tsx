@@ -1,8 +1,8 @@
-import { findByName } from "@lib/metro";
-import { i18n, NavigationNative } from "@lib/metro/common";
-import { FormIcon, FormRow, FormSection } from "@lib/ui/components/discord/Forms";
-import { registeredSections } from "@lib/ui/settings";
 import { findInReactTree } from "@lib/utils";
+import { i18n, NavigationNative } from "@metro/common";
+import { findByName } from "@metro/utils";
+import { FormIcon, FormRow, FormSection } from "@ui/components/discord/Forms";
+import { registeredSections } from "@ui/settings";
 import { after } from "spitroast";
 
 import { CustomPageRenderer, wrapOnPress } from "./shared";

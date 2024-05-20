@@ -108,6 +108,7 @@ try {
                                     "transform-classes"
                                 ],
                                 exclude: [
+                                    "transform-parameters",
                                     "transform-async-to-generator",
                                     "transform-exponentiation-operator",
                                     "transform-named-capturing-groups-regex",

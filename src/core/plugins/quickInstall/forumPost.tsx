@@ -5,10 +5,10 @@ import { after } from "@lib/api/patcher";
 import { useProxy } from "@lib/api/storage";
 import { installPlugin, plugins, removePlugin } from "@lib/managers/plugins";
 import { installTheme, removeTheme, themes } from "@lib/managers/themes";
-import { ErrorBoundary } from "@lib/ui/components";
-import { Button } from "@lib/ui/components/discord/Redesign";
 import { DISCORD_SERVER_ID, HTTP_REGEX_MULTI, PLUGINS_CHANNEL_ID, PROXY_PREFIX, THEMES_CHANNEL_ID } from "@lib/utils/constants";
-import { findByProps } from "@metro/filters";
+import { findByProps } from "@metro/utils";
+import { ErrorBoundary } from "@ui/components";
+import { Button } from "@ui/components/discord/Redesign";
 import { showToast } from "@ui/toasts";
 
 type PostType = "Plugin" | "Theme";

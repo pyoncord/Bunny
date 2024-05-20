@@ -1,7 +1,7 @@
 import { Strings } from "@core/i18n";
 import { getAssetIDByName } from "@lib/api/assets";
 import { toasts } from "@metro/common";
-import { findByProps } from "@metro/filters";
+import { findByProps } from "@metro/utils";
 import { Platform } from "react-native";
 
 const { uuid4 } = findByProps("uuid4");

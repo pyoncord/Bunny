@@ -3,7 +3,7 @@ import Version from "@core/ui/components/Version";
 import { useProxy } from "@lib/api/storage";
 import { getDebugInfo } from "@lib/debug";
 import { settings } from "@lib/settings";
-import { Stack, TableRowGroup } from "@lib/ui/components/discord/Redesign";
+import { Stack, TableRowGroup } from "@ui/components/discord/Redesign";
 import { Platform, ScrollView } from "react-native";
 
 export default function About() {

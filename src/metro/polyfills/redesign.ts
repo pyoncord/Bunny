@@ -1,5 +1,5 @@
-import { getMetroCache, registerPolyfillCacheId } from "@lib/metro/caches";
-import { modules, requireModule } from "@metro";
+import { getMetroCache, registerPolyfillCacheId } from "@metro/caches";
+import { getModules, requireModule } from "@metro/modules";
 import { LiteralUnion } from "type-fest";
 
 const redesignProps = new Set([
@@ -104,7 +104,7 @@ const redesignPropSource = {} as Record<Keys, any>;
 const redesignModule = {} as Record<Keys, any>;
 
 const cache = getMetroCache().polyfillCache.redesign_module;
-for (const id in cache ?? modules) {
+for (const id in cache ?? getModules(null)) {
     const moduleExports = requireModule(id);
     polyfillRedesignModule(moduleExports, Number(id));
 }

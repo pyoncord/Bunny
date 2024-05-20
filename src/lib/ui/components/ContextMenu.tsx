@@ -1,6 +1,6 @@
 import { instead } from "@lib/api/patcher";
-import { findByProps } from "@lib/metro/filters";
 import { OptionalKeys } from "@lib/utils/types";
+import { findByProps } from "@metro/utils";
 import { AccessibilityInfo, Platform, View } from "react-native";
 
 const { ContextMenu: _ContextMenu } = findByProps("ContextMenu");

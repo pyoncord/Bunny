@@ -4,7 +4,7 @@ import { after } from "@lib/api/patcher";
 import { toggleSafeMode } from "@lib/debug";
 import { settings } from "@lib/settings";
 import { ButtonColors } from "@lib/utils/types";
-import { findByName, findByProps } from "@metro/filters";
+import { findByName, findByProps } from "@metro/utils";
 import { semanticColors } from "@ui/color";
 import { Codeblock, ErrorBoundary as _ErrorBoundary } from "@ui/components";
 import { Button, SafeAreaView } from "@ui/components/discord";

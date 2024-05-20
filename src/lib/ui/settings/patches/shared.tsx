@@ -1,7 +1,7 @@
-import { NavigationNative } from "@lib/metro/common";
-import { findByProps } from "@lib/metro/filters";
-import { ErrorBoundary } from "@lib/ui/components";
-import { RowConfig } from "@lib/ui/settings";
+import { NavigationNative } from "@metro/common";
+import { findByProps } from "@metro/utils";
+import { ErrorBoundary } from "@ui/components";
+import { RowConfig } from "@ui/settings";
 
 const tabsNavigationRef = findByProps("getRootNavigationRef");
 

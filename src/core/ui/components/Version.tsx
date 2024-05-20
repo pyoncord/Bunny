@@ -1,7 +1,7 @@
 import { getAssetIDByName } from "@lib/api/assets";
-import { FormText } from "@lib/ui/components/discord/Forms";
-import { TableRow } from "@lib/ui/components/discord/Redesign";
 import { clipboard } from "@metro/common";
+import { FormText } from "@ui/components/discord/Forms";
+import { TableRow } from "@ui/components/discord/Redesign";
 import { showToast } from "@ui/toasts";
 
 interface VersionProps {

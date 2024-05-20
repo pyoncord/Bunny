@@ -1,8 +1,8 @@
 // TODO: Rewrite the whole thing to fit new metro :3
 
 import { after } from "@lib/api/patcher";
-import { getImportingModuleId, requireModule } from "@lib/metro";
-import { getMetroCache, registerAssetCacheId } from "@lib/metro/caches";
+import { getMetroCache, registerAssetCacheId } from "@metro/caches";
+import { getImportingModuleId, requireModule } from "@metro/modules";
 
 export const all: Record<string, Asset> = {};
 

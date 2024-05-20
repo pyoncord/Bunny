@@ -10,7 +10,9 @@ import { awaitSyncWrapper, createFileBackend, createMMKVBackend, createStorage, 
 import { findInReactTree, safeFetch } from "@lib/utils";
 import { Author } from "@lib/utils/types";
 import { chroma } from "@metro/common";
-import { find, findByName, findByProps, findByStoreName } from "@metro/filters";
+import { byMutableProp } from "@metro/filters";
+import { find } from "@metro/finders";
+import { findByName, findByProps, findByStoreName } from "@metro/utils";
 import { ImageBackground, Platform, processColor } from "react-native";
 
 export interface ThemeData {
@@ -249,7 +251,7 @@ function isDiscordTheme(name: string) {
 }
 
 function patchColor() {
-    const isThemeModule = find(m => m.isThemeDark && Object.getOwnPropertyDescriptor(m, "isThemeDark")?.value);
+    const isThemeModule = find(byMutableProp("isThemeDark"));
     const callback = ([theme]: any[]) => theme === vdKey ? [vdThemeFallback] : void 0;
 
     Object.keys(color.RawColor).forEach(k => {

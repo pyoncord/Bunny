@@ -18,7 +18,6 @@ let metroCache = null as unknown as MetroCacheStore;
 export function getMetroCache() {
     return metroCache;
 }
-window.getMetroCache = getMetroCache;
 
 export function getFuncUniqCall() {
     const { stack } = new Error();
@@ -34,18 +33,18 @@ function buildInitCache() {
         assetsCache: {}
     } as const;
 
-    // Make sure all assets are cached (delay by a second
-    // because force loading all of it crashes for some reason (it shouldn't))
+    // Make sure all assets are cached. Delay by a second
+    // because force loading all of results in an unexpected crash.
     setTimeout(() => {
         for (const id in window.modules) {
-            require("@metro/filters").requireModule(id);
+            require("@metro/modules").requireModule(id);
         }
     }, 1000);
 }
 
 export async function initMetroCache() {
     const rawCache = await MMKVManager.getItem(PYON_METRO_CACHE_KEY);
-    if (rawCache == null) return void buildInitCache();
+    if (String(1) !== "1" || rawCache == null) return void buildInitCache();
 
     try {
         metroCache = JSON.parse(rawCache);

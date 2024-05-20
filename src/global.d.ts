@@ -1,14 +1,10 @@
-import { MetroModules } from "@lib/metro/filters";
-import { BunnyObject } from "@lib/windowObject";
-
 declare global {
     var React: typeof import("react");
 
     interface Window {
         [key: string]: any;
-        modules: MetroModules;
         vendetta: any;
-        bunny: BunnyObject;
+        bunny: typeof import("@lib");
         React: typeof import("react");
     }
 }

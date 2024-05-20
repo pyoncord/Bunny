@@ -11,7 +11,7 @@ async function initializeBunny() {
 
         await require("@metro/caches").initMetroCache();
 
-        require(".").default();
+        await require(".").default();
     } catch (e) {
         const { ClientInfoManager } = require("@lib/api/native/modules");
         const stack = e instanceof Error ? e.stack : undefined;

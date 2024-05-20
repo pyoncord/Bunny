@@ -1,4 +1,4 @@
-import { findByName } from "@metro/filters";
+import { findByName } from "@metro/utils";
 
 export type LoggerFunction = (...messages: any[]) => void;
 export interface Logger {

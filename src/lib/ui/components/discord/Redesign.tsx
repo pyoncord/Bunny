@@ -1,9 +1,16 @@
-import { find, findByProps } from "@lib/metro";
-import { RedesignModuleKeys } from "@lib/ui/types";
+import { createFilterDefinition } from "@metro/filters";
+import { find } from "@metro/finders";
+import { findByProps } from "@metro/utils";
+import { RedesignModuleKeys } from "@ui/types";
 import { useEffect } from "react";
 import { View } from "react-native";
 
-const findSingular = (prop: string) => find(m => m[prop] && Object.keys(m).length === 1)?.[prop];
+const bySingularProp = createFilterDefinition<[string]>(
+    ([prop], m) => m[prop] && Object.keys(m).length === 1,
+    prop => `pyoncord.makldlksdjks(${prop})`
+);
+
+const findSingular = (prop: string) => find(bySingularProp(prop))?.[prop];
 
 export const Redesign = findByProps("TableRow") as Record<RedesignModuleKeys, any>;
 

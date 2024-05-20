@@ -6,11 +6,13 @@ import { installPlugin } from "@lib/managers/plugins";
 import { installTheme } from "@lib/managers/themes";
 import { PROXY_PREFIX, THEMES_CHANNEL_ID } from "@lib/utils/constants";
 import { channels, url } from "@metro/common";
-import { find, findByProps } from "@metro/filters";
+import { byMutableProp } from "@metro/filters";
+import { find } from "@metro/finders";
+import { findByProps } from "@metro/utils";
 import { showConfirmationAlert } from "@ui/alerts";
 import { showToast } from "@ui/toasts";
 
-const showSimpleActionSheet = find(m => m?.showSimpleActionSheet && !Object.getOwnPropertyDescriptor(m, "showSimpleActionSheet")?.get);
+const showSimpleActionSheet = find(byMutableProp("showSimpleActionSheet"));
 const handleClick = findByProps("handleClick");
 const { openURL } = url;
 const { getChannelId } = channels;

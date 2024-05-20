@@ -1,7 +1,7 @@
 import AssetDisplay from "@core/ui/components/AssetDisplay";
 import { all } from "@lib/api/assets";
-import { FormDivider } from "@lib/ui/components/discord/Forms";
 import { ErrorBoundary, Search } from "@ui/components";
+import { FormDivider } from "@ui/components/discord/Forms";
 import { FlatList, View } from "react-native";
 
 export default function AssetBrowser() {

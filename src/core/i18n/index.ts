@@ -1,5 +1,5 @@
-import { FluxDispatcher } from "@lib/metro/common";
-import { findByName } from "@lib/metro/filters";
+import { FluxDispatcher } from "@metro/common";
+import { findByName } from "@metro/utils";
 import { PrimitiveType } from "intl-messageformat";
 
 import langDefault from "./default.json";

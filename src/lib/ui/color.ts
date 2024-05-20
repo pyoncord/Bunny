@@ -1,6 +1,6 @@
 import { color } from "@lib/managers/themes";
-import { findByStoreName } from "@lib/metro/filters";
 import { constants } from "@metro/common";
+import { findByStoreName } from "@metro/utils";
 
 //! This module is only found on 165.0+, under the assumption that iOS 165.0 is the same as Android 165.0.
 //* In 167.1, most if not all traces of the old color modules were removed.

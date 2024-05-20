@@ -1,4 +1,4 @@
-import { findByDisplayName, findByName, findByProps } from "@metro/filters";
+import { findByDisplayName, findByName, findByProps } from "@metro/utils";
 
 export * as Forms from "./Forms";
 export * as Redesign from "./Redesign";

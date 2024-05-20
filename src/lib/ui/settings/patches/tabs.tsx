@@ -1,7 +1,7 @@
-import { findByName, findByProps } from "@lib/metro";
-import { i18n } from "@lib/metro/common";
-import { registeredSections } from "@lib/ui/settings";
 import { findInReactTree } from "@lib/utils";
+import { i18n } from "@metro/common";
+import { findByName, findByProps } from "@metro/utils";
+import { registeredSections } from "@ui/settings";
 import { after } from "spitroast";
 
 import { CustomPageRenderer, wrapOnPress } from "./shared";

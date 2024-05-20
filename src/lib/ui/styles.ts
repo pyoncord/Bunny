@@ -1,4 +1,4 @@
-import { findByProps } from "@lib/metro";
+import { findByProps } from "@metro/utils";
 import { isSemanticColor, resolveSemanticColor } from "@ui/color";
 import { CompatfulRedesign } from "@ui/components/discord/Redesign";
 import { DiscordTextStyles } from "@ui/types";

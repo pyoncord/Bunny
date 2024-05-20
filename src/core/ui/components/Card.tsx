@@ -1,10 +1,10 @@
 import { getAssetIDByName } from "@lib/api/assets";
-import { FormRow } from "@lib/ui/components/discord/Forms";
-import { FormCheckbox, FormSwitch, IconButton } from "@lib/ui/components/discord/Redesign";
-import { createStyles, TextStyleSheet } from "@lib/ui/styles";
 import { ReactNative as RN } from "@metro/common";
-import { findByProps } from "@metro/filters";
+import { findByProps } from "@metro/utils";
 import { semanticColors } from "@ui/color";
+import { FormRow } from "@ui/components/discord/Forms";
+import { FormCheckbox, FormSwitch, IconButton } from "@ui/components/discord/Redesign";
+import { createStyles, TextStyleSheet } from "@ui/styles";
 import { ImageBackground, View } from "react-native";
 
 const { hideActionSheet } = findByProps("openLazy", "hideActionSheet");

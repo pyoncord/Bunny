@@ -6,12 +6,12 @@ import { getReactDevToolsProp, getReactDevToolsVersion, isLoaderConfigSupported,
 import { useProxy } from "@lib/api/storage";
 import { connectToDebugger } from "@lib/debug";
 import { loaderConfig, settings } from "@lib/settings";
-import { FormText } from "@lib/ui/components/discord/Forms";
-import { Button, Stack, TableRow, TableRowGroup, TableSwitchRow, TextInput } from "@lib/ui/components/discord/Redesign";
 import { NavigationNative } from "@metro/common";
-import { findByProps } from "@metro/filters";
+import { findByProps } from "@metro/utils";
 import { semanticColors } from "@ui/color";
 import { ErrorBoundary } from "@ui/components";
+import { FormText } from "@ui/components/discord/Forms";
+import { Button, Stack, TableRow, TableRowGroup, TableSwitchRow, TextInput } from "@ui/components/discord/Redesign";
 import { createStyles, TextStyleSheet } from "@ui/styles";
 import { ScrollView, StyleSheet } from "react-native";
 

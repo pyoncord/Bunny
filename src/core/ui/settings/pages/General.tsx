@@ -4,9 +4,9 @@ import { getAssetIDByName } from "@lib/api/assets";
 import { useProxy } from "@lib/api/storage";
 import { getDebugInfo, toggleSafeMode } from "@lib/debug";
 import { settings } from "@lib/settings";
-import { Stack, TableRow, TableRowGroup, TableSwitchRow, useNavigation } from "@lib/ui/components/discord/Redesign";
 import { DISCORD_SERVER, GITHUB } from "@lib/utils/constants";
 import { url } from "@metro/common";
+import { Stack, TableRow, TableRowGroup, TableSwitchRow, useNavigation } from "@ui/components/discord/Redesign";
 import { NativeModules, ScrollView } from "react-native";
 
 import About from "./About";

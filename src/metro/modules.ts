@@ -1,12 +1,10 @@
-import { instead } from "@lib/api/patcher";
-import type { Metro } from "@metro/types";
-import { metroRequire, modules } from "@metro/utils";
+import { getMetroCache } from "@metro/caches";
+import { Metro } from "@metro/types";
+import { instead } from "spitroast";
 
-import { getFuncUniqCall, getMetroCache, registerModuleFindCacheId } from "./caches";
-
-export type PropIntellisense<P extends PropertyKey> = Record<P, any> & Record<PropertyKey, any>;
-export type PropsFinder = <T extends PropertyKey>(...props: T[]) => PropIntellisense<T>;
-export type PropsFinderAll = <T extends PropertyKey>(...props: T[]) => PropIntellisense<T>[];
+// eslint-disable-next-line prefer-destructuring
+const modules: Metro.ModuleList = window.modules;
+const metroRequire: Metro.Require = window.__r;
 
 metroRequire(0);
 
@@ -153,11 +151,15 @@ export function requireModule(id: Metro.ModuleID) {
     return moduleExports;
 }
 
-function* getModules(uniqueId: string, all: boolean) {
+export function* getModules(uniqueId: string | null, all = false) {
     yield [-1, require("@metro/polyfills/redesign")];
 
-    let cache = getMetroCache().findCache[uniqueId];
-    if (all && !cache?._) cache = undefined;
+    let cache = null;
+
+    if (uniqueId) {
+        cache = getMetroCache().findCache[uniqueId];
+        if (all && !cache?._) cache = undefined;
+    }
 
     for (const id in cache ?? modules) {
         const exports = requireModule(id);
@@ -165,70 +167,3 @@ function* getModules(uniqueId: string, all: boolean) {
         yield [id, exports];
     }
 }
-
-type ExportsFilter = (moduleExports: any) => unknown;
-
-function testExports(moduleExports: any, filter: ExportsFilter) {
-    if (moduleExports.default && moduleExports.__esModule && filter(moduleExports.default))
-        return moduleExports.default;
-    if (filter(moduleExports))
-        return moduleExports;
-}
-
-/**
- * Returns the exports of the first module where filter returns truthy, and undefined otherwise.
- * @param filter find calls filter once for each enumerable module's exports until it finds one where filter returns a thruthy value.
- */
-export function find(filter: ExportsFilter) {
-    const uniqueId = getFuncUniqCall();
-
-    for (const [id, moduleExports] of getModules(uniqueId, false)) {
-        const testedExports = testExports(moduleExports, filter);
-        if (testedExports !== undefined) {
-            if (id !== -1) registerModuleFindCacheId(uniqueId, Number(id), false);
-            return testedExports;
-        }
-    }
-}
-
-/**
- * Returns the exports of all modules where filter returns truthy.
- * @param filter findAll calls filter once for each enumerable module's exports, adding the exports to the returned array when filter returns a thruthy value.
- */
-export function findAll(filter: ExportsFilter) {
-    const foundExports: any[] = [];
-    const uniqueId = getFuncUniqCall();
-
-    for (const [id, moduleExports] of getModules(uniqueId, true)) {
-        const testedExports = testExports(moduleExports, filter);
-        if (testedExports !== undefined) {
-            if (id !== -1) registerModuleFindCacheId(uniqueId, Number(id), true);
-            foundExports.push(testedExports);
-        }
-    }
-    return foundExports;
-}
-
-const propsFilter = (props: PropertyKey[]) =>
-    (exps: any) => props.every(p => exps[p] !== undefined);
-const nameFilter = (name: string, defaultExp: boolean) => defaultExp
-    ? (exps: any) => exps?.name === name
-    : (exps: any) => exps?.default?.name === name;
-const dNameFilter = (displayName: string, defaultExp: boolean) => defaultExp
-    ? (exps: any) => exps?.displayName === displayName
-    : (exps: any) => exps?.default?.displayName === displayName;
-const tNameFilter = (typeName: string, defaultExp: boolean) => defaultExp
-    ? (exps: any) => exps?.type?.name === typeName
-    : (exps: any) => exps?.default?.type?.name === typeName;
-const storeFilter = (name: string) =>
-    (exps: any) => exps.getName && exps.getName.length === 0 && exps.getName() === name;
-
-export const findByProps: PropsFinder = (...props) => find(propsFilter(props));
-export const findByPropsAll: PropsFinderAll = (...props) => findAll(propsFilter(props));
-export const findByName = (name: string, defaultExp = true) => find(nameFilter(name, defaultExp));
-export const findByNameAll = (name: string, defaultExp = true) => findAll(nameFilter(name, defaultExp));
-export const findByDisplayName = (displayName: string, defaultExp = true) => find(dNameFilter(displayName, defaultExp));
-export const findByDisplayNameAll = (displayName: string, defaultExp = true) => findAll(dNameFilter(displayName, defaultExp));
-export const findByTypeName = (typeName: string, defaultExp = true) => find(tNameFilter(typeName, defaultExp));
-export const findByTypeNameAll = (typeName: string, defaultExp = true) => findAll(tNameFilter(typeName, defaultExp));
-export const findByStoreName = (name: string) => find(storeFilter(name));

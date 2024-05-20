@@ -4,8 +4,8 @@ import FontCard from "@core/ui/components/FontCard";
 import { useProxy } from "@lib/api/storage";
 import { FontDefinition, fonts, installFont } from "@lib/managers/fonts";
 import { settings } from "@lib/settings";
-import { FormText } from "@lib/ui/components/discord/Forms";
-import { useNavigation } from "@lib/ui/components/discord/Redesign";
+import { FormText } from "@ui/components/discord/Forms";
+import { useNavigation } from "@ui/components/discord/Redesign";
 import { useEffect, useState } from "react";
 import { TouchableOpacity } from "react-native";
 
