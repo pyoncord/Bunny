@@ -9,27 +9,27 @@ export interface FilterFn<A extends unknown[]> {
     filter: FilterCheckDef<A>;
     args: A;
     isDefault: boolean;
-    serialized: string;
+    uniq: string;
 }
 
-export interface FilterDef<A extends unknown[]> {
+export interface FilterDefinition<A extends unknown[]> {
     (...args: A): FilterFn<A>;
     byDefault(...args: A): FilterFn<A>;
-    serializer(args: A): string;
+    uniqMaker(args: A): string;
 }
 
 export function createFilterDefinition<A extends unknown[]>(
     fn: FilterCheckDef<A>,
-    serializer: (args: A) => string
-): FilterDef<A> {
+    uniqMaker: (args: A) => string
+): FilterDefinition<A> {
     function createHolder<T extends Function>(func: T, args: A, isDefault: boolean) {
         return Object.assign(func, {
             filter: fn,
             args,
             isDefault,
-            serialized: [
+            uniq: [
                 isDefault && "default::",
-                serializer(args)
+                uniqMaker(args)
             ].filter(Boolean).join("")
         });
     }
@@ -44,17 +44,17 @@ export function createFilterDefinition<A extends unknown[]>(
 
     return Object.assign(curried, {
         byDefault: curriedDefault,
-        serializer
+        uniqMaker
     });
 }
 
 export function createSimpleFilter(
     filter: (m: ModuleExports) => boolean,
-    id: string
+    uniq: string
 ) {
     return createFilterDefinition(
         (_, m) => filter(m),
-        () => `dynamic::${id}`
+        () => `dynamic::${uniq}`
     )();
 }
 

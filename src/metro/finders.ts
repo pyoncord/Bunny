@@ -1,4 +1,4 @@
-import { registerModuleFindCacheId, registerModuleFindFinished } from "./caches";
+import { getCacherForUniq } from "./caches";
 import { getModules, requireModule } from "./modules";
 import { FilterFn } from "./utils";
 
@@ -16,15 +16,17 @@ function testExports<A extends unknown[]>(moduleExports: any, moduleId: number, 
  * @param filter find calls filter once for each enumerable module's exports until it finds one where filter returns a thruthy value.
  */
 export function findModule<A extends unknown[]>(filter: FilterFn<A>) {
-    for (const [id, moduleExports] of getModules(filter.serialized, false)) {
+    const { cacheId, finish } = getCacherForUniq(filter.uniq, false);
+
+    for (const [id, moduleExports] of getModules(filter.uniq, false)) {
         const [testedExports, defaultExp] = testExports(moduleExports, id, filter);
         if (testedExports !== undefined) {
-            registerModuleFindCacheId(filter.serialized, id, false);
+            cacheId(id);
             return [id, defaultExp];
         }
     }
 
-    registerModuleFindFinished(filter.serialized);
+    finish();
     return [];
 }
 
@@ -51,17 +53,18 @@ export function findExports<A extends unknown[]>(filter: FilterFn<A>) {
  * @param filter findAll calls filter once for each enumerable module's exports, adding the exports to the returned array when filter returns a thruthy value.
  */
 export function findAllModule<A extends unknown[]>(filter: FilterFn<A>) {
+    const { cacheId, finish } = getCacherForUniq(filter.uniq, true);
     const foundExports: [id: number, defaultExp: boolean][] = [];
 
-    for (const [id, moduleExports] of getModules(filter.serialized, true)) {
+    for (const [id, moduleExports] of getModules(filter.uniq, true)) {
         const [testedExports, defaultExp] = testExports(moduleExports, id, filter);
         if (testedExports !== undefined) {
             foundExports.push([id, defaultExp]);
-            registerModuleFindCacheId(filter.serialized, id, true);
+            cacheId(id);
         }
     }
 
-    registerModuleFindFinished(filter.serialized);
+    finish();
     return foundExports;
 }
 

@@ -1,9 +1,11 @@
 import { ClientInfoManager, MMKVManager } from "@lib/api/native/modules";
 import { throttle } from "@lib/utils/throttle";
 
+import { getCachedPolyfillModules } from "./modules";
+
 const BUNNY_METRO_CACHE_KEY = "__bunny_metro_cache_key_v5__";
 
-type ModulesIndexer = {
+type ModulesMap = {
     _?: 1;
     [id: number]: 1 | void;
 };
@@ -11,8 +13,8 @@ type ModulesIndexer = {
 interface MetroCacheStore {
     v: 5;
     buildNumber: number;
-    findIndex: Record<string, ModulesIndexer | undefined>;
-    polyfillCache: Record<string, ModulesIndexer | undefined>;
+    findIndex: Record<string, ModulesMap | undefined>;
+    polyfillCache: Record<string, ModulesMap | undefined>;
     assetsCache: Record<string, number>;
 }
 
@@ -57,25 +59,38 @@ export async function initMetroCache() {
 
 const saveCache = throttle(() => MMKVManager.setItem(BUNNY_METRO_CACHE_KEY, JSON.stringify(metroCache)));
 
-export function registerModuleFindCacheId(uniqueId: string, moduleId: number, all: boolean) {
-    (metroCache.findIndex[uniqueId] ??= { _: undefined })[moduleId] = 1;
-    if (all) metroCache.findIndex[uniqueId]!._ = 1;
-    saveCache();
+export function getCacherForUniq(uniq: string, allFind: boolean) {
+    const indexObject = metroCache.findIndex[uniq] ??= {};
+
+    return {
+        cacheId(moduleId: number) {
+            indexObject[moduleId] = 1;
+            saveCache();
+        },
+        finish() {
+            if (allFind) indexObject._ = 1;
+            saveCache();
+        }
+    };
 }
 
-export function registerModuleFindFinished(uniqueId: string) {
-    metroCache.findIndex[uniqueId] ??= { _: undefined };
-    saveCache();
-}
+export function getPolyfillModuleCacher(name: string) {
+    const indexObject = metroCache.polyfillCache[name] ??= {};
 
-export function registerPolyfillCacheId(name: string, moduleId: number, remove = false) {
-    if (remove) delete metroCache.polyfillCache[name]?.[moduleId];
-    else (metroCache.polyfillCache[name] ??= {})[moduleId] = 1;
-    saveCache();
+    return {
+        getModules() {
+            return getCachedPolyfillModules(name);
+        },
+        cacheId(moduleId: number) {
+            indexObject[moduleId] = 1;
+            saveCache();
+        }
+    };
 }
 
 export function registerAssetCacheId(name: string, moduleId: number) {
-    if (isNaN(moduleId)) return;
-    metroCache.assetsCache[name] = moduleId;
-    saveCache();
+    if (!isNaN(moduleId)) {
+        metroCache.assetsCache[name] = moduleId;
+        saveCache();
+    }
 }
