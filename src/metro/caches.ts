@@ -3,38 +3,37 @@ import { throttle } from "@lib/utils/throttle";
 
 import { getCachedPolyfillModules } from "./modules";
 
-const BUNNY_METRO_CACHE_KEY = "__bunny_metro_cache_key_v5__";
-
 type ModulesMap = {
     _?: 1;
     [id: number]: 1 | void;
 };
 
 interface MetroCacheStore {
-    v: 5;
-    buildNumber: number;
+    _v: 6;
+    _buildNumber: number;
     findIndex: Record<string, ModulesMap | undefined>;
-    polyfillCache: Record<string, ModulesMap | undefined>;
-    assetsCache: Record<string, number>;
+    polyfillIndex: Record<string, ModulesMap | undefined>;
+    assetsIndex: Record<string, number>;
 }
 
-let metroCache = null as unknown as MetroCacheStore;
+const BUNNY_METRO_CACHE_KEY = "__bunny_metro_cache_key_v5__";
+let _metroCache = null as unknown as MetroCacheStore;
 
 export function getMetroCache() {
-    return metroCache;
+    return _metroCache;
 }
 
 function buildInitCache() {
-    metroCache = {
-        v: 5,
-        buildNumber: ClientInfoManager.Build,
+    _metroCache = {
+        _v: 6,
+        _buildNumber: ClientInfoManager.Build,
         findIndex: {},
-        polyfillCache: {},
-        assetsCache: {}
+        polyfillIndex: {},
+        assetsIndex: {}
     } as const;
 
     // Make sure all assets are cached. Delay by a second
-    // because force loading all will results in an unexpected crash.
+    // because force loading it all will results in an unexpected crash.
     setTimeout(() => {
         for (const id in window.modules) {
             require("@metro/modules").requireModule(id);
@@ -47,9 +46,9 @@ export async function initMetroCache() {
     if (rawCache == null) return void buildInitCache();
 
     try {
-        metroCache = JSON.parse(rawCache);
-        if (metroCache.buildNumber !== ClientInfoManager.Build) {
-            metroCache = null!;
+        _metroCache = JSON.parse(rawCache);
+        if (_metroCache._buildNumber !== ClientInfoManager.Build) {
+            _metroCache = null!;
             throw "cache invalidated; version mismatch";
         }
     } catch {
@@ -57,10 +56,10 @@ export async function initMetroCache() {
     }
 }
 
-const saveCache = throttle(() => MMKVManager.setItem(BUNNY_METRO_CACHE_KEY, JSON.stringify(metroCache)));
+const saveCache = throttle(() => MMKVManager.setItem(BUNNY_METRO_CACHE_KEY, JSON.stringify(_metroCache)));
 
 export function getCacherForUniq(uniq: string, allFind: boolean) {
-    const indexObject = metroCache.findIndex[uniq] ??= {};
+    const indexObject = _metroCache.findIndex[uniq] ??= {};
 
     return {
         cacheId(moduleId: number) {
@@ -75,7 +74,7 @@ export function getCacherForUniq(uniq: string, allFind: boolean) {
 }
 
 export function getPolyfillModuleCacher(name: string) {
-    const indexObject = metroCache.polyfillCache[name] ??= {};
+    const indexObject = _metroCache.polyfillIndex[name] ??= {};
 
     return {
         getModules() {
@@ -90,7 +89,7 @@ export function getPolyfillModuleCacher(name: string) {
 
 export function registerAssetCacheId(name: string, moduleId: number) {
     if (!isNaN(moduleId)) {
-        metroCache.assetsCache[name] = moduleId;
+        _metroCache.assetsIndex[name] = moduleId;
         saveCache();
     }
 }

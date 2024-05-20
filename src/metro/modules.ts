@@ -172,7 +172,7 @@ export function* getModules(uniq: string, all = false) {
 }
 
 export function* getCachedPolyfillModules(name: string) {
-    const cache = getMetroCache().polyfillCache[name];
+    const cache = getMetroCache().polyfillIndex[name];
     for (const id in cache ?? metroModules) {
         const exports = requireModule(id);
         if (isBadExports(exports)) continue;

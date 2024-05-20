@@ -1,43 +1,30 @@
 import { byDisplayName, byFilePath, byName, byProps, byStoreName, byTypeName } from "./filters";
 import { findAllExports, findExports } from "./finders";
-
-type ModuleExports = any;
-type FilterCheckDef<A extends unknown[]> = (args: A, m: any, id: number) => boolean;
-
-export interface FilterFn<A extends unknown[]> {
-    (m: any, id: number): boolean;
-    filter: FilterCheckDef<A>;
-    args: A;
-    isDefault: boolean;
-    uniq: string;
-}
-
-export interface FilterDefinition<A extends unknown[]> {
-    (...args: A): FilterFn<A>;
-    byDefault(...args: A): FilterFn<A>;
-    uniqMaker(args: A): string;
-}
+import { FilterCheckDef, FilterDefinition, ModuleExports } from "./types";
 
 export function createFilterDefinition<A extends unknown[]>(
     fn: FilterCheckDef<A>,
     uniqMaker: (args: A) => string
 ): FilterDefinition<A> {
-    function createHolder<T extends Function>(func: T, args: A, isDefault: boolean) {
+    function createHolder<T extends Function>(func: T, args: A, defaultFilter: boolean) {
         return Object.assign(func, {
             filter: fn,
             args,
-            isDefault,
+            defaultFilter,
             uniq: [
-                isDefault && "default::",
+                defaultFilter && "default::",
                 uniqMaker(args)
             ].filter(Boolean).join("")
         });
     }
 
-    const curried = (...args: A) => createHolder((m: ModuleExports, id: number) => fn(args, m, id), args, false);
+    const curried = (...args: A) => createHolder((m: ModuleExports, id: number, defaultCheck: boolean) => {
+        return fn(args, m, id, defaultCheck);
+    }, args, false);
+
     const curriedDefault = (...args: A) => {
-        function filter(m: ModuleExports, id: number) {
-            return m.__esModule && m.default ? fn(args, m.default, id) : false;
+        function filter(m: ModuleExports, id: number, defaultCheck: boolean) {
+            return m.__esModule && m.default ? fn(args, m.default, id, defaultCheck) : false;
         }
         return createHolder(filter, args, true);
     };

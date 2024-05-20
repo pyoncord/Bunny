@@ -27,7 +27,7 @@ export const byStoreName = createFilterDefinition<[string]>(
 );
 
 export const byFilePath = createFilterDefinition<[string]>(
-    ([path], _, id) => metroModules[id]?.__filePath === path,
+    ([path], _, id, defaultCheck) => !defaultCheck && metroModules[id]?.__filePath === path,
     path => `bunny.metro.byFilePath(${path})`
 );
 

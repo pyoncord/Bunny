@@ -126,6 +126,29 @@ export namespace Metro {
     }
 }
 
+
+export type ModuleExports = any;
+export type FilterCheckDef<A extends unknown[]> = (
+    args: A,
+    module: any,
+    modulesId: number,
+    defaultCheck: boolean
+) => boolean;
+
+export interface FilterFn<A extends unknown[]> {
+    (m: any, id: number, defaultCheck: boolean): boolean;
+    filter: FilterCheckDef<A>;
+    args: A;
+    defaultFilter: boolean;
+    uniq: string;
+}
+
+export interface FilterDefinition<A extends unknown[]> {
+    (...args: A): FilterFn<A>;
+    byDefault(...args: A): FilterFn<A>;
+    uniqMaker(args: A): string;
+}
+
 export interface Dispatcher {
     _actionHandlers: unknown;
     _interceptors?: ((payload: any) => void | boolean)[];

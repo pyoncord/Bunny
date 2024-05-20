@@ -53,4 +53,4 @@ export function patchAssets(module: AssetModule) {
 export const find = (filter: (a: any) => void): Asset | null | undefined => Object.values(all).find(filter);
 export const getAssetByName = (name: string): Asset => all[name];
 export const getAssetByID = (id: number): Asset => assetsModule.getAssetByID(id);
-export const getAssetIDByName = (name: string) => all[name]?.id ?? requireModule(getMetroCache().assetsCache[name]);
+export const getAssetIDByName = (name: string) => all[name]?.id ?? requireModule(getMetroCache().assetsIndex[name]);
