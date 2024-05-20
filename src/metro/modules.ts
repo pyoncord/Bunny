@@ -157,10 +157,19 @@ export function* getModules(uniqueId: string | null, all = false) {
     let cache = null;
 
     if (uniqueId) {
-        cache = getMetroCache().findCache[uniqueId];
+        cache = getMetroCache().findIndex[uniqueId];
         if (all && !cache?._) cache = undefined;
     }
 
+    for (const id in cache ?? modules) {
+        const exports = requireModule(id);
+        if (isBadExports(exports)) continue;
+        yield [id, exports];
+    }
+}
+
+export function* getCachedPolyfillModules(name: string) {
+    const cache = getMetroCache().polyfillCache[name];
     for (const id in cache ?? modules) {
         const exports = requireModule(id);
         if (isBadExports(exports)) continue;

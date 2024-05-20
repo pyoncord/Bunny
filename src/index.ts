@@ -2,6 +2,7 @@ import initFixes from "@core/fixes";
 import { initFetchI18nStrings } from "@core/i18n";
 import { initCorePlugins } from "@core/plugins";
 import initSettings from "@core/ui/settings";
+import { initVendettaObject } from "@core/vendettaObject";
 import { patchCommands } from "@lib/api/commands";
 import { injectFluxInterceptor } from "@lib/api/flux";
 import { removeFile, writeFile } from "@lib/api/native/fs";
@@ -9,6 +10,7 @@ import { isPyonLoader, isThemeSupported } from "@lib/api/native/loader";
 import { FileManager } from "@lib/api/native/modules";
 import { patchLogHook } from "@lib/debug";
 import { updateFonts } from "@lib/managers/fonts";
+import { initPlugins } from "@lib/managers/plugins";
 import { initThemes, patchChatBackground } from "@lib/managers/themes";
 import { logger } from "@lib/utils/logger";
 import initSafeMode from "@ui/safeMode";
@@ -40,7 +42,7 @@ export default async () => {
         patchLogHook(),
         patchCommands(),
         patchChatBackground(),
-        // initVendettaObject(),
+        initVendettaObject(),
         initFetchI18nStrings(),
         initSettings(),
         initFixes(),
@@ -55,7 +57,7 @@ export default async () => {
     window.bunny = lib;
 
     // Once done, load plugins
-    // lib.unload.push(await initPlugins());
+    lib.unload.push(await initPlugins());
 
     // Update the fonts
     updateFonts();

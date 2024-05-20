@@ -8,8 +8,8 @@ import * as plugins from "@lib/managers/plugins";
 import * as themes from "@lib/managers/themes";
 import { loaderConfig, settings } from "@lib/settings";
 import * as utils from "@lib/utils";
+import * as metro from "@metro";
 import * as common from "@metro/common";
-import * as metro from "@metro/utils";
 import * as alerts from "@ui/alerts";
 import * as color from "@ui/color";
 import * as components from "@ui/components";
@@ -17,6 +17,7 @@ import { Forms } from "@ui/components/discord/Forms";
 import { CompatfulRedesign } from "@ui/components/discord/Redesign";
 import { createThemedStyleSheet } from "@ui/styles";
 import * as toasts from "@ui/toasts";
+import SparkMD5 from "spark-md5";
 
 export const initVendettaObject = (): any => {
     const api = window.vendetta = {
@@ -27,8 +28,20 @@ export const initVendettaObject = (): any => {
         },
         metro: {
             modules: window.modules,
-            find: (filter: (m: any) => boolean) => metro.find(filter),
-            findAll: (filter: (m: any) => boolean) => metro.findAll(filter),
+            find: (filter: (m: any) => boolean) => {
+                const { stack } = new Error();
+                return metro.find(metro.createSimpleFilter(
+                    filter,
+                    SparkMD5.hash(stack!)
+                ));
+            },
+            findAll: (filter: (m: any) => boolean) => {
+                const { stack } = new Error();
+                return metro.findAll(metro.createSimpleFilter(
+                    filter,
+                    SparkMD5.hash(stack!)
+                ));
+            },
             findByProps: (...props: any) => {
                 // Decor fix hack
                 if (props.length === 1 && props[0] === "KeyboardAwareScrollView") {

@@ -2,16 +2,21 @@ import { ClientInfoManager, MMKVManager } from "@lib/api/native/modules";
 import { throttle } from "@lib/utils/throttle";
 import SparkMD5 from "spark-md5";
 
-// fucked types right here
 interface MetroCacheStore {
-    v: 4;
+    v: 5;
     buildNumber: number;
-    findCache: Record<string, Record<number | "_", 1 | undefined> | undefined>;
-    polyfillCache: Record<string, Record<number, 1 | undefined> | undefined>;
+    findIndex: Record<string, {
+        _?: 1;
+        [id: number]: 1 | void;
+    } | undefined>;
+    polyfillCache: Record<string, {
+        _?: 1;
+        [id: number]: 1 | void;
+    } | undefined>;
     assetsCache: Record<string, number>;
 }
 
-const PYON_METRO_CACHE_KEY = "__bunny_metro_cache_key_v4__";
+const BUNNY_METRO_CACHE_KEY = "__bunny_metro_cache_key_v5__";
 
 let metroCache = null as unknown as MetroCacheStore;
 
@@ -26,15 +31,15 @@ export function getFuncUniqCall() {
 
 function buildInitCache() {
     metroCache = {
-        v: 4,
+        v: 5,
         buildNumber: ClientInfoManager.Build,
-        findCache: {},
+        findIndex: {},
         polyfillCache: {},
         assetsCache: {}
     } as const;
 
     // Make sure all assets are cached. Delay by a second
-    // because force loading all of results in an unexpected crash.
+    // because force loading all will results in an unexpected crash.
     setTimeout(() => {
         for (const id in window.modules) {
             require("@metro/modules").requireModule(id);
@@ -43,8 +48,8 @@ function buildInitCache() {
 }
 
 export async function initMetroCache() {
-    const rawCache = await MMKVManager.getItem(PYON_METRO_CACHE_KEY);
-    if (String(1) !== "1" || rawCache == null) return void buildInitCache();
+    const rawCache = await MMKVManager.getItem(BUNNY_METRO_CACHE_KEY);
+    if (rawCache == null) return void buildInitCache();
 
     try {
         metroCache = JSON.parse(rawCache);
@@ -58,12 +63,12 @@ export async function initMetroCache() {
 }
 
 const saveCache = throttle(() => {
-    MMKVManager.setItem(PYON_METRO_CACHE_KEY, JSON.stringify(metroCache));
+    MMKVManager.setItem(BUNNY_METRO_CACHE_KEY, JSON.stringify(metroCache));
 });
 
 export function registerModuleFindCacheId(uniqueId: string, moduleId: number, all: boolean) {
-    (metroCache.findCache[uniqueId] ??= { _: undefined })[moduleId] = 1;
-    if (all) metroCache.findCache[uniqueId]!._ ||= 1;
+    (metroCache.findIndex[uniqueId] ??= { _: undefined })[moduleId] = 1;
+    if (all) metroCache.findIndex[uniqueId]!._ ||= 1;
     saveCache();
 }
 
