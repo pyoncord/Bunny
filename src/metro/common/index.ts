@@ -15,7 +15,7 @@ export const commands = findByProps("getBuiltInCommands");
 export const navigation = findByProps("pushLazy");
 export const toasts = find(createSimpleFilter(
     m => m.open && m.close && !m.startDrag && !m.init && !m.openReplay && !m.setAlwaysOnTop && !m.setAccountFlag,
-    "pyoncord.metro.common.toasts"
+    "bunny.metro.common.toasts"
 ));
 export const messageUtil = findByProps("sendBotMessage");
 export const navigationStack = findByProps("createStackNavigator");

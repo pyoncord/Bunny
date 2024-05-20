@@ -1,4 +1,4 @@
-import { getFuncUniqCall, registerModuleFindCacheId } from "./caches";
+import { registerModuleFindCacheId, registerModuleFindFinished } from "./caches";
 import { FilterFn } from "./filters";
 import { getModules } from "./modules";
 
@@ -14,15 +14,15 @@ function testExports<A extends unknown[]>(moduleExports: any, filter: FilterFn<A
  * @param filter find calls filter once for each enumerable module's exports until it finds one where filter returns a thruthy value.
  */
 export function find<A extends unknown[]>(filter: FilterFn<A>) {
-    const uniq = filter.serialized || getFuncUniqCall();
-
-    for (const [id, moduleExports] of getModules(uniq, false)) {
+    for (const [id, moduleExports] of getModules(filter.serialized, false)) {
         const testedExports = testExports(moduleExports, filter);
         if (testedExports !== undefined) {
-            registerModuleFindCacheId(uniq, id, false);
+            registerModuleFindCacheId(filter.serialized, id, false);
             return testedExports;
         }
     }
+
+    registerModuleFindFinished(filter.serialized);
 }
 
 /**
@@ -31,14 +31,15 @@ export function find<A extends unknown[]>(filter: FilterFn<A>) {
  */
 export function findAll<A extends unknown[]>(filter: FilterFn<A>) {
     const foundExports: any[] = [];
-    const uniq = filter.serialized || getFuncUniqCall();
 
-    for (const [id, moduleExports] of getModules(uniq, true)) {
+    for (const [id, moduleExports] of getModules(filter.serialized, true)) {
         const testedExports = testExports(moduleExports, filter);
         if (testedExports !== undefined) {
             foundExports.push(testedExports);
-            registerModuleFindCacheId(uniq, id, true);
+            registerModuleFindCacheId(filter.serialized, id, true);
         }
     }
+
+    registerModuleFindFinished(filter.serialized);
     return foundExports;
 }

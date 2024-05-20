@@ -14,7 +14,7 @@ export const PyoncordIcon = _PyoncordIcon as string;
 
 export default function initSettings() {
     registerSection({
-        name: "Bunny" + (__DEV__ ? " (DEV)" : ""),
+        name: "Bunny",
         items: [
             {
                 key: "BUNNY",

@@ -151,15 +151,11 @@ export function requireModule(id: Metro.ModuleID) {
     return moduleExports;
 }
 
-export function* getModules(uniqueId: string | null, all = false) {
+export function* getModules(uniqueId: string, all = false) {
     yield [-1, require("@metro/polyfills/redesign")];
 
-    let cache = null;
-
-    if (uniqueId) {
-        cache = getMetroCache().findIndex[uniqueId];
-        if (all && !cache?._) cache = undefined;
-    }
+    let cache = getMetroCache().findIndex[uniqueId];
+    if (all && !cache?._) cache = undefined;
 
     for (const id in cache ?? modules) {
         const exports = requireModule(id);

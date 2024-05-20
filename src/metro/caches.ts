@@ -68,7 +68,12 @@ const saveCache = throttle(() => {
 
 export function registerModuleFindCacheId(uniqueId: string, moduleId: number, all: boolean) {
     (metroCache.findIndex[uniqueId] ??= { _: undefined })[moduleId] = 1;
-    if (all) metroCache.findIndex[uniqueId]!._ ||= 1;
+    if (all) metroCache.findIndex[uniqueId]!._ = 1;
+    saveCache();
+}
+
+export function registerModuleFindFinished(uniqueId: string) {
+    metroCache.findIndex[uniqueId] ??= { _: undefined };
     saveCache();
 }
 

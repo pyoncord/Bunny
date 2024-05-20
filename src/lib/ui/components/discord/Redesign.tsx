@@ -7,7 +7,7 @@ import { View } from "react-native";
 
 const bySingularProp = createFilterDefinition<[string]>(
     ([prop], m) => m[prop] && Object.keys(m).length === 1,
-    prop => `pyoncord.makldlksdjks(${prop})`
+    prop => `bunny.ui.bySingularProp(${prop})`
 );
 
 const findSingular = (prop: string) => find(bySingularProp(prop))?.[prop];

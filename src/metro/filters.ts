@@ -61,30 +61,30 @@ export function createSimpleFilter(
 
 export const byProps = createFilterDefinition<string[]>(
     (props, m) => props.length === 0 ? m[props[0]] : props.every(p => m[p]),
-    props => `pyoncord.metro.byProps(${props.join(",")})`
+    props => `bunny.metro.byProps(${props.join(",")})`
 );
 
 export const byName = createFilterDefinition<[string]>(
     ([name], m) => m.name === name,
-    name => `pyoncord.metro.byName(${name})`
+    name => `bunny.metro.byName(${name})`
 );
 
 export const byDisplayName = createFilterDefinition<[string]>(
     ([displayName], m) => m.displayName === displayName,
-    name => `pyoncord.metro.byDisplayName(${name})`
+    name => `bunny.metro.byDisplayName(${name})`
 );
 
 export const byTypeName = createFilterDefinition<[string]>(
     ([typeName], m) => m.type?.name === typeName,
-    name => `pyoncord.metro.byTypeName(${name})`
+    name => `bunny.metro.byTypeName(${name})`
 );
 
 export const byStoreName = createFilterDefinition<[string]>(
     ([name], m) => m.getName?.length === 0 && m.getName() === name,
-    name => `pyoncord.metro.byStoreName(${name})`
+    name => `bunny.metro.byStoreName(${name})`
 );
 
 export const byMutableProp = createFilterDefinition<[string]>(
     ([prop], m) => m?.[prop] && !Object.getOwnPropertyDescriptor(m, prop)?.get,
-    prop => `pyoncord.metro.byMutableProp(${prop})`
+    prop => `bunny.metro.byMutableProp(${prop})`
 );
