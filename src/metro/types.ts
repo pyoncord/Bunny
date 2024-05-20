@@ -45,22 +45,43 @@ export namespace Metro {
         error?: any;
         /** Set to undefined once module is initialized */
         factory: FactoryFn | undefined;
-        /** If factory thrown any error */
+        /**
+         * If factory thrown any error
+         * */
         hasError: boolean;
-        /** Only available on Discord's development environment, will never be defined on release builds */
+        /**
+         * Only available on Discord's development environment, will never be defined on release builds
+         * */
         hot?: HotModuleReloadingData | undefined;
-        /** Cached `import *` imports in Metro, always an empty object as Bunny prevents outdated import cache */
+        /**
+         * Cached `import *` imports in Metro, always an empty object as Bunny prevents outdated import cache
+         * */
         importedAll: any;
-        /** Cached `import module from "./module"` imports in Metro, always an empty object as Bunny prevents outdated import cache */
+        /**
+         * Cached `import module from "./module"` imports in Metro, always an empty object as Bunny prevents outdated import cache
+         * */
         importedDefault: any;
-        /** If factory has been successfully called */
+        /**
+         * Whether factory has been successfully called
+         * */
         isInitialized: boolean;
-        /** Only available on Discord's development environment, will never be defined on release builds */
+        /**
+         * Only available on Discord's development environment, will never be defined on release builds
+         * */
         path?: string | undefined;
-        /** Acts as CJS module in the bundler */
+        /**
+         * Acts as CJS module in the bundler
+         * */
         publicModule: Module;
-        /** Only available on Discord's development environment, will never be defined on release builds */
+        /**
+         * Only available on Discord's development environment, will never be defined on release builds
+         * */
         verboseName?: string | undefined;
+
+        /**
+         * This is set by us. Should be available for all Discord's tsx modules!
+         */
+        __filePath?: string;
     }
 
     export type ModuleList = Record<ModuleID, ModuleDefinition | Nullish>;

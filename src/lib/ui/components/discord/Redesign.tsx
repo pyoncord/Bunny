@@ -1,6 +1,5 @@
-import { createFilterDefinition } from "@metro/filters";
 import { find } from "@metro/finders";
-import { findByProps } from "@metro/utils";
+import { createFilterDefinition, findByProps } from "@metro/utils";
 import { RedesignModuleKeys } from "@ui/types";
 import { useEffect } from "react";
 import { View } from "react-native";

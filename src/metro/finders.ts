@@ -1,11 +1,11 @@
 import { registerModuleFindCacheId, registerModuleFindFinished } from "./caches";
-import { FilterFn } from "./filters";
 import { getModules } from "./modules";
+import { FilterFn } from "./utils";
 
-function testExports<A extends unknown[]>(moduleExports: any, filter: FilterFn<A>) {
-    if (moduleExports.default && moduleExports.__esModule && filter(moduleExports.default))
+function testExports<A extends unknown[]>(moduleExports: any, moduleId: number, filter: FilterFn<A>) {
+    if (moduleExports.default && moduleExports.__esModule && filter(moduleExports.default, moduleId))
         return moduleExports.default;
-    if (filter(moduleExports))
+    if (filter(moduleExports, moduleId))
         return moduleExports;
 }
 
@@ -15,7 +15,7 @@ function testExports<A extends unknown[]>(moduleExports: any, filter: FilterFn<A
  */
 export function find<A extends unknown[]>(filter: FilterFn<A>) {
     for (const [id, moduleExports] of getModules(filter.serialized, false)) {
-        const testedExports = testExports(moduleExports, filter);
+        const testedExports = testExports(moduleExports, id, filter);
         if (testedExports !== undefined) {
             registerModuleFindCacheId(filter.serialized, id, false);
             return testedExports;
@@ -33,7 +33,7 @@ export function findAll<A extends unknown[]>(filter: FilterFn<A>) {
     const foundExports: any[] = [];
 
     for (const [id, moduleExports] of getModules(filter.serialized, true)) {
-        const testedExports = testExports(moduleExports, filter);
+        const testedExports = testExports(moduleExports, id, filter);
         if (testedExports !== undefined) {
             foundExports.push(testedExports);
             registerModuleFindCacheId(filter.serialized, id, true);

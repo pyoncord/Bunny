@@ -1,32 +1,25 @@
 import { ClientInfoManager, MMKVManager } from "@lib/api/native/modules";
 import { throttle } from "@lib/utils/throttle";
-import SparkMD5 from "spark-md5";
+
+const BUNNY_METRO_CACHE_KEY = "__bunny_metro_cache_key_v5__";
+
+type ModulesIndexer = {
+    _?: 1;
+    [id: number]: 1 | void;
+};
 
 interface MetroCacheStore {
     v: 5;
     buildNumber: number;
-    findIndex: Record<string, {
-        _?: 1;
-        [id: number]: 1 | void;
-    } | undefined>;
-    polyfillCache: Record<string, {
-        _?: 1;
-        [id: number]: 1 | void;
-    } | undefined>;
+    findIndex: Record<string, ModulesIndexer | undefined>;
+    polyfillCache: Record<string, ModulesIndexer | undefined>;
     assetsCache: Record<string, number>;
 }
-
-const BUNNY_METRO_CACHE_KEY = "__bunny_metro_cache_key_v5__";
 
 let metroCache = null as unknown as MetroCacheStore;
 
 export function getMetroCache() {
     return metroCache;
-}
-
-export function getFuncUniqCall() {
-    const { stack } = new Error();
-    return SparkMD5.hash(stack!);
 }
 
 function buildInitCache() {
@@ -62,9 +55,7 @@ export async function initMetroCache() {
     }
 }
 
-const saveCache = throttle(() => {
-    MMKVManager.setItem(BUNNY_METRO_CACHE_KEY, JSON.stringify(metroCache));
-});
+const saveCache = throttle(() => MMKVManager.setItem(BUNNY_METRO_CACHE_KEY, JSON.stringify(metroCache)));
 
 export function registerModuleFindCacheId(uniqueId: string, moduleId: number, all: boolean) {
     (metroCache.findIndex[uniqueId] ??= { _: undefined })[moduleId] = 1;

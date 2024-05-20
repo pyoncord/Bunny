@@ -1,7 +1,6 @@
-import { createSimpleFilter } from "@metro/filters";
 import { find } from "@metro/finders";
 import { Dispatcher } from "@metro/types";
-import { findByProps } from "@metro/utils";
+import { createSimpleFilter, findByProps } from "@metro/utils";
 
 // Discord
 export const constants = findByProps("Fonts", "Permissions");

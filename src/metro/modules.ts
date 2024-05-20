@@ -1,23 +1,21 @@
 import { getMetroCache } from "@metro/caches";
 import { Metro } from "@metro/types";
-import { instead } from "spitroast";
+import { before, instead } from "spitroast";
 
-// eslint-disable-next-line prefer-destructuring
-const modules: Metro.ModuleList = window.modules;
+export const metroModules: Metro.ModuleList = window.modules;
 const metroRequire: Metro.Require = window.__r;
-
-metroRequire(0);
 
 const blacklistedIds = new Set<String>();
 const noopHandler = () => undefined;
 const functionToString = Function.prototype.toString;
 
 let patchedInspectSource = false;
+let patchedImportTracker = false;
 let _importingModuleId: string | null = null;
 
 /** Makes the module associated with the specified ID non-enumberable. */
 function blacklistModule(id: string) {
-    Object.defineProperty(modules, id, { enumerable: false });
+    Object.defineProperty(metroModules, id, { enumerable: false });
     blacklistedIds.add(id);
 }
 
@@ -25,8 +23,8 @@ function isBadExports(exports: any) {
     return !exports || exports === window || exports["<!@ pylix was here :fuyusquish: !@>"] === null;
 }
 
-for (const id in modules) {
-    const metroModule = modules[id];
+for (const id in metroModules) {
+    const metroModule = metroModules[id];
 
     if (metroModule!.factory) {
         instead("factory", metroModule, ((args: Parameters<Metro.FactoryFn>, origFunc: Metro.FactoryFn) => {
@@ -95,6 +93,14 @@ function onModuleRequire(moduleExports: any, id: Metro.ModuleID) {
         });
     }
 
+    if (!patchedImportTracker && moduleExports.fileFinishedImporting) {
+        before("fileFinishedImporting", moduleExports, ([filePath]) => {
+            if (_importingModuleId == null || !filePath) return;
+            metroModules[_importingModuleId]!.__filePath = filePath;
+        });
+        patchedImportTracker = true;
+    }
+
     // Funny infinity recursion caused by a race condition
     if (!patchedInspectSource && window["__core-js_shared__"]) {
         const inspect = (f: unknown) => typeof f === "function" && functionToString.apply(f, []);
@@ -105,9 +111,9 @@ function onModuleRequire(moduleExports: any, id: Metro.ModuleID) {
     // Explosion (no, I can't explain this, don't ask) ((hi rosie))
     if (moduleExports.findHostInstance_DEPRECATED) {
         const numberedId = Number(id);
-        const prevExports = modules[numberedId - 1]?.publicModule.exports;
+        const prevExports = metroModules[numberedId - 1]?.publicModule.exports;
         const inc = prevExports.default?.reactProfilingEnabled ? 1 : -1;
-        if (!modules[numberedId + inc]?.isInitialized) {
+        if (!metroModules[numberedId + inc]?.isInitialized) {
             blacklistModule(String(numberedId + inc));
         }
     }
@@ -127,9 +133,10 @@ export function getImportingModuleId() {
 }
 
 export function requireModule(id: Metro.ModuleID) {
+    if (!metroModules[0]?.isInitialized) metroRequire(0);
     if (blacklistedIds.has(String(id))) return undefined;
 
-    if (modules[id]?.isInitialized && !modules[id]?.hasError) {
+    if (metroModules[id]?.isInitialized && !metroModules[id]?.hasError) {
         return metroRequire(id);
     }
 
@@ -157,7 +164,7 @@ export function* getModules(uniqueId: string, all = false) {
     let cache = getMetroCache().findIndex[uniqueId];
     if (all && !cache?._) cache = undefined;
 
-    for (const id in cache ?? modules) {
+    for (const id in cache ?? metroModules) {
         const exports = requireModule(id);
         if (isBadExports(exports)) continue;
         yield [id, exports];
@@ -166,7 +173,7 @@ export function* getModules(uniqueId: string, all = false) {
 
 export function* getCachedPolyfillModules(name: string) {
     const cache = getMetroCache().polyfillCache[name];
-    for (const id in cache ?? modules) {
+    for (const id in cache ?? metroModules) {
         const exports = requireModule(id);
         if (isBadExports(exports)) continue;
         yield [id, exports];
