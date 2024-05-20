@@ -9,8 +9,8 @@ export function createFilterDefinition<A extends unknown[]>(
     function createHolder<T extends Function>(func: T, args: A, defaultFilter: boolean) {
         return Object.assign(func, {
             filter: fn,
-            args,
             defaultFilter,
+            args,
             uniq: [
                 defaultFilter && "default::",
                 uniqMaker(args)
@@ -18,19 +18,14 @@ export function createFilterDefinition<A extends unknown[]>(
         });
     }
 
-    const curried = (...args: A) => createHolder((m: ModuleExports, id: number, defaultCheck: boolean) => {
-        return fn(args, m, id, defaultCheck);
-    }, args, false);
-
-    const curriedDefault = (...args: A) => {
-        function filter(m: ModuleExports, id: number, defaultCheck: boolean) {
-            return m.__esModule && m.default ? fn(args, m.default, id, defaultCheck) : false;
-        }
-        return createHolder(filter, args, true);
+    const curry = (defaultFilter: boolean) => (...args: A) => {
+        return createHolder((m: ModuleExports, id: number, defaultCheck: boolean) => {
+            return fn(args, m, id, defaultCheck);
+        }, args, defaultFilter);
     };
 
-    return Object.assign(curried, {
-        byDefault: curriedDefault,
+    return Object.assign(curry(false), {
+        byDefault: curry(true),
         uniqMaker
     });
 }
