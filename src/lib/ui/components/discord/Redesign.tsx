@@ -1,4 +1,4 @@
-import { find } from "@metro/finders";
+import { findExports } from "@metro/finders";
 import { createFilterDefinition, findByProps } from "@metro/utils";
 import { RedesignModuleKeys } from "@ui/types";
 import { useEffect } from "react";
@@ -9,7 +9,7 @@ const bySingularProp = createFilterDefinition<[string]>(
     prop => `bunny.ui.bySingularProp(${prop})`
 );
 
-const findSingular = (prop: string) => find(bySingularProp(prop))?.[prop];
+const findSingular = (prop: string) => findExports(bySingularProp(prop))?.[prop];
 
 export const Redesign = findByProps("TableRow") as Record<RedesignModuleKeys, any>;
 

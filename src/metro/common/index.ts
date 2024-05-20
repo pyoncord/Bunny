@@ -1,4 +1,4 @@
-import { find } from "@metro/finders";
+import { findExports } from "@metro/finders";
 import { Dispatcher } from "@metro/types";
 import { createSimpleFilter, findByProps } from "@metro/utils";
 
@@ -12,7 +12,7 @@ export const assets = findByProps("registerAsset");
 export const invites = findByProps("acceptInviteAndTransitionToInviteChannel");
 export const commands = findByProps("getBuiltInCommands");
 export const navigation = findByProps("pushLazy");
-export const toasts = find(createSimpleFilter(
+export const toasts = findExports(createSimpleFilter(
     m => m.open && m.close && !m.startDrag && !m.init && !m.openReplay && !m.setAlwaysOnTop && !m.setAccountFlag,
     "bunny.metro.common.toasts"
 ));

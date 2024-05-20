@@ -29,10 +29,10 @@ export const initVendettaObject = (): any => {
         metro: {
             modules: window.modules,
             find: (filter: (m: any) => boolean) => {
-                return metro.find(metro.createSimpleFilter(filter, SparkMD5.hash(new Error().stack!)));
+                return metro.findExports(metro.createSimpleFilter(filter, SparkMD5.hash(new Error().stack!)));
             },
             findAll: (filter: (m: any) => boolean) => {
-                return metro.findAll(metro.createSimpleFilter(filter, SparkMD5.hash(new Error().stack!)));
+                return metro.findAllExports(metro.createSimpleFilter(filter, SparkMD5.hash(new Error().stack!)));
             },
             findByProps: (...props: any) => {
                 // Decor fix hack
