@@ -24,7 +24,7 @@ export function findModule<A extends unknown[]>(filter: FilterFn<A>) {
     for (const [id, moduleExports] of getModules(filter.uniq, false)) {
         const [testedExports, defaultExp] = testExports(moduleExports, id, filter);
         if (testedExports !== undefined) {
-            cacheId(id);
+            cacheId(id, testedExports);
             return [id, defaultExp];
         }
     }
@@ -63,7 +63,7 @@ export function findAllModule<A extends unknown[]>(filter: FilterFn<A>) {
         const [testedExports, defaultExp] = testExports(moduleExports, id, filter);
         if (testedExports !== undefined) {
             foundExports.push([id, defaultExp]);
-            cacheId(id);
+            cacheId(id, testedExports);
         }
     }
 

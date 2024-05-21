@@ -1,4 +1,4 @@
-import { getMetroCache } from "@metro/caches";
+import { ExportsFlags, getMetroCache, indexBlacklistFlag, indexExportsFlags } from "@metro/caches";
 import { Metro } from "@metro/types";
 import { before, instead } from "spitroast";
 
@@ -15,6 +15,12 @@ let _importingModuleId: string | null = null;
 
 for (const id in metroModules) {
     const metroModule = metroModules[id];
+
+    const cache = getMetroCache().exportsIndex[id];
+    if (cache?.[0] & ExportsFlags.BLACKLISTED) {
+        blacklistModule(id);
+        continue;
+    }
 
     if (metroModule!.factory) {
         instead("factory", metroModule, ((args: Parameters<Metro.FactoryFn>, origFunc: Metro.FactoryFn) => {
@@ -51,6 +57,7 @@ for (const id in metroModules) {
 function blacklistModule(id: string) {
     Object.defineProperty(metroModules, id, { enumerable: false });
     blacklistedIds.add(id);
+    indexBlacklistFlag(Number(id));
 }
 
 function isBadExports(exports: any) {
@@ -58,6 +65,8 @@ function isBadExports(exports: any) {
 }
 
 function onModuleRequire(moduleExports: any, id: Metro.ModuleID) {
+    indexExportsFlags(Number(id), moduleExports);
+
     // Temporary
     moduleExports.initSentry &&= () => undefined;
     if (moduleExports.default?.track && moduleExports.default.trackMaker)
