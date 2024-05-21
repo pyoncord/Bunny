@@ -1,11 +1,11 @@
-import { findByDisplayName, findByName, findByProps } from "@metro/utils";
+import { findByDisplayName, findByNameProxy, findByPropsProxy } from "@metro/utils";
 
 export * as Forms from "./Forms";
 export * as Redesign from "./Redesign";
 
 // Discord
 export const Alert = findByDisplayName("FluxContainer(Alert)");
-export const Button = findByProps("Looks", "Colors", "Sizes") as React.ComponentType<any> & { Looks: any, Colors: any, Sizes: any; };
-export const HelpMessage = findByName("HelpMessage");
+export const Button = findByPropsProxy("Looks", "Colors", "Sizes") as React.ComponentType<any> & { Looks: any, Colors: any, Sizes: any; };
+export const HelpMessage = findByNameProxy("HelpMessage");
 // React Native's included SafeAreaView only adds padding on iOS.
-export const SafeAreaView = findByProps("useSafeAreaInsets").SafeAreaView as any;
+export const SafeAreaView = findByPropsProxy("useSafeAreaInsets").SafeAreaView as any;

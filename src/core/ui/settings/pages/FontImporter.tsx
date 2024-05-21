@@ -4,13 +4,13 @@ import { createProxy, useProxy } from "@lib/api/storage";
 import { FontDefinition, saveFont, validateFont } from "@lib/managers/fonts";
 import { getCurrentTheme } from "@lib/managers/themes";
 import { safeFetch } from "@lib/utils";
-import { findByProps } from "@metro/utils";
+import { findByPropsProxy } from "@metro/utils";
 import { ErrorBoundary } from "@ui/components";
 import { ActionSheet, BottomSheetTitleHeader, Button, IconButton, Stack, TableRow, TableRowGroup, Text, TextInput, useNavigation } from "@ui/components/discord/Redesign";
 import { useMemo, useRef, useState } from "react";
 import { ScrollView, View } from "react-native";
 
-const actionSheet = findByProps("hideActionSheet");
+const actionSheet = findByPropsProxy("hideActionSheet");
 
 function guessFontName(urls: string[]) {
     const fileNames = urls.map(url => {

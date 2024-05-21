@@ -8,15 +8,15 @@ import { PROXY_PREFIX, THEMES_CHANNEL_ID } from "@lib/utils/constants";
 import { channels, url } from "@metro/common";
 import { byMutableProp } from "@metro/filters";
 import { findExports } from "@metro/finders";
-import { findByProps } from "@metro/utils";
+import { findByPropsProxy } from "@metro/utils";
 import { showConfirmationAlert } from "@ui/alerts";
 import { showToast } from "@ui/toasts";
 
 const showSimpleActionSheet = findExports(byMutableProp("showSimpleActionSheet"));
-const handleClick = findByProps("handleClick");
+const handleClick = findByPropsProxy("handleClick");
 const { openURL } = url;
 const { getChannelId } = channels;
-const { getChannel } = findByProps("getChannel");
+const { getChannel } = findByPropsProxy("getChannel");
 
 function typeFromUrl(url: string) {
     if (url.startsWith(PROXY_PREFIX)) {

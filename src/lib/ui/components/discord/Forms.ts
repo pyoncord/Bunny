@@ -1,6 +1,6 @@
-import { findByProps } from "@metro/utils";
+import { findByPropsProxy } from "@metro/utils";
 
-export const Forms = findByProps("Form", "FormSection");
+export const Forms = findByPropsProxy("Form", "FormSection");
 
 export const {
     Form,

@@ -1,4 +1,4 @@
-import { findByProps } from "@metro/utils";
+import { findByPropsProxy } from "@metro/utils";
 import { isSemanticColor, resolveSemanticColor } from "@ui/color";
 import { CompatfulRedesign } from "@ui/components/discord/Redesign";
 import { DiscordTextStyles } from "@ui/types";
@@ -6,7 +6,7 @@ import { ImageStyle, StyleSheet, TextStyle, ViewStyle } from "react-native";
 
 type NamedStyles<T> = { [P in keyof T]: ViewStyle | TextStyle | ImageStyle };
 
-export const { TextStyleSheet } = findByProps("TextStyleSheet") as unknown as {
+export const { TextStyleSheet } = findByPropsProxy("TextStyleSheet") as unknown as {
     TextStyleSheet: { [key in DiscordTextStyles]: TextStyle; };
 };
 

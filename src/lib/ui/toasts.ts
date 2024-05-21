@@ -1,10 +1,10 @@
 import { Strings } from "@core/i18n";
 import { getAssetIDByName } from "@lib/api/assets";
 import { toasts } from "@metro/common";
-import { findByProps } from "@metro/utils";
+import { findByPropsProxy } from "@metro/utils";
 import { Platform } from "react-native";
 
-const { uuid4 } = findByProps("uuid4");
+const { uuid4 } = findByPropsProxy("uuid4");
 
 export const showToast = (content: string, asset?: number) => toasts.open({
     // ? In build 182205/44707, Discord changed their toasts, source is no longer used, rather icon, and a key is needed.

@@ -4,17 +4,17 @@ import { after } from "@lib/api/patcher";
 import { toggleSafeMode } from "@lib/debug";
 import { settings } from "@lib/settings";
 import { ButtonColors } from "@lib/utils/types";
-import { findByName, findByProps } from "@metro/utils";
+import { findByNameProxy, findByPropsProxy } from "@metro/utils";
 import { semanticColors } from "@ui/color";
 import { Codeblock, ErrorBoundary as _ErrorBoundary } from "@ui/components";
 import { Button, SafeAreaView } from "@ui/components/discord";
 import { createThemedStyleSheet, TextStyleSheet } from "@ui/styles";
 import { Text, View } from "react-native";
 
-const ErrorBoundary = findByName("ErrorBoundary");
+const ErrorBoundary = findByNameProxy("ErrorBoundary");
 
 // Let's just pray they have this.
-const { BadgableTabBar } = findByProps("BadgableTabBar");
+const { BadgableTabBar } = findByPropsProxy("BadgableTabBar");
 
 const styles = createThemedStyleSheet({
     container: {

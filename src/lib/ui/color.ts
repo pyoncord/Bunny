@@ -8,7 +8,7 @@ import { findByStoreName } from "@metro/utils";
 //* In 173.10, Discord restructured a lot of the app. These changes included making the color module impossible to early-find.
 // ? To stop duplication, it is now exported in our theming code.
 // ? These comments are preserved for historical purposes.
-// const colorModule = findByProps("colors", "meta");
+// const colorModule = findByPropsProxy("colors", "meta");
 
 // ? SemanticColor and default.colors are effectively ThemeColorMap
 export const semanticColors = (color?.default?.colors ?? constants?.ThemeColorMap) as Record<string, any>;

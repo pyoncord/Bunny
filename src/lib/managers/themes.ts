@@ -12,7 +12,7 @@ import { Author } from "@lib/utils/types";
 import { chroma } from "@metro/common";
 import { byMutableProp } from "@metro/filters";
 import { findExports } from "@metro/finders";
-import { findByName, findByProps, findByStoreName } from "@metro/utils";
+import { findByNameProxy, findByPropsProxy, findByStoreName } from "@metro/utils";
 import { ImageBackground, Platform, processColor } from "react-native";
 
 export interface ThemeData {
@@ -41,12 +41,12 @@ export interface Theme {
 
 //! As of 173.10, early-finding this does not work.
 // Somehow, this is late enough, though?
-export const color = findByProps("SemanticColor");
+export const color = findByPropsProxy("SemanticColor");
 
-const appearanceManager = findByProps("updateTheme");
-const mmkvStorage = findByProps("storage")?.parseResolve ? findByProps("storage") : findByProps("impl").impl;
+const appearanceManager = findByPropsProxy("updateTheme");
+const mmkvStorage = findByPropsProxy("storage")?.parseResolve ? findByPropsProxy("storage") : findByPropsProxy("impl").impl;
 const ThemeStore = findByStoreName("ThemeStore");
-const formDividerModule = findByProps("DIVIDER_COLORS");
+const formDividerModule = findByPropsProxy("DIVIDER_COLORS");
 
 export const themes = wrapSync(createStorage<Record<string, Theme>>(createMMKVBackend("VENDETTA_THEMES")));
 
@@ -75,9 +75,9 @@ async function writeTheme(theme: Theme | {}) {
  * @internal
  */
 export function patchChatBackground() {
-    const MessagesWrapperConnected = findByName("MessagesWrapperConnected", false);
+    const MessagesWrapperConnected = findByNameProxy("MessagesWrapperConnected", false);
     if (!MessagesWrapperConnected) return;
-    const { MessagesWrapper } = findByProps("MessagesWrapper");
+    const { MessagesWrapper } = findByPropsProxy("MessagesWrapper");
     if (!MessagesWrapper) return;
 
     const patches = [

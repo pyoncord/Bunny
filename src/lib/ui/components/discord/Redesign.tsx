@@ -1,5 +1,5 @@
 import { findExports } from "@metro/finders";
-import { createFilterDefinition, findByProps } from "@metro/utils";
+import { createFilterDefinition, findByPropsProxy } from "@metro/utils";
 import { RedesignModuleKeys } from "@ui/types";
 import { useEffect } from "react";
 import { View } from "react-native";
@@ -11,9 +11,9 @@ const bySingularProp = createFilterDefinition<[string]>(
 
 const findSingular = (prop: string) => findExports(bySingularProp(prop))?.[prop];
 
-export const Redesign = findByProps("TableRow") as Record<RedesignModuleKeys, any>;
+export const Redesign = findByPropsProxy("TableRow") as Record<RedesignModuleKeys, any>;
 
-export const CompatfulRedesign = findByProps("ActionSheetRow") as unknown as {
+export const CompatfulRedesign = findByPropsProxy("ActionSheetRow") as unknown as {
     TextStyleSheet: typeof import("@ui/styles").TextStyleSheet;
     [key: string]: any;
 };

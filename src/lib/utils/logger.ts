@@ -1,4 +1,4 @@
-import { findByName } from "@metro/utils";
+import { findByNameProxy } from "@metro/utils";
 
 export type LoggerFunction = (...messages: any[]) => void;
 export interface Logger {
@@ -11,5 +11,5 @@ export interface Logger {
     verbose: LoggerFunction;
 }
 
-export const logModule = findByName("Logger");
+export const logModule = findByNameProxy("Logger");
 export const logger: Logger = new logModule("Bunny");

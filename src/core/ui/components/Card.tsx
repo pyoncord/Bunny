@@ -1,14 +1,14 @@
 import { getAssetIDByName } from "@lib/api/assets";
 import { ReactNative as RN } from "@metro/common";
-import { findByProps } from "@metro/utils";
+import { findByPropsProxy } from "@metro/utils";
 import { semanticColors } from "@ui/color";
 import { FormRow } from "@ui/components/discord/Forms";
 import { FormCheckbox, FormSwitch, IconButton } from "@ui/components/discord/Redesign";
 import { createStyles, TextStyleSheet } from "@ui/styles";
 import { ImageBackground, View } from "react-native";
 
-const { hideActionSheet } = findByProps("openLazy", "hideActionSheet");
-const { showSimpleActionSheet } = findByProps("showSimpleActionSheet");
+const { hideActionSheet } = findByPropsProxy("openLazy", "hideActionSheet");
+const { showSimpleActionSheet } = findByPropsProxy("showSimpleActionSheet");
 
 // TODO: These styles work weirdly. iOS has cramped text, Android with low DPI probably does too. Fix?
 const useStyles = createStyles({

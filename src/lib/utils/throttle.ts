@@ -10,11 +10,20 @@ export function throttle<T extends (...args: any[]) => any>(
     time: number = 200
 ): T {
     let active = false;
+    let calledWhileActive = false;
     return function (this: ReturnType<T>, ...args: Parameters<T>) {
         if (!active) {
             active = true;
             funct.apply(this, args);
-            setTimeout(() => { active = false; }, time);
+            setTimeout(() => {
+                active = false;
+                if (calledWhileActive) {
+                    calledWhileActive = false;
+                    funct.apply(this, args);
+                }
+            }, time);
+        } else {
+            calledWhileActive = true;
         }
     } as T;
 }

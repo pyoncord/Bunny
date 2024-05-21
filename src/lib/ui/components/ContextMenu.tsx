@@ -1,9 +1,9 @@
 import { instead } from "@lib/api/patcher";
 import { OptionalKeys } from "@lib/utils/types";
-import { findByProps } from "@metro/utils";
+import { findByPropsProxy } from "@metro/utils";
 import { AccessibilityInfo, Platform, View } from "react-native";
 
-const { ContextMenu: _ContextMenu } = findByProps("ContextMenu");
+const { ContextMenu: _ContextMenu } = findByPropsProxy("ContextMenu");
 
 type ContextMenuItem = {
     label: string,

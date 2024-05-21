@@ -1,38 +1,38 @@
 import { Dispatcher } from "@metro/types";
-import { findByFilePath, findByProps } from "@metro/utils";
+import { findByFilePath, findByPropsProxy } from "@metro/utils";
 
 // Discord
-export const constants = findByProps("Fonts", "Permissions");
-export const channels = findByProps("getVoiceChannelId");
-export const i18n = findByProps("Messages");
-export const url = findByProps("openURL", "openDeeplink");
-export const clipboard = findByProps("setString", "getString", "hasString") as typeof import("@react-native-clipboard/clipboard").default;
-export const assets = findByProps("registerAsset");
-export const invites = findByProps("acceptInviteAndTransitionToInviteChannel");
-export const commands = findByProps("getBuiltInCommands");
-export const navigation = findByProps("pushLazy");
+export const constants = findByPropsProxy("Fonts", "Permissions");
+export const channels = findByPropsProxy("getVoiceChannelId");
+export const i18n = findByPropsProxy("Messages");
+export const url = findByPropsProxy("openURL", "openDeeplink");
+export const clipboard = findByPropsProxy("setString", "getString", "hasString") as typeof import("@react-native-clipboard/clipboard").default;
+export const assets = findByPropsProxy("registerAsset");
+export const invites = findByPropsProxy("acceptInviteAndTransitionToInviteChannel");
+export const commands = findByPropsProxy("getBuiltInCommands");
+export const navigation = findByPropsProxy("pushLazy");
 export const toasts = findByFilePath("modules/toast/native/ToastActionCreators.tsx").default;
-export const messageUtil = findByProps("sendBotMessage");
-export const navigationStack = findByProps("createStackNavigator");
-export const NavigationNative = findByProps("NavigationContainer");
+export const messageUtil = findByPropsProxy("sendBotMessage");
+export const navigationStack = findByPropsProxy("createStackNavigator");
+export const NavigationNative = findByPropsProxy("NavigationContainer");
 
 // Flux
-export const Flux = findByProps("connectStores");
-export const FluxDispatcher = findByProps("_interceptors") as Dispatcher;
+export const Flux = findByPropsProxy("connectStores");
+export const FluxDispatcher = findByPropsProxy("_interceptors") as Dispatcher;
 
 // React
-export const React = window.React = findByProps("createElement") as typeof import("react");
-export const ReactNative = window.ReactNative = findByProps("AppRegistry") as typeof import("react-native");
+export const React = window.React = findByPropsProxy("createElement") as typeof import("react");
+export const ReactNative = window.ReactNative = findByPropsProxy("AppRegistry") as typeof import("react-native");
 
 // Moment
-export const moment = findByProps("isMoment") as typeof import("moment");
+export const moment = findByPropsProxy("isMoment") as typeof import("moment");
 
 // chroma.js
-export const chroma = findByProps("brewer") as typeof import("chroma-js");
+export const chroma = findByPropsProxy("brewer") as typeof import("chroma-js");
 
 // Lodash
-export const lodash = findByProps("forEachRight") as typeof import("lodash");
+export const lodash = findByPropsProxy("forEachRight") as typeof import("lodash");
 
 // The node:util polyfill for RN
 // TODO: Find types for this
-export const util = findByProps("inspect", "isNullOrUndefined");
+export const util = findByPropsProxy("inspect", "isNullOrUndefined");

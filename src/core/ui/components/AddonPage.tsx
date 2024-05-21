@@ -5,7 +5,7 @@ import { useProxy } from "@lib/api/storage";
 import { settings } from "@lib/settings";
 import { HTTP_REGEX_MULTI } from "@lib/utils/constants";
 import { clipboard } from "@metro/common";
-import { findByProps } from "@metro/utils";
+import { findByPropsProxy } from "@metro/utils";
 import { showInputAlert } from "@ui/alerts";
 import { ErrorBoundary, Search } from "@ui/components";
 import { HelpMessage } from "@ui/components/discord";
@@ -43,8 +43,8 @@ function getItemsByQuery<T extends AddonPageProps<unknown>["items"][string]>(ite
     }).map(r => r.obj);
 }
 
-const reanimated = findByProps("useSharedValue");
-const { FloatingActionButton } = findByProps("FloatingActionButton");
+const reanimated = findByPropsProxy("useSharedValue");
+const { FloatingActionButton } = findByPropsProxy("FloatingActionButton");
 
 export default function AddonPage<T>({ floatingButtonText, fetchFunction, items, safeModeMessage, safeModeExtras, card: CardComponent, isRemoveMode, headerComponent, onFABPress }: AddonPageProps<T>) {
     useProxy(items);

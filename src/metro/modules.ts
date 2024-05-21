@@ -5,6 +5,8 @@ import { before, instead } from "spitroast";
 export const metroModules: Metro.ModuleList = window.modules;
 const metroRequire: Metro.Require = window.__r;
 
+// eslint-disable-next-line func-call-spacing
+const moduleSubscriptions = new Map<number, Set<() => void>>();
 const blacklistedIds = new Set<String>();
 const noopHandler = () => undefined;
 const functionToString = Function.prototype.toString;
@@ -61,7 +63,10 @@ function blacklistModule(id: string) {
 }
 
 function isBadExports(exports: any) {
-    return !exports || exports === window || exports["<!@ pylix was here :fuyusquish: !@>"] === null;
+    return !exports
+        || exports === window
+        || exports["<!@ pylix was here :fuyusquish: !@>"] === null
+        || (exports.__proto__ === Object.prototype && Reflect.ownKeys(exports).length === 0);
 }
 
 function onModuleRequire(moduleExports: any, id: Metro.ModuleID) {
@@ -135,10 +140,35 @@ function onModuleRequire(moduleExports: any, id: Metro.ModuleID) {
             moduleExports.locale(origLocale);
         });
     }
+
+    moduleSubscriptions.get(Number(id))?.forEach(s => s());
 }
 
 export function getImportingModuleId() {
     return _importingModuleId;
+}
+
+export function subscribeModule(id: number, cb: () => void): () => void {
+    const subs = moduleSubscriptions.get(id) ?? new Set();
+
+    const deleteIfEmpty = () => {
+        subs.delete(cb);
+        if (moduleSubscriptions.get(id)?.size === 0) {
+            moduleSubscriptions.delete(id);
+        }
+    };
+    const wrappedCb = () => {
+        cb();
+        deleteIfEmpty();
+    };
+
+    subs.add(wrappedCb);
+    moduleSubscriptions.set(id, subs);
+
+    return () => {
+        subs.delete(wrappedCb);
+        deleteIfEmpty();
+    };
 }
 
 export function requireModule(id: Metro.ModuleID) {
