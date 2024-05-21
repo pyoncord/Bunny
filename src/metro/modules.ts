@@ -141,7 +141,8 @@ function onModuleRequire(moduleExports: any, id: Metro.ModuleID) {
         });
     }
 
-    moduleSubscriptions.get(Number(id))?.forEach(s => s());
+    moduleSubscriptions.get(Number(id))?.forEach(s => s())
+        && moduleSubscriptions.delete(Number(id));
 }
 
 export function getImportingModuleId() {
@@ -151,24 +152,10 @@ export function getImportingModuleId() {
 export function subscribeModule(id: number, cb: () => void): () => void {
     const subs = moduleSubscriptions.get(id) ?? new Set();
 
-    const deleteIfEmpty = () => {
-        subs.delete(cb);
-        if (moduleSubscriptions.get(id)?.size === 0) {
-            moduleSubscriptions.delete(id);
-        }
-    };
-    const wrappedCb = () => {
-        cb();
-        deleteIfEmpty();
-    };
-
-    subs.add(wrappedCb);
+    subs.add(cb);
     moduleSubscriptions.set(id, subs);
 
-    return () => {
-        subs.delete(wrappedCb);
-        deleteIfEmpty();
-    };
+    return () => subs.delete(cb);
 }
 
 export function requireModule(id: Metro.ModuleID) {
