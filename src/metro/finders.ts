@@ -4,10 +4,10 @@ import { FilterFn } from "./types";
 
 function testExports<A extends unknown[]>(moduleExports: any, moduleId: number, filter: FilterFn<A>) {
     if (moduleExports.default && moduleExports.__esModule && filter(moduleExports.default, moduleId, true)) {
-        return [filter.defaultFilter ? moduleExports : moduleExports.default, !filter.defaultFilter];
+        return [filter.raw ? moduleExports : moduleExports.default, !filter.raw];
     }
 
-    if (!filter.defaultFilter && filter(moduleExports, moduleId, false)) {
+    if (!filter.raw && filter(moduleExports, moduleId, false)) {
         return [moduleExports, false];
     }
 
@@ -47,7 +47,7 @@ export function findModuleId<A extends unknown[]>(filter: FilterFn<A>) {
  */
 export function findExports<A extends unknown[]>(filter: FilterFn<A>) {
     const [id, defaultExp] = findModule(filter);
-    if (defaultExp == null) return;
+    if (id == null) return;
     return defaultExp ? requireModule(id).default : requireModule(id);
 }
 
@@ -84,9 +84,9 @@ export function findAllModuleId<A extends unknown[]>(filter: FilterFn<A>) {
  * @param filter findAll calls filter once for each enumerable module's exports, adding the exports to the returned array when filter returns a thruthy value.
  */
 export function findAllExports<A extends unknown[]>(filter: FilterFn<A>) {
-    return findAllModule(filter).map(e => {
-        const [id, defaultExp] = e;
-        if (defaultExp == null) return;
+    return findAllModule(filter).map(ret => {
+        if (!ret.length) return;
+        const [id, defaultExp] = ret;
         return defaultExp ? requireModule(id).default : requireModule(id);
     });
 }

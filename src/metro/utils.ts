@@ -8,26 +8,26 @@ export function createFilterDefinition<A extends unknown[]>(
     fn: FilterCheckDef<A>,
     uniqMaker: (args: A) => string
 ): FilterDefinition<A> {
-    function createHolder<T extends Function>(func: T, args: A, defaultFilter: boolean) {
+    function createHolder<T extends Function>(func: T, args: A, raw: boolean) {
         return Object.assign(func, {
             filter: fn,
-            defaultFilter,
+            raw,
             args,
             uniq: [
-                defaultFilter && "default::",
+                raw && "raw::",
                 uniqMaker(args)
             ].filter(Boolean).join("")
         });
     }
 
-    const curry = (defaultFilter: boolean) => (...args: A) => {
+    const curry = (raw: boolean) => (...args: A) => {
         return createHolder((m: ModuleExports, id: number, defaultCheck: boolean) => {
             return fn(args, m, id, defaultCheck);
-        }, args, defaultFilter);
+        }, args, raw);
     };
 
     return Object.assign(curry(false), {
-        byDefault: curry(true),
+        byRaw: curry(true),
         uniqMaker
     });
 }
@@ -46,17 +46,17 @@ export const findByProps = (...props: string[]) => findExports(byProps(...props)
 export const findByPropsLazy = (...props: string[]) => proxyLazy(() => findByProps(...props));
 export const findByPropsAll = (...props: string[]) => findAllExports(byProps(...props));
 
-export const findByName = (name: string, expDefault = true) => findExports(expDefault ? byName(name) : byName.byDefault(name));
+export const findByName = (name: string, expDefault = true) => findExports(expDefault ? byName(name) : byName.byRaw(name));
 export const findByNameLazy = (name: string, expDefault = true) => proxyLazy(() => findByName(name, expDefault));
-export const findByNameAll = (name: string, expDefault = true) => findAllExports(expDefault ? byName(name) : byName.byDefault(name));
+export const findByNameAll = (name: string, expDefault = true) => findAllExports(expDefault ? byName(name) : byName.byRaw(name));
 
-export const findByDisplayName = (name: string, expDefault = true) => findExports(expDefault ? byDisplayName(name) : byDisplayName.byDefault(name));
+export const findByDisplayName = (name: string, expDefault = true) => findExports(expDefault ? byDisplayName(name) : byDisplayName.byRaw(name));
 export const findByDisplayNameLazy = (name: string, expDefault = true) => proxyLazy(() => findByDisplayName(name, expDefault));
-export const findByDisplayNameAll = (name: string, expDefault = true) => findAllExports(expDefault ? byDisplayName(name) : byDisplayName.byDefault(name));
+export const findByDisplayNameAll = (name: string, expDefault = true) => findAllExports(expDefault ? byDisplayName(name) : byDisplayName.byRaw(name));
 
-export const findByTypeName = (name: string, expDefault = true) => findExports(expDefault ? byTypeName(name) : byTypeName.byDefault(name));
+export const findByTypeName = (name: string, expDefault = true) => findExports(expDefault ? byTypeName(name) : byTypeName.byRaw(name));
 export const findByTypeNameLazy = (name: string, expDefault = true) => proxyLazy(() => findByTypeName(name, expDefault));
-export const findByTypeNameAll = (name: string, expDefault = true) => findAllExports(expDefault ? byTypeName(name) : byTypeName.byDefault(name));
+export const findByTypeNameAll = (name: string, expDefault = true) => findAllExports(expDefault ? byTypeName(name) : byTypeName.byRaw(name));
 
 export const findByStoreName = (name: string) => findExports(byStoreName(name));
 export const findByStoreNameLazy = (name: string) => proxyLazy(() => findByStoreName(name));

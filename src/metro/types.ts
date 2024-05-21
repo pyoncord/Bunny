@@ -139,13 +139,13 @@ export interface FilterFn<A extends unknown[]> {
     (m: any, id: number, defaultCheck: boolean): boolean;
     filter: FilterCheckDef<A>;
     args: A;
-    defaultFilter: boolean;
+    raw: boolean;
     uniq: string;
 }
 
 export interface FilterDefinition<A extends unknown[]> {
     (...args: A): FilterFn<A>;
-    byDefault(...args: A): FilterFn<A>;
+    byRaw(...args: A): FilterFn<A>;
     uniqMaker(args: A): string;
 }
 

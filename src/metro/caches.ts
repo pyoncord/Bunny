@@ -7,24 +7,21 @@ type ModulesMap = {
 };
 
 interface MetroCacheStore {
-    _v: 6;
+    _v: 10;
     _buildNumber: number;
     findIndex: Record<string, ModulesMap | undefined>;
     polyfillIndex: Record<string, ModulesMap | undefined>;
     assetsIndex: Record<string, number>;
 }
 
-const BUNNY_METRO_CACHE_KEY = "__bunny_metro_cache_key_v5__";
+const BUNNY_METRO_CACHE_KEY = "__bunny_metro_cache_key_v10__";
 let _metroCache = null as unknown as MetroCacheStore;
 
-export function getMetroCache() {
-    return _metroCache;
-}
-window.getMetroCache = getMetroCache;
+export const getMetroCache = window.__getMetroCache = () => _metroCache;
 
 function buildInitCache() {
     _metroCache = {
-        _v: 6,
+        _v: 10,
         _buildNumber: ClientInfoManager.Build,
         findIndex: {},
         polyfillIndex: {},
@@ -62,12 +59,12 @@ export function getCacherForUniq(uniq: string, allFind: boolean) {
 
     return {
         cacheId(moduleId: number) {
-            indexObject = _metroCache.findIndex[uniq] ??= {};
+            indexObject ??= _metroCache.findIndex[uniq] ??= {};
             indexObject[moduleId] = 1;
             saveCache();
         },
         finish() {
-            indexObject = _metroCache.findIndex[uniq] ??= {};
+            indexObject ??= _metroCache.findIndex[uniq] ??= {};
             if (allFind) indexObject._ = 1;
             saveCache();
         }
@@ -82,7 +79,7 @@ export function getPolyfillModuleCacher(name: string) {
             return require("@metro/modules").getCachedPolyfillModules(name);
         },
         cacheId(moduleId: number) {
-            indexObject = _metroCache.polyfillIndex[name] ??= {};
+            indexObject ??= _metroCache.polyfillIndex[name] ??= {};
             indexObject[moduleId] = 1;
             saveCache();
         }
