@@ -1,6 +1,6 @@
 import { color } from "@lib/managers/themes";
 import { constants } from "@metro/common";
-import { findByStoreName } from "@metro/utils";
+import { findByStoreNameProxy } from "@metro/utils";
 
 //! This module is only found on 165.0+, under the assumption that iOS 165.0 is the same as Android 165.0.
 //* In 167.1, most if not all traces of the old color modules were removed.
@@ -17,7 +17,7 @@ export const semanticColors = (color?.default?.colors ?? constants?.ThemeColorMa
 //* Note that constants.Colors does still appear to exist on newer versions despite Discord not internally using it - what the fuck?
 export const rawColors = (color?.default?.unsafe_rawColors ?? constants?.Colors) as Record<string, string>;
 
-const ThemeStore = findByStoreName("ThemeStore");
+const ThemeStore = findByStoreNameProxy("ThemeStore");
 const colorResolver = color.default.meta ??= color.default.internal;
 
 export function isSemanticColor(sym: any): boolean {

@@ -12,7 +12,7 @@ import { Author } from "@lib/utils/types";
 import { chroma } from "@metro/common";
 import { byMutableProp } from "@metro/filters";
 import { findExports } from "@metro/finders";
-import { findByNameProxy, findByPropsProxy, findByStoreName } from "@metro/utils";
+import { findByNameProxy, findByPropsProxy, findByStoreNameProxy } from "@metro/utils";
 import { ImageBackground, Platform, processColor } from "react-native";
 
 export interface ThemeData {
@@ -45,7 +45,7 @@ export const color = findByPropsProxy("SemanticColor");
 
 const appearanceManager = findByPropsProxy("updateTheme");
 const mmkvStorage = findByPropsProxy("storage")?.parseResolve ? findByPropsProxy("storage") : findByPropsProxy("impl").impl;
-const ThemeStore = findByStoreName("ThemeStore");
+const ThemeStore = findByStoreNameProxy("ThemeStore");
 const formDividerModule = findByPropsProxy("DIVIDER_COLORS");
 
 export const themes = wrapSync(createStorage<Record<string, Theme>>(createMMKVBackend("VENDETTA_THEMES")));

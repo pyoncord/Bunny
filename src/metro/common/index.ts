@@ -1,5 +1,5 @@
 import { Dispatcher } from "@metro/types";
-import { findByFilePath, findByPropsProxy } from "@metro/utils";
+import { findByFilePathProxy, findByPropsProxy } from "@metro/utils";
 
 // Discord
 export const constants = findByPropsProxy("Fonts", "Permissions");
@@ -11,7 +11,7 @@ export const assets = findByPropsProxy("registerAsset");
 export const invites = findByPropsProxy("acceptInviteAndTransitionToInviteChannel");
 export const commands = findByPropsProxy("getBuiltInCommands");
 export const navigation = findByPropsProxy("pushLazy");
-export const toasts = findByFilePath("modules/toast/native/ToastActionCreators.tsx").default;
+export const toasts = findByFilePathProxy("modules/toast/native/ToastActionCreators.tsx").default;
 export const messageUtil = findByPropsProxy("sendBotMessage");
 export const navigationStack = findByPropsProxy("createStackNavigator");
 export const NavigationNative = findByPropsProxy("NavigationContainer");
