@@ -1,8 +1,6 @@
 import { ClientInfoManager, MMKVManager } from "@lib/api/native/modules";
 import { throttle } from "@lib/utils/throttle";
 
-import { getCachedPolyfillModules } from "./modules";
-
 type ModulesMap = {
     _?: 1;
     [id: number]: 1 | void;
@@ -22,6 +20,7 @@ let _metroCache = null as unknown as MetroCacheStore;
 export function getMetroCache() {
     return _metroCache;
 }
+window.getMetroCache = getMetroCache;
 
 function buildInitCache() {
     _metroCache = {
@@ -59,14 +58,16 @@ export async function initMetroCache() {
 const saveCache = throttle(() => MMKVManager.setItem(BUNNY_METRO_CACHE_KEY, JSON.stringify(_metroCache)));
 
 export function getCacherForUniq(uniq: string, allFind: boolean) {
-    const indexObject = _metroCache.findIndex[uniq] ??= {};
+    let indexObject = _metroCache.findIndex[uniq];
 
     return {
         cacheId(moduleId: number) {
+            indexObject = _metroCache.findIndex[uniq] ??= {};
             indexObject[moduleId] = 1;
             saveCache();
         },
         finish() {
+            indexObject = _metroCache.findIndex[uniq] ??= {};
             if (allFind) indexObject._ = 1;
             saveCache();
         }
@@ -74,13 +75,14 @@ export function getCacherForUniq(uniq: string, allFind: boolean) {
 }
 
 export function getPolyfillModuleCacher(name: string) {
-    const indexObject = _metroCache.polyfillIndex[name] ??= {};
+    let indexObject = _metroCache.polyfillIndex[name];
 
     return {
         getModules() {
-            return getCachedPolyfillModules(name);
+            return require("@metro/modules").getCachedPolyfillModules(name);
         },
         cacheId(moduleId: number) {
+            indexObject = _metroCache.polyfillIndex[name] ??= {};
             indexObject[moduleId] = 1;
             saveCache();
         }

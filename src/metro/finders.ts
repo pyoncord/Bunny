@@ -4,7 +4,7 @@ import { FilterFn } from "./types";
 
 function testExports<A extends unknown[]>(moduleExports: any, moduleId: number, filter: FilterFn<A>) {
     if (moduleExports.default && moduleExports.__esModule && filter(moduleExports.default, moduleId, true)) {
-        return [moduleExports.default, true];
+        return [filter.defaultFilter ? moduleExports : moduleExports.default, !filter.defaultFilter];
     }
 
     if (!filter.defaultFilter && filter(moduleExports, moduleId, false)) {

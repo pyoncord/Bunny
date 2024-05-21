@@ -13,16 +13,6 @@ let patchedInspectSource = false;
 let patchedImportTracker = false;
 let _importingModuleId: string | null = null;
 
-/** Makes the module associated with the specified ID non-enumberable. */
-function blacklistModule(id: string) {
-    Object.defineProperty(metroModules, id, { enumerable: false });
-    blacklistedIds.add(id);
-}
-
-function isBadExports(exports: any) {
-    return !exports || exports === window || exports["<!@ pylix was here :fuyusquish: !@>"] === null;
-}
-
 for (const id in metroModules) {
     const metroModule = metroModules[id];
 
@@ -55,6 +45,16 @@ for (const id in metroModules) {
             _importingModuleId = null;
         }) as any); // If only spitroast had better types
     }
+}
+
+/** Makes the module associated with the specified ID non-enumberable. */
+function blacklistModule(id: string) {
+    Object.defineProperty(metroModules, id, { enumerable: false });
+    blacklistedIds.add(id);
+}
+
+function isBadExports(exports: any) {
+    return !exports || exports === window || exports["<!@ pylix was here :fuyusquish: !@>"] === null;
 }
 
 function onModuleRequire(moduleExports: any, id: Metro.ModuleID) {
@@ -135,6 +135,8 @@ export function getImportingModuleId() {
 export function requireModule(id: Metro.ModuleID) {
     if (!metroModules[0]?.isInitialized) metroRequire(0);
     if (blacklistedIds.has(String(id))) return undefined;
+
+    if (Number(id) === -1) return require("@metro/polyfills/redesign");
 
     if (metroModules[id]?.isInitialized && !metroModules[id]?.hasError) {
         return metroRequire(id);
