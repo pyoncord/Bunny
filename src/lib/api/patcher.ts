@@ -8,12 +8,12 @@ import {
 function shim<T extends (...args: any) => any>(fn: T) {
     return function shimmed(this: any, ...args: Parameters<T>) {
         const proxyInfo = getFindProxyInfo(args[1]);
-        if (proxyInfo && !proxyInfo.cache) {
+        if (proxyInfo && !proxyInfo.cache && proxyInfo.indexed) {
             let cancel = false;
             let unpatch = () => cancel = true;
             proxyInfo.subscribe(exp => {
-                args[1] = exp;
                 if (cancel) return;
+                args[1] = exp;
                 unpatch = fn.apply(this, args);
             });
 

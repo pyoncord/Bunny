@@ -20,7 +20,9 @@ interface FindProxyInfo<A extends unknown[]> {
 }
 
 function getIndexedSingleFind<A extends unknown[]>(filter: FilterFn<A>) {
-    const id = Object.keys(getMetroCache().findIndex[filter.uniq]!).filter(k => k !== "_")[0];
+    const modulesMap = getMetroCache().findIndex[filter.uniq];
+    if (!modulesMap) return;
+    const id = Object.keys(modulesMap).filter(k => k !== "_")[0];
     return id ? Number(id) : void 0;
 }
 
