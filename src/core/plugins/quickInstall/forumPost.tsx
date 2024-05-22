@@ -6,7 +6,8 @@ import { useProxy } from "@lib/api/storage";
 import { installPlugin, plugins, removePlugin } from "@lib/managers/plugins";
 import { installTheme, removeTheme, themes } from "@lib/managers/themes";
 import { DISCORD_SERVER_ID, HTTP_REGEX_MULTI, PLUGINS_CHANNEL_ID, PROXY_PREFIX, THEMES_CHANNEL_ID } from "@lib/utils/constants";
-import { findByPropsProxy } from "@metro/utils";
+import { lazyDestructure } from "@lib/utils/lazy";
+import { findByProps, findByPropsProxy } from "@metro/utils";
 import { ErrorBoundary } from "@ui/components";
 import { Button } from "@ui/components/discord/Redesign";
 import { showToast } from "@ui/toasts";
@@ -15,7 +16,7 @@ type PostType = "Plugin" | "Theme";
 
 // const ForumPostLongPressActionSheet = findByNameProxy("ForumPostLongPressActionSheet", false);
 // const { ActionSheetRow } = findByPropsProxy("ActionSheetRow");
-const { useFirstForumPostMessage } = findByPropsProxy("useFirstForumPostMessage");
+const { useFirstForumPostMessage } = lazyDestructure(() => findByProps("useFirstForumPostMessage"));
 const forumReactions = findByPropsProxy("MostCommonForumPostReaction");
 
 const postMap = {

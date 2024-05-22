@@ -3,8 +3,9 @@ import { DeviceManager } from "@lib/api/native/modules";
 import { after } from "@lib/api/patcher";
 import { toggleSafeMode } from "@lib/debug";
 import { settings } from "@lib/settings";
+import { lazyDestructure } from "@lib/utils/lazy";
 import { ButtonColors } from "@lib/utils/types";
-import { findByNameProxy, findByPropsProxy } from "@metro/utils";
+import { findByNameProxy, findByProps } from "@metro/utils";
 import { semanticColors } from "@ui/color";
 import { Codeblock, ErrorBoundary as _ErrorBoundary } from "@ui/components";
 import { Button, SafeAreaView } from "@ui/components/discord";
@@ -14,7 +15,7 @@ import { Text, View } from "react-native";
 const ErrorBoundary = findByNameProxy("ErrorBoundary");
 
 // Let's just pray they have this.
-const { BadgableTabBar } = findByPropsProxy("BadgableTabBar");
+const { BadgableTabBar } = lazyDestructure(() => findByProps("BadgableTabBar"));
 
 const styles = createThemedStyleSheet({
     container: {

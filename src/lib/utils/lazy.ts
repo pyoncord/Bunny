@@ -43,3 +43,22 @@ export function proxyLazy<T>(factory: () => T, asFunction = true): T {
 
     return new Proxy(dummy, lazyHandler) as any;
 }
+
+export function lazyDestructure<T extends Record<PropertyKey, unknown>>(factory: () => T, asFunction = false): T {
+    const proxiedObject = proxyLazy(factory, asFunction);
+
+    return new Proxy({}, {
+        get(_, property) {
+            if (property === Symbol.iterator) {
+                return function* () {
+                    yield proxiedObject;
+                    yield new Proxy({}, {
+                        get: (_, p) => proxyLazy(() => proxiedObject[p])
+                    });
+                    throw new Error("This is not a real iterator, this is likely used incorrectly");
+                };
+            }
+            return proxyLazy(() => proxiedObject[property]);
+        }
+    }) as T;
+}

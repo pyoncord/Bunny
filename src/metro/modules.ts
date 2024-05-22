@@ -174,7 +174,9 @@ export function requireModule(id: Metro.ModuleID) {
 
     let moduleExports;
     try {
+        const forced = !metroModules[id]?.isInitialized;
         moduleExports = metroRequire(id);
+        forced && console.log("Force inited", id, moduleExports);
     } catch {
         blacklistModule(String(id));
         moduleExports = undefined;

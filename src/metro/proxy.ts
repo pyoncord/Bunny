@@ -5,9 +5,6 @@ import { filterExports, findExports } from "./finders";
 import { requireModule, subscribeModule } from "./modules";
 import type { FilterFn } from "./types";
 
-// TODO: "Find info" sounds too meh
-const findInfoSym = Symbol.for("bunny.metro.findInfo");
-
 const proxyInfoMap = new WeakMap<{}, FindProxyInfo<any[]>>();
 
 interface FindProxyInfo<A extends unknown[]> {

@@ -8,11 +8,12 @@ import { ThemeManager } from "@lib/api/native/modules";
 import { after, before, instead } from "@lib/api/patcher";
 import { awaitSyncWrapper, createFileBackend, createMMKVBackend, createStorage, wrapSync } from "@lib/api/storage";
 import { findInReactTree, safeFetch } from "@lib/utils";
+import { lazyDestructure } from "@lib/utils/lazy";
 import { Author } from "@lib/utils/types";
 import { chroma } from "@metro/common";
 import { byMutableProp } from "@metro/filters";
 import { findExports } from "@metro/finders";
-import { findByNameProxy, findByPropsProxy, findByStoreNameProxy } from "@metro/utils";
+import { findByNameProxy, findByProps, findByPropsProxy, findByStoreNameProxy } from "@metro/utils";
 import { ImageBackground, Platform, processColor } from "react-native";
 
 export interface ThemeData {
@@ -76,9 +77,7 @@ async function writeTheme(theme: Theme | {}) {
  */
 export function patchChatBackground() {
     const MessagesWrapperConnected = findByNameProxy("MessagesWrapperConnected", false);
-    if (!MessagesWrapperConnected) return;
-    const { MessagesWrapper } = findByPropsProxy("MessagesWrapper");
-    if (!MessagesWrapper) return;
+    const { MessagesWrapper } = lazyDestructure(() => findByProps("MessagesWrapper"));
 
     const patches = [
         after("default", MessagesWrapperConnected, (_, ret) => enabled ? React.createElement(ImageBackground, {

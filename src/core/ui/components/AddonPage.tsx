@@ -4,8 +4,9 @@ import { getAssetIDByName } from "@lib/api/assets";
 import { useProxy } from "@lib/api/storage";
 import { settings } from "@lib/settings";
 import { HTTP_REGEX_MULTI } from "@lib/utils/constants";
+import { lazyDestructure } from "@lib/utils/lazy";
 import { clipboard } from "@metro/common";
-import { findByPropsProxy } from "@metro/utils";
+import { findByProps, findByPropsProxy } from "@metro/utils";
 import { showInputAlert } from "@ui/alerts";
 import { ErrorBoundary, Search } from "@ui/components";
 import { HelpMessage } from "@ui/components/discord";
@@ -44,7 +45,7 @@ function getItemsByQuery<T extends AddonPageProps<unknown>["items"][string]>(ite
 }
 
 const reanimated = findByPropsProxy("useSharedValue");
-const { FloatingActionButton } = findByPropsProxy("FloatingActionButton");
+const { FloatingActionButton } = lazyDestructure(() => findByProps("FloatingActionButton"));
 
 export default function AddonPage<T>({ floatingButtonText, fetchFunction, items, safeModeMessage, safeModeExtras, card: CardComponent, isRemoveMode, headerComponent, onFABPress }: AddonPageProps<T>) {
     useProxy(items);

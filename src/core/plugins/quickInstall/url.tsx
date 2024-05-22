@@ -5,18 +5,19 @@ import { after, instead } from "@lib/api/patcher";
 import { installPlugin } from "@lib/managers/plugins";
 import { installTheme } from "@lib/managers/themes";
 import { PROXY_PREFIX, THEMES_CHANNEL_ID } from "@lib/utils/constants";
+import { lazyDestructure } from "@lib/utils/lazy";
 import { channels, url } from "@metro/common";
 import { byMutableProp } from "@metro/filters";
 import { findExports } from "@metro/finders";
-import { findByPropsProxy } from "@metro/utils";
+import { findByProps, findByPropsProxy } from "@metro/utils";
 import { showConfirmationAlert } from "@ui/alerts";
 import { showToast } from "@ui/toasts";
 
 const showSimpleActionSheet = findExports(byMutableProp("showSimpleActionSheet"));
 const handleClick = findByPropsProxy("handleClick");
-const { openURL } = url;
-const { getChannelId } = channels;
-const { getChannel } = findByPropsProxy("getChannel");
+const { openURL } = lazyDestructure(() => url);
+const { getChannelId } = lazyDestructure(() => channels);
+const { getChannel } = lazyDestructure(() => findByProps("getChannel"));
 
 function typeFromUrl(url: string) {
     if (url.startsWith(PROXY_PREFIX)) {

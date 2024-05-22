@@ -6,8 +6,9 @@ import { getReactDevToolsProp, getReactDevToolsVersion, isLoaderConfigSupported,
 import { useProxy } from "@lib/api/storage";
 import { connectToDebugger } from "@lib/debug";
 import { loaderConfig, settings } from "@lib/settings";
+import { lazyDestructure } from "@lib/utils/lazy";
 import { NavigationNative } from "@metro/common";
-import { findByPropsProxy } from "@metro/utils";
+import { findByProps } from "@metro/utils";
 import { semanticColors } from "@ui/color";
 import { ErrorBoundary } from "@ui/components";
 import { FormText } from "@ui/components/discord/Forms";
@@ -15,8 +16,8 @@ import { Button, Stack, TableRow, TableRowGroup, TableSwitchRow, TextInput } fro
 import { createStyles, TextStyleSheet } from "@ui/styles";
 import { ScrollView, StyleSheet } from "react-native";
 
-const { hideActionSheet } = findByPropsProxy("openLazy", "hideActionSheet");
-const { showSimpleActionSheet } = findByPropsProxy("showSimpleActionSheet");
+const { hideActionSheet } = lazyDestructure(() => findByProps("openLazy", "hideActionSheet"));
+const { showSimpleActionSheet } = lazyDestructure(() => findByProps("showSimpleActionSheet"));
 
 const RDT_EMBED_LINK = "https://raw.githubusercontent.com/amsyarasyiq/rdt-embedder/main/dist.js";
 
