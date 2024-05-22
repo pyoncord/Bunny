@@ -1,5 +1,5 @@
 import { Strings } from "@core/i18n";
-import { getAssetIDByName } from "@lib/api/assets";
+import { requireAssetIndex } from "@lib/api/assets";
 import { HTTP_REGEX_MULTI } from "@lib/utils/constants";
 import { clipboard } from "@metro/common";
 import { showInputAlert } from "@ui/alerts";
@@ -35,7 +35,7 @@ export default function InstallButton({ alertTitle, installFunction: fetchFuncti
                 })
             )
         }>
-            <Image style={styles.icon} source={getAssetIDByName("ic_add_24px")} />
+            <Image style={styles.icon} source={requireAssetIndex("ic_add_24px")} />
         </TouchableOpacity>
     );
 }

@@ -1,6 +1,6 @@
 import { Strings } from "@core/i18n";
 import { CardWrapper } from "@core/ui/components/Card";
-import { getAssetIDByName } from "@lib/api/assets";
+import { requireAssetIndex } from "@lib/api/assets";
 import { useProxy } from "@lib/api/storage";
 import { FontDefinition, fonts, removeFont, selectFont } from "@lib/managers/fonts";
 import { FormCheckbox, IconButton, TableRow, TableRowGroup } from "@ui/components/discord/Redesign";
@@ -23,13 +23,13 @@ export default function FontCard({ item: font, index }: CardWrapper<FontDefiniti
                 trailing={
                     <Pressable onPress={() => {
                         selectFont(selected ? null : font.name).then(() => {
-                            showToast(Strings.RESTART_REQUIRED_TO_TAKE_EFFECT, getAssetIDByName("WarningIcon"));
+                            showToast(Strings.RESTART_REQUIRED_TO_TAKE_EFFECT, requireAssetIndex("WarningIcon"));
                         });
                     }}>
                         {!removeMode ? <FormCheckbox checked={selected} /> : <IconButton
                             size="sm"
                             variant="secondary"
-                            icon={getAssetIDByName("TrashIcon")}
+                            icon={requireAssetIndex("TrashIcon")}
                             onPress={() => removeFont(font.name)}
                         />}
                     </Pressable>

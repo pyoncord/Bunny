@@ -1,5 +1,5 @@
 import { Strings } from "@core/i18n";
-import { getAssetIDByName } from "@lib/api/assets";
+import { requireAssetIndex } from "@lib/api/assets";
 import { isThemeSupported } from "@lib/api/native/loader";
 import { after } from "@lib/api/patcher";
 import { useProxy } from "@lib/api/storage";
@@ -77,7 +77,7 @@ function useInstaller(thread: any, firstMessage = null, actionSheet = false): [t
         try {
             await postMap[postType].installOrRemove(url);
         } catch (e: any) {
-            showToast(e.message, getAssetIDByName("Small"));
+            showToast(e.message, requireAssetIndex("Small"));
         } finally {
             setIsInstalling(false);
         }
@@ -119,7 +119,7 @@ const installButtonPatch = () => after("MostCommonForumPostReaction", forumReact
                 variant={installed ? "secondary" : "primary"}
                 text={installed ? Strings.UNINSTALL : Strings.INSTALL}
                 onPress={installOrRemove}
-                icon={getAssetIDByName(installed ? "ic_message_delete" : "DownloadIcon")}
+                icon={requireAssetIndex(installed ? "ic_message_delete" : "DownloadIcon")}
                 style={{ marginLeft: 8 }}
             />
         </ErrorBoundary>

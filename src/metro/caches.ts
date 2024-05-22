@@ -1,7 +1,7 @@
 import { ClientInfoManager, MMKVManager } from "@lib/api/native/modules";
 import { throttle } from "@lib/utils/throttle";
 
-const CACHE_VERSION = 18;
+const CACHE_VERSION = 19;
 const BUNNY_METRO_CACHE_KEY = `__bunny_metro_cache_key_v${CACHE_VERSION}__`;
 
 export enum ExportsFlags {

@@ -127,11 +127,11 @@ export const initVendettaObject = (): any => {
                 showInputAlert: (options: any) => alerts.showInputAlert(options)
             },
             assets: {
-                all: assets.all,
-                find: (filter: (a: any) => void) => assets.find(filter),
-                getAssetByName: (name: string) => assets.getAssetByName(name),
-                getAssetByID: (id: number) => assets.getAssetByID(id),
-                getAssetIDByName: (name: string) => assets.getAssetIDByName(name)
+                all: assets.assetsMap,
+                find: (filter: (a: any) => void) => assets.findAsset(filter),
+                getAssetByName: (name: string) => assets.requireAssetByName(name),
+                getAssetByID: (id: number) => assets.requireAssetByIndex(id),
+                getAssetIDByName: (name: string) => assets.requireAssetIndex(name)
             },
             semanticColors: color.semanticColors,
             rawColors: color.rawColors

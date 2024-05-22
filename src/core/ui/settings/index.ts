@@ -1,5 +1,5 @@
 import { Strings } from "@core/i18n";
-import { getAssetIDByName } from "@lib/api/assets";
+import { requireAssetIndex } from "@lib/api/assets";
 import { isFontSupported, isThemeSupported } from "@lib/api/native/loader";
 import { useProxy } from "@lib/api/storage";
 import { settings } from "@lib/settings";
@@ -28,27 +28,27 @@ export default function initSettings() {
             {
                 key: "BUNNY_PLUGINS",
                 title: () => Strings.PLUGINS,
-                icon: getAssetIDByName("ActivitiesIcon"),
+                icon: requireAssetIndex("ActivitiesIcon"),
                 render: () => import("@core/ui/settings/pages/Plugins")
             },
             {
                 key: "BUNNY_THEMES",
                 title: () => Strings.THEMES,
-                icon: getAssetIDByName("PaintPaletteIcon"),
+                icon: requireAssetIndex("PaintPaletteIcon"),
                 render: () => import("@core/ui/settings/pages/Themes"),
                 usePredicate: () => isThemeSupported()
             },
             {
                 key: "BUNNY_FONTS",
                 title: () => Strings.FONTS,
-                icon: getAssetIDByName("ic_add_text"),
+                icon: requireAssetIndex("ic_add_text"),
                 render: () => import("@core/ui/settings/pages/Fonts"),
                 usePredicate: () => isFontSupported()
             },
             {
                 key: "BUNNY_DEVELOPER",
                 title: () => Strings.DEVELOPER,
-                icon: getAssetIDByName("WrenchIcon"),
+                icon: requireAssetIndex("WrenchIcon"),
                 render: () => import("@core/ui/settings/pages/Developer"),
                 usePredicate: () => useProxy(settings).developerSettings ?? false
             }

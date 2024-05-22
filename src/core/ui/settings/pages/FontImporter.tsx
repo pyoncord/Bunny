@@ -1,5 +1,5 @@
 import { formatString, Strings } from "@core/i18n";
-import { getAssetIDByName } from "@lib/api/assets";
+import { requireAssetIndex } from "@lib/api/assets";
 import { createProxy, useProxy } from "@lib/api/storage";
 import { FontDefinition, saveFont, validateFont } from "@lib/managers/fonts";
 import { getCurrentTheme } from "@lib/managers/themes";
@@ -153,7 +153,7 @@ function EntryRow({ fontEntry }: { fontEntry: Record<string, string>; }) {
                 size="md"
                 label={nameSet ? nameRef.current : void 0}
                 placeholder={nameSet ? "https://path.to/the/file.ttf" : "PostScript name (e.g. ggsans-Bold)"}
-                leadingIcon={() => nameSet ? null : <TableRow.Icon source={getAssetIDByName("PlusSmallIcon")} />}
+                leadingIcon={() => nameSet ? null : <TableRow.Icon source={requireAssetIndex("PlusSmallIcon")} />}
                 leadingText={nameSet ? nameRef.current : ""}
                 onChange={(text: string) => (nameSet ? urlRef : nameRef).current = text}
                 errorMessage={error}
@@ -167,7 +167,7 @@ function EntryRow({ fontEntry }: { fontEntry: Record<string, string>; }) {
                 nameRef.current = "";
                 setNameSet(false);
             }}
-            icon={getAssetIDByName("TrashIcon")}
+            icon={requireAssetIndex("TrashIcon")}
         />}
         <IconButton
             size="md"
@@ -191,7 +191,7 @@ function EntryRow({ fontEntry }: { fontEntry: Record<string, string>; }) {
                     }
                 }
             }}
-            icon={getAssetIDByName(nameSet ? "PlusSmallIcon" : "ArrowLargeRightIcon")}
+            icon={requireAssetIndex(nameSet ? "PlusSmallIcon" : "ArrowLargeRightIcon")}
         />
     </View>;
 }
@@ -212,13 +212,13 @@ export default function FontImporter() {
                 {getCurrentTheme()?.data?.fonts && <TableRow
                     label={Strings.LABEL_EXTRACT_FONTS_FROM_THEME}
                     subLabel={Strings.DESC_EXTRACT_FONTS_FROM_THEME}
-                    icon={<TableRow.Icon source={getAssetIDByName("HammerIcon")} />}
+                    icon={<TableRow.Icon source={requireAssetIndex("HammerIcon")} />}
                     onPress={() => promptActionSheet(RevengeFontsExtractor, fontEntries, setName)}
                 />}
                 <TableRow
                     label={"Import font entries from a link"}
                     subLabel={"Directly import from a link with a pre-configured JSON file"}
-                    icon={<TableRow.Icon source={getAssetIDByName("LinkIcon")} />}
+                    icon={<TableRow.Icon source={requireAssetIndex("LinkIcon")} />}
                     onPress={() => promptActionSheet(JsonFontImporter, fontEntries, setName)}
                 />
             </TableRowGroup>
@@ -237,7 +237,7 @@ export default function FontImporter() {
                         trailing={<IconButton
                             size="sm"
                             variant="secondary"
-                            icon={getAssetIDByName("TrashIcon")}
+                            icon={requireAssetIndex("TrashIcon")}
                             onPress={() => delete fontEntries[name]}
                         />}
                     />;
@@ -264,7 +264,7 @@ export default function FontImporter() {
                             .then(() => navigation.goBack())
                             .finally(() => setIsImporting(false));
                     }}
-                    icon={getAssetIDByName("DownloadIcon")}
+                    icon={requireAssetIndex("DownloadIcon")}
                     style={{ marginLeft: 8 }}
                 />
             </View>

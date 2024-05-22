@@ -1,4 +1,4 @@
-import { getAssetIDByName } from "@lib/api/assets";
+import { requireAssetIndex } from "@lib/api/assets";
 import { clipboard } from "@metro/common";
 import { FormText } from "@ui/components/discord/Forms";
 import { TableRow } from "@ui/components/discord/Redesign";
@@ -14,7 +14,7 @@ export default function Version({ label, version, icon }: VersionProps) {
     return (
         <TableRow
             label={label}
-            icon={<TableRow.Icon source={getAssetIDByName(icon)} />}
+            icon={<TableRow.Icon source={requireAssetIndex(icon)} />}
             trailing={<FormText>{version}</FormText>}
             onPress={() => {
                 clipboard.setString(`${label} - ${version}`);

@@ -1,5 +1,5 @@
 import { Strings } from "@core/i18n";
-import { getAssetIDByName } from "@lib/api/assets";
+import { requireAssetIndex } from "@lib/api/assets";
 import { TextInput } from "@ui/components/discord/Redesign";
 import ErrorBoundary from "@ui/components/ErrorBoundary";
 import { Image, View } from "react-native";
@@ -11,7 +11,7 @@ export interface SearchProps {
 }
 
 function SearchIcon() {
-    return <Image style={{ transform: [{ scale: 0.8 }] }} source={getAssetIDByName("search")} />;
+    return <Image style={{ transform: [{ scale: 0.8 }] }} source={requireAssetIndex("search")} />;
 }
 
 export default ({ onChangeText, placeholder, style }: SearchProps) => {

@@ -1,4 +1,4 @@
-import { getAssetIDByName } from "@lib/api/assets";
+import { requireAssetIndex } from "@lib/api/assets";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { ReactNative as RN } from "@metro/common";
 import { findByProps } from "@metro/utils";
@@ -96,7 +96,7 @@ export default function Card(props: CardProps) {
     return (
         <RN.View style={[styles.card, { marginTop: props.index !== 0 ? 15 : 0 }]}>
             <ImageBackground
-                source={props.headerIcon && getAssetIDByName(props.headerIcon) || {}}
+                source={props.headerIcon && requireAssetIndex(props.headerIcon) || {}}
                 resizeMode="cover"
                 imageStyle={styles.iconStyle}
             >
@@ -119,14 +119,14 @@ export default function Card(props: CardProps) {
                                             key: "CardOverflow",
                                             header: {
                                                 title: props.overflowTitle,
-                                                icon: props.headerIcon && <FormRow.Icon style={{ marginRight: 8 }} source={getAssetIDByName(props.headerIcon)} />,
+                                                icon: props.headerIcon && <FormRow.Icon style={{ marginRight: 8 }} source={requireAssetIndex(props.headerIcon)} />,
                                                 onClose: () => hideActionSheet(),
                                             },
-                                            options: props.overflowActions?.map(i => ({ ...i, icon: getAssetIDByName(i.icon) })),
+                                            options: props.overflowActions?.map(i => ({ ...i, icon: requireAssetIndex(i.icon) })),
                                         })}
                                         size="sm"
                                         variant="secondary"
-                                        icon={getAssetIDByName("CircleInformationIcon-primary")}
+                                        icon={requireAssetIndex("CircleInformationIcon-primary")}
                                     />}
                                 {props.actions?.map(({ icon, onPress, disabled }) => (
                                     <IconButton
@@ -134,7 +134,7 @@ export default function Card(props: CardProps) {
                                         disabled={disabled}
                                         size="sm"
                                         variant="secondary"
-                                        icon={getAssetIDByName(icon)}
+                                        icon={requireAssetIndex(icon)}
                                     />
                                 ))}
                             </View>

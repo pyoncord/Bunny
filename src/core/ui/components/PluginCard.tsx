@@ -1,6 +1,6 @@
 import { formatString, Strings } from "@core/i18n";
 import Card, { CardWrapper } from "@core/ui/components/Card";
-import { getAssetIDByName } from "@lib/api/assets";
+import { requireAssetIndex } from "@lib/api/assets";
 import { purgeStorage, useProxy } from "@lib/api/storage";
 import { BunnyPlugin, fetchPlugin, getSettings, removePlugin, startPlugin, stopPlugin } from "@lib/managers/plugins";
 import { ButtonColors } from "@lib/utils/types";
@@ -37,7 +37,7 @@ export default function PluginCard({ item: plugin, index }: CardWrapper<BunnyPlu
                 try {
                     if (v) startPlugin(plugin.id); else stopPlugin(plugin.id);
                 } catch (e) {
-                    showToast((e as Error).message, getAssetIDByName("Small"));
+                    showToast((e as Error).message, requireAssetIndex("Small"));
                 }
             }}
             descriptionLabel={plugin.manifest.description}
@@ -65,9 +65,9 @@ export default function PluginCard({ item: plugin, index }: CardWrapper<BunnyPlu
                     onPress: async () => {
                         stopThenStart(plugin, () => {
                             fetchPlugin(plugin.id).then(async () => {
-                                showToast(Strings.PLUGIN_REFETCH_SUCCESSFUL, getAssetIDByName("toast_image_saved"));
+                                showToast(Strings.PLUGIN_REFETCH_SUCCESSFUL, requireAssetIndex("toast_image_saved"));
                             }).catch(() => {
-                                showToast(Strings.PLUGIN_REFETCH_FAILED, getAssetIDByName("Small"));
+                                showToast(Strings.PLUGIN_REFETCH_FAILED, requireAssetIndex("Small"));
                             });
                         });
                     },
@@ -85,7 +85,7 @@ export default function PluginCard({ item: plugin, index }: CardWrapper<BunnyPlu
                     label: plugin.update ? Strings.DISABLE_UPDATES : Strings.ENABLE_UPDATES,
                     onPress: () => {
                         plugin.update = !plugin.update;
-                        showToast(formatString("TOASTS_PLUGIN_UPDATE", { update: plugin.update, name: plugin.manifest.name }), getAssetIDByName("toast_image_saved"));
+                        showToast(formatString("TOASTS_PLUGIN_UPDATE", { update: plugin.update, name: plugin.manifest.name }), requireAssetIndex("toast_image_saved"));
                     }
                 },
                 {
@@ -102,9 +102,9 @@ export default function PluginCard({ item: plugin, index }: CardWrapper<BunnyPlu
                             stopThenStart(plugin, () => {
                                 try {
                                     purgeStorage(plugin.id);
-                                    showToast(formatString("CLEAR_DATA_SUCCESSFUL", { name: plugin.manifest.name }), getAssetIDByName("trash"));
+                                    showToast(formatString("CLEAR_DATA_SUCCESSFUL", { name: plugin.manifest.name }), requireAssetIndex("trash"));
                                 } catch {
-                                    showToast(formatString("CLEAR_DATA_FAILED", { name: plugin.manifest.name }), getAssetIDByName("Small"));
+                                    showToast(formatString("CLEAR_DATA_FAILED", { name: plugin.manifest.name }), requireAssetIndex("Small"));
                                 }
                             });
                         }
@@ -125,7 +125,7 @@ export default function PluginCard({ item: plugin, index }: CardWrapper<BunnyPlu
                                 removePlugin(plugin.id);
                                 setRemoved(true);
                             } catch (e) {
-                                showToast((e as Error).message, getAssetIDByName("Small"));
+                                showToast((e as Error).message, requireAssetIndex("Small"));
                             }
                         }
                     }),

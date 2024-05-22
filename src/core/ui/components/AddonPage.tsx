@@ -1,6 +1,6 @@
 import { Strings } from "@core/i18n";
 import { CardWrapper } from "@core/ui/components/Card";
-import { getAssetIDByName } from "@lib/api/assets";
+import { requireAssetIndex } from "@lib/api/assets";
 import { useProxy } from "@lib/api/storage";
 import { settings } from "@lib/settings";
 import { HTTP_REGEX_MULTI } from "@lib/utils/constants";
@@ -85,7 +85,7 @@ export default function AddonPage<T>({ floatingButtonText, fetchFunction, items,
             />
             <FloatingActionButton
                 text={floatingButtonText}
-                icon={getAssetIDByName("PlusLargeIcon")}
+                icon={requireAssetIndex("PlusLargeIcon")}
                 state={{ collapseText }}
                 onPress={onFABPress ?? (() => {
                     // from ./InstallButton.tsx

@@ -1,7 +1,7 @@
 import { Strings } from "@core/i18n";
 import { CheckState, useFileExists } from "@core/ui/settings/hooks/useFS";
 import AssetBrowser from "@core/ui/settings/pages/AssetBrowser";
-import { getAssetIDByName } from "@lib/api/assets";
+import { requireAssetIndex } from "@lib/api/assets";
 import { getReactDevToolsProp, getReactDevToolsVersion, isLoaderConfigSupported, isReactDevToolsPreloaded, isVendettaLoader } from "@lib/api/native/loader";
 import { useProxy } from "@lib/api/storage";
 import { connectToDebugger } from "@lib/debug";
@@ -53,13 +53,13 @@ export default function Developer() {
                     <TableRowGroup title={Strings.DEBUG}>
                         <TableRow
                             label={Strings.CONNECT_TO_DEBUG_WEBSOCKET}
-                            icon={<TableRow.Icon source={getAssetIDByName("copy")} />}
+                            icon={<TableRow.Icon source={requireAssetIndex("copy")} />}
                             onPress={() => connectToDebugger(settings.debuggerUrl)}
                         />
                         {isReactDevToolsPreloaded() && <>
                             <TableRow
                                 label={Strings.CONNECT_TO_REACT_DEVTOOLS}
-                                icon={<TableRow.Icon source={getAssetIDByName("ic_badge_staff")} />}
+                                icon={<TableRow.Icon source={requireAssetIndex("ic_badge_staff")} />}
                                 onPress={() => window[getReactDevToolsProp() || "__vendetta_rdc"]?.connectToDevTools({
                                     host: settings.debuggerUrl.split(":")?.[0],
                                     resolveRNStyle: StyleSheet.flatten,
@@ -72,7 +72,7 @@ export default function Developer() {
                             <TableSwitchRow
                                 label={Strings.LOAD_FROM_CUSTOM_URL}
                                 subLabel={Strings.LOAD_FROM_CUSTOM_URL_DEC}
-                                icon={<TableRow.Icon source={getAssetIDByName("copy")} />}
+                                icon={<TableRow.Icon source={requireAssetIndex("copy")} />}
                                 value={loaderConfig.customLoadUrl.enabled}
                                 onValueChange={(v: boolean) => {
                                     loaderConfig.customLoadUrl.enabled = v;
@@ -88,7 +88,7 @@ export default function Developer() {
                             {isReactDevToolsPreloaded() && isVendettaLoader() && <TableSwitchRow
                                 label={Strings.LOAD_REACT_DEVTOOLS}
                                 subLabel={`${Strings.VERSION}: ${getReactDevToolsVersion()}`}
-                                icon={<TableRow.Icon source={getAssetIDByName("ic_badge_staff")} />}
+                                icon={<TableRow.Icon source={requireAssetIndex("ic_badge_staff")} />}
                                 value={loaderConfig.loadReactDevTools}
                                 onValueChange={(v: boolean) => {
                                     loaderConfig.loadReactDevTools = v;
@@ -100,7 +100,7 @@ export default function Developer() {
                         <TableRow
                             arrow
                             label={Strings.ASSET_BROWSER}
-                            icon={<TableRow.Icon source={getAssetIDByName("ic_image")} />}
+                            icon={<TableRow.Icon source={requireAssetIndex("ic_image")} />}
                             trailing={TableRow.Arrow}
                             onPress={() => navigation.push("VendettaCustomPage", {
                                 title: Strings.ASSET_BROWSER,
@@ -110,12 +110,12 @@ export default function Developer() {
                         <TableRow
                             arrow
                             label={Strings.ERROR_BOUNDARY_TOOLS_LABEL}
-                            icon={<TableRow.Icon source={getAssetIDByName("ic_warning_24px")} />}
+                            icon={<TableRow.Icon source={requireAssetIndex("ic_warning_24px")} />}
                             onPress={() => showSimpleActionSheet({
                                 key: "ErrorBoundaryTools",
                                 header: {
                                     title: "Which ErrorBoundary do you want to trip?",
-                                    icon: <TableRow.Icon style={{ marginRight: 8 }} source={getAssetIDByName("ic_warning_24px")} />,
+                                    icon: <TableRow.Icon style={{ marginRight: 8 }} source={requireAssetIndex("ic_warning_24px")} />,
                                     onClose: () => hideActionSheet(),
                                 },
                                 options: [
@@ -129,7 +129,7 @@ export default function Developer() {
                         <TableRow
                             label={Strings.INSTALL_REACT_DEVTOOLS}
                             subLabel={Strings.RESTART_REQUIRED_TO_TAKE_EFFECT}
-                            icon={<TableRow.Icon source={getAssetIDByName("DownloadIcon")} />}
+                            icon={<TableRow.Icon source={requireAssetIndex("DownloadIcon")} />}
                             trailing={
                                 <Button
                                     size="sm"
@@ -144,7 +144,7 @@ export default function Developer() {
                                             fs.removeFile("preloads/reactDevtools.js");
                                         }
                                     }}
-                                    icon={getAssetIDByName(rdtFileExists === CheckState.TRUE ? "ic_message_delete" : "DownloadIcon")}
+                                    icon={requireAssetIndex(rdtFileExists === CheckState.TRUE ? "ic_message_delete" : "DownloadIcon")}
                                     style={{ marginLeft: 8 }}
                                 />
                             }
@@ -152,7 +152,7 @@ export default function Developer() {
                         <TableSwitchRow
                             label={Strings.ENABLE_EVAL_COMMAND}
                             subLabel={Strings.ENABLE_EVAL_COMMAND_DESC}
-                            icon={<TableRow.Icon source={getAssetIDByName("PencilIcon")} />}
+                            icon={<TableRow.Icon source={requireAssetIndex("PencilIcon")} />}
                             value={settings.enableEvalCommand}
                             onValueChange={(v: boolean) => {
                                 settings.enableEvalCommand = v;
