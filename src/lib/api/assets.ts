@@ -29,9 +29,8 @@ export function patchAssets(module: AssetModule) {
     const unpatch = after("registerAsset", assetsModule, (args: Asset[], id: number) => {
         const asset = args[0];
 
-        const moduleId = Number(getImportingModuleId());
-
-        registerAssetCacheId(asset.name, moduleId);
+        const moduleId = getImportingModuleId();
+        if (moduleId !== -1) registerAssetCacheId(asset.name, moduleId);
 
         all[asset.name] = {
             ...asset,

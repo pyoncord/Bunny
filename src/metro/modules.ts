@@ -7,15 +7,16 @@ const metroRequire: Metro.Require = window.__r;
 
 // eslint-disable-next-line func-call-spacing
 const moduleSubscriptions = new Map<number, Set<() => void>>();
-const blacklistedIds = new Set<String>();
+const blacklistedIds = new Set<number>();
 const noopHandler = () => undefined;
 const functionToString = Function.prototype.toString;
 
 let patchedInspectSource = false;
 let patchedImportTracker = false;
-let _importingModuleId: string | null = null;
+let _importingModuleId: number = -1;
 
-for (const id in metroModules) {
+for (const key in metroModules) {
+    const id = Number(key);
     const metroModule = metroModules[id];
 
     const cache = getMetroCache().exportsIndex[id];
@@ -50,13 +51,14 @@ for (const id in metroModules) {
             } else {
                 blacklistModule(id);
             }
-            _importingModuleId = null;
+
+            _importingModuleId = -1;
         }) as any); // If only spitroast had better types
     }
 }
 
 /** Makes the module associated with the specified ID non-enumberable. */
-function blacklistModule(id: string) {
+function blacklistModule(id: number) {
     Object.defineProperty(metroModules, id, { enumerable: false });
     blacklistedIds.add(id);
     indexBlacklistFlag(Number(id));
@@ -70,7 +72,7 @@ function isBadExports(exports: any) {
 }
 
 function onModuleRequire(moduleExports: any, id: Metro.ModuleID) {
-    indexExportsFlags(Number(id), moduleExports);
+    indexExportsFlags(id, moduleExports);
 
     // Temporary
     moduleExports.initSentry &&= () => undefined;
@@ -109,7 +111,7 @@ function onModuleRequire(moduleExports: any, id: Metro.ModuleID) {
 
     if (!patchedImportTracker && moduleExports.fileFinishedImporting) {
         before("fileFinishedImporting", moduleExports, ([filePath]) => {
-            if (_importingModuleId == null || !filePath) return;
+            if (_importingModuleId === -1 || !filePath) return;
             metroModules[_importingModuleId]!.__filePath = filePath;
         });
         patchedImportTracker = true;
@@ -124,11 +126,10 @@ function onModuleRequire(moduleExports: any, id: Metro.ModuleID) {
 
     // Explosion (no, I can't explain this, don't ask) ((hi rosie))
     if (moduleExports.findHostInstance_DEPRECATED) {
-        const numberedId = Number(id);
-        const prevExports = metroModules[numberedId - 1]?.publicModule.exports;
+        const prevExports = metroModules[id - 1]?.publicModule.exports;
         const inc = prevExports.default?.reactProfilingEnabled ? 1 : -1;
-        if (!metroModules[numberedId + inc]?.isInitialized) {
-            blacklistModule(String(numberedId + inc));
+        if (!metroModules[id + inc]?.isInitialized) {
+            blacklistModule(id + inc);
         }
     }
 
@@ -163,7 +164,7 @@ export function subscribeModule(id: number, cb: () => void): () => void {
 
 export function requireModule(id: Metro.ModuleID) {
     if (!metroModules[0]?.isInitialized) metroRequire(0);
-    if (blacklistedIds.has(String(id))) return undefined;
+    if (blacklistedIds.has(id)) return undefined;
 
     if (Number(id) === -1) return require("@metro/polyfills/redesign");
 
@@ -179,7 +180,7 @@ export function requireModule(id: Metro.ModuleID) {
     try {
         moduleExports = metroRequire(id);
     } catch {
-        blacklistModule(String(id));
+        blacklistModule(id);
         moduleExports = undefined;
     }
 
@@ -196,7 +197,7 @@ export function* getModules(uniq: string, all = false) {
     if (all && !cache?._) cache = undefined;
 
     for (const id in cache ?? metroModules) {
-        const exports = requireModule(id);
+        const exports = requireModule(Number(id));
         if (isBadExports(exports)) continue;
         yield [id, exports];
     }
@@ -205,7 +206,7 @@ export function* getModules(uniq: string, all = false) {
 export function* getCachedPolyfillModules(name: string) {
     const cache = getMetroCache().polyfillIndex[name];
     for (const id in cache ?? metroModules) {
-        const exports = requireModule(id);
+        const exports = requireModule(Number(id));
         if (isBadExports(exports)) continue;
         yield [id, exports];
     }

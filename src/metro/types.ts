@@ -30,7 +30,7 @@ export namespace Metro {
         dispose: (callback?: (() => void) | undefined) => void;
     }
 
-    export type ModuleID = string | number;
+    export type ModuleID = number;
 
     export interface Module {
         id?: ModuleID | undefined;
