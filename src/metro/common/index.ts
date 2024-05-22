@@ -1,5 +1,6 @@
+import { proxyLazy } from "@lib/utils/lazy";
 import { Dispatcher } from "@metro/types";
-import { findByFilePathProxy, findByPropsProxy } from "@metro/utils";
+import { findByFilePath, findByProps, findByPropsProxy } from "@metro/utils";
 
 // Discord
 export const constants = findByPropsProxy("Fonts", "Permissions");
@@ -11,14 +12,15 @@ export const assets = findByPropsProxy("registerAsset");
 export const invites = findByPropsProxy("acceptInviteAndTransitionToInviteChannel");
 export const commands = findByPropsProxy("getBuiltInCommands");
 export const navigation = findByPropsProxy("pushLazy");
-export const toasts = findByFilePathProxy("modules/toast/native/ToastActionCreators.tsx").default;
+export const toasts = proxyLazy(() => findByFilePath("modules/toast/native/ToastActionCreators.tsx").default);
 export const messageUtil = findByPropsProxy("sendBotMessage");
 export const navigationStack = findByPropsProxy("createStackNavigator");
 export const NavigationNative = findByPropsProxy("NavigationContainer");
 
 // Flux
 export const Flux = findByPropsProxy("connectStores");
-export const FluxDispatcher = findByPropsProxy("_interceptors") as Dispatcher;
+// TODO: Making this a proxy/lazy fuck things up for some reason
+export const FluxDispatcher = findByProps("_interceptors") as Dispatcher;
 
 // React
 export const React = window.React = findByPropsProxy("createElement") as typeof import("react");
