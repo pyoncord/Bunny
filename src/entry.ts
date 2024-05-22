@@ -1,8 +1,16 @@
+import { getFactoryOfProxy } from "@lib/utils/lazy";
 import { version } from "bunny-build";
 import { instead } from "spitroast";
 
 // @ts-ignore - shut up fr
 globalThis.window = globalThis;
+
+// @ts-ignore && TODO: Move this to a more sensible place
+globalThis.__bunny_createElement = function createElement(type, props, ...children) {
+    const factory = getFactoryOfProxy(type);
+    if (factory) type = factory();
+    return React.createElement(type, props, ...children);
+};
 
 async function initializeBunny() {
     try {

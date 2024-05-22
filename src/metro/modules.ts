@@ -141,8 +141,11 @@ function onModuleRequire(moduleExports: any, id: Metro.ModuleID) {
         });
     }
 
-    moduleSubscriptions.get(Number(id))?.forEach(s => s())
-        && moduleSubscriptions.delete(Number(id));
+    const subs = moduleSubscriptions.get(Number(id));
+    if (subs) {
+        subs.forEach(s => s());
+        moduleSubscriptions.delete(Number(id));
+    }
 }
 
 export function getImportingModuleId() {
@@ -174,9 +177,7 @@ export function requireModule(id: Metro.ModuleID) {
 
     let moduleExports;
     try {
-        const forced = !metroModules[id]?.isInitialized;
         moduleExports = metroRequire(id);
-        forced && console.log("Force inited", id, moduleExports);
     } catch {
         blacklistModule(String(id));
         moduleExports = undefined;

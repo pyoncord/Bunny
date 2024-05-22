@@ -1,3 +1,4 @@
+import { lazyDestructure } from "@lib/utils/lazy";
 import { findByPropsProxy } from "@metro/utils";
 
 export const Forms = findByPropsProxy("Form", "FormSection");
@@ -29,4 +30,4 @@ export const {
     FormTernaryCheckBox,
     FormText,
     FormTitle
-} = Forms;
+} = lazyDestructure(() => Forms);

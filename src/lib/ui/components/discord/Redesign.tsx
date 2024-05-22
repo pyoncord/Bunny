@@ -1,4 +1,5 @@
-import { findExports } from "@metro/finders";
+import { lazyDestructure, proxyLazy } from "@lib/utils/lazy";
+import { findExports } from "@metro";
 import { createFilterDefinition, findByPropsProxy } from "@metro/utils";
 import { RedesignModuleKeys } from "@ui/types";
 import { useEffect } from "react";
@@ -9,7 +10,7 @@ const bySingularProp = createFilterDefinition<[string]>(
     prop => `bunny.ui.bySingularProp(${prop})`
 );
 
-const findSingular = (prop: string) => findExports(bySingularProp(prop))?.[prop];
+const findSingular = (prop: string) => proxyLazy(() => findExports(bySingularProp(prop))?.[prop]);
 
 export const Redesign = findByPropsProxy("TableRow") as Record<RedesignModuleKeys, any>;
 
@@ -117,7 +118,7 @@ export const {
     useStackNavigation,
     useTabNavigation,
     useTooltip
-} = Redesign;
+} = lazyDestructure(() => Redesign);
 
 export const {
     AccessibilityAnnouncer,
@@ -166,4 +167,4 @@ export const {
     useLegacyClassComponentStyles,
     useThemeContext,
     useToken
-} = CompatfulRedesign;
+} = lazyDestructure(() => CompatfulRedesign);

@@ -8,11 +8,11 @@ import { ThemeManager } from "@lib/api/native/modules";
 import { after, before, instead } from "@lib/api/patcher";
 import { awaitSyncWrapper, createFileBackend, createMMKVBackend, createStorage, wrapSync } from "@lib/api/storage";
 import { findInReactTree, safeFetch } from "@lib/utils";
-import { lazyDestructure } from "@lib/utils/lazy";
+import { lazyDestructure, proxyLazy } from "@lib/utils/lazy";
 import { Author } from "@lib/utils/types";
 import { chroma } from "@metro/common";
 import { byMutableProp } from "@metro/filters";
-import { findExports } from "@metro/finders";
+import { createFindProxy } from "@metro/proxy";
 import { findByNameProxy, findByProps, findByPropsProxy, findByStoreNameProxy } from "@metro/utils";
 import { ImageBackground, Platform, processColor } from "react-native";
 
@@ -44,10 +44,18 @@ export interface Theme {
 // Somehow, this is late enough, though?
 export const color = findByPropsProxy("SemanticColor");
 
+const mmkvStorage = proxyLazy(() => {
+    const newModule = findByProps("impl");
+    if (typeof newModule?.impl === "object") return newModule.impl;
+    return findByProps("storage");
+});
+
 const appearanceManager = findByPropsProxy("updateTheme");
-const mmkvStorage = findByPropsProxy("storage")?.parseResolve ? findByPropsProxy("storage") : findByPropsProxy("impl").impl;
 const ThemeStore = findByStoreNameProxy("ThemeStore");
 const formDividerModule = findByPropsProxy("DIVIDER_COLORS");
+const MessagesWrapperConnected = findByNameProxy("MessagesWrapperConnected", false);
+const { MessagesWrapper } = lazyDestructure(() => findByProps("MessagesWrapper"));
+const isThemeModule = createFindProxy(byMutableProp("isThemeDark"));
 
 export const themes = wrapSync(createStorage<Record<string, Theme>>(createMMKVBackend("VENDETTA_THEMES")));
 
@@ -76,9 +84,6 @@ async function writeTheme(theme: Theme | {}) {
  * @internal
  */
 export function patchChatBackground() {
-    const MessagesWrapperConnected = findByNameProxy("MessagesWrapperConnected", false);
-    const { MessagesWrapper } = lazyDestructure(() => findByProps("MessagesWrapper"));
-
     const patches = [
         after("default", MessagesWrapperConnected, (_, ret) => enabled ? React.createElement(ImageBackground, {
             style: { flex: 1, height: "100%" },
@@ -250,7 +255,6 @@ function isDiscordTheme(name: string) {
 }
 
 function patchColor() {
-    const isThemeModule = findExports(byMutableProp("isThemeDark"));
     const callback = ([theme]: any[]) => theme === vdKey ? [vdThemeFallback] : void 0;
 
     Object.keys(color.RawColor).forEach(k => {

@@ -95,6 +95,9 @@ try {
                                                 version: `"${isRelease ? commitHash : timeString}"`
                                             }
                                         }
+                                    },
+                                    react: {
+                                        pragma: "__bunny_createElement"
                                     }
                                 },
                             },

@@ -1,8 +1,11 @@
-const factorySymbol = Symbol("lazyFactory");
-const cacheSymbol = Symbol("lazyCache");
+const factorySymbol = Symbol.for("bunny.lazy.factory");
+const cacheSymbol = Symbol.for("bunny.lazy.cache");
 
 const unconfigurable = ["arguments", "caller", "prototype"];
 const isUnconfigurable = (key: PropertyKey) => typeof key === "string" && unconfigurable.includes(key);
+
+// eslint-disable-next-line func-call-spacing
+const proxyToFactoryMap = new WeakMap<any, () => any>();
 
 const lazyHandler: ProxyHandler<any> = {
     ownKeys: target => {
@@ -41,7 +44,9 @@ export function proxyLazy<T>(factory: () => T, asFunction = true): T {
         return dummy[cacheSymbol] ??= factory();
     };
 
-    return new Proxy(dummy, lazyHandler) as any;
+    const proxy = new Proxy(dummy, lazyHandler) as T;
+    proxyToFactoryMap.set(proxy, dummy[factorySymbol]);
+    return proxy;
 }
 
 export function lazyDestructure<T extends Record<PropertyKey, unknown>>(factory: () => T, asFunction = false): T {
@@ -61,4 +66,8 @@ export function lazyDestructure<T extends Record<PropertyKey, unknown>>(factory:
             return proxyLazy(() => proxiedObject[property]);
         }
     }) as T;
+}
+
+export function getFactoryOfProxy<T>(obj: T): (() => T) | void {
+    return proxyToFactoryMap.get(obj) as (() => T) | void;
 }

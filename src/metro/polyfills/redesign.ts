@@ -1,4 +1,5 @@
 import { getPolyfillModuleCacher } from "@metro/caches";
+import { byProps } from "@metro/filters";
 import { LiteralUnion } from "type-fest";
 
 const redesignProps = new Set([
@@ -99,41 +100,42 @@ const redesignProps = new Set([
 
 type Keys = LiteralUnion<typeof redesignProps extends Set<infer U> ? U : string, string>;
 
-const redesignPropSource = {} as Record<Keys, any>;
-const redesignModule = {} as Record<Keys, any>;
-
 const cacher = getPolyfillModuleCacher("redesign_module");
 
-for (const [id, moduleExports] of cacher.getModules()) {
-    polyfillRedesignModule(moduleExports, Number(id));
-}
+const _cache = {} as Record<Keys, any>;
 
-function polyfillRedesignModule(moduleExports: any, id: number) {
-    const propMap = new Map<string, string | null>();
+export default new Proxy({}, {
+    get(_, p) {
+        if (typeof p !== "string" || !redesignProps.has(p as any)) return;
+        if (_cache[p]) return _cache[p];
 
-    for (const prop of redesignProps) {
-        if (moduleExports?.[prop]) {
-            cacher.cacheId(id);
-            propMap.set(prop, null);
-        } else if (moduleExports?.default?.[prop]) {
-            cacher.cacheId(id);
-            propMap.set(prop, "default");
-        }
-    }
+        const prop = p as Keys;
+        const filter = byProps(prop);
+        const candidates: any[] = [];
 
-    for (const [prop, defaultKey] of propMap) {
-        const exportsForProp = defaultKey ? moduleExports[defaultKey] : moduleExports;
-
-        if (redesignModule[prop]) {
-            if (Object.keys(exportsForProp).length < Object.keys(redesignPropSource[prop]).length) {
-                redesignModule[prop] = exportsForProp[prop];
-                redesignPropSource[prop] = exportsForProp;
+        for (const [id, moduleExports] of cacher.getModules()) {
+            if (filter(moduleExports, id, false)) {
+                cacher.cacheId(id);
+                candidates.push(moduleExports);
+            } else if (
+                moduleExports.__esModule
+                && moduleExports.default
+                && filter(moduleExports.default, id, false)
+            ) {
+                cacher.cacheId(id);
+                candidates.push(moduleExports.default);
             }
-        } else {
-            redesignModule[prop] = exportsForProp[prop];
-            redesignPropSource[prop] = exportsForProp;
         }
-    }
-}
 
-export default redesignModule;
+        if (candidates.length === 0) return undefined;
+
+        const bestCandidate = candidates.reduce(
+            (c1, c2) =>
+                (Object.keys(c2).length < Object.keys(c1).length)
+                    ? c2
+                    : c1
+        );
+
+        return _cache[prop] = bestCandidate[prop];
+    },
+});
