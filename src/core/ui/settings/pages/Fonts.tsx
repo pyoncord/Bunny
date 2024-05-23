@@ -4,8 +4,8 @@ import FontCard from "@core/ui/components/FontCard";
 import { useProxy } from "@lib/api/storage";
 import { FontDefinition, fonts, installFont } from "@lib/managers/fonts";
 import { settings } from "@lib/settings";
-import { FormText } from "@ui/components/discord/Forms";
-import { useNavigation } from "@ui/components/discord/Redesign";
+import { NavigationNative } from "@metro/common";
+import { LegacyFormText } from "@metro/common/components";
 import { useEffect, useState } from "react";
 import { TouchableOpacity } from "react-native";
 
@@ -17,7 +17,7 @@ export default function Plugins() {
 
     const [removeMode, setRemoveMode] = useState(false);
 
-    const navigation = useNavigation();
+    const navigation = NavigationNative.useNavigation();
 
     useEffect(() => {
         const onPressCallback = () => {
@@ -26,9 +26,9 @@ export default function Plugins() {
 
         navigation.setOptions({
             headerRight: () => <TouchableOpacity onPress={onPressCallback}>
-                <FormText style={{ marginRight: 12 }}>
+                <LegacyFormText style={{ marginRight: 12 }}>
                     {removeMode ? Strings.DONE : Strings.REMOVE}
-                </FormText>
+                </LegacyFormText>
             </TouchableOpacity>
         });
     }, [removeMode]);

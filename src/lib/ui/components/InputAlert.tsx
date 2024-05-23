@@ -1,7 +1,6 @@
 import { ButtonColors } from "@lib/utils/types";
+import { Alert, LegacyFormInput } from "@metro/common/components";
 import { findByPropsProxy } from "@metro/utils";
-import { Alert } from "@ui/components/discord";
-import { FormInput } from "@ui/components/discord/Forms";
 
 const Alerts = findByPropsProxy("openLazy", "close");
 
@@ -40,7 +39,7 @@ export default function InputAlert({ title, confirmText, confirmColor, onConfirm
             cancelText={cancelText}
             onCancel={() => Alerts.close()}
         >
-            <FormInput
+            <LegacyFormInput
                 placeholder={placeholder}
                 value={value}
                 onChange={(v: string | { text: string; }) => {

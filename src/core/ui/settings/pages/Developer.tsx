@@ -8,11 +8,10 @@ import { connectToDebugger } from "@lib/debug";
 import { loaderConfig, settings } from "@lib/settings";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { NavigationNative } from "@metro/common";
+import { Button, LegacyFormText, Stack, TableRow, TableRowGroup, TableSwitchRow, TextInput } from "@metro/common/components";
 import { findByProps } from "@metro/utils";
 import { semanticColors } from "@ui/color";
 import { ErrorBoundary } from "@ui/components";
-import { FormText } from "@ui/components/discord/Forms";
-import { Button, Stack, TableRow, TableRowGroup, TableSwitchRow, TextInput } from "@ui/components/discord/Redesign";
 import { createStyles, TextStyleSheet } from "@ui/styles";
 import { ScrollView, StyleSheet } from "react-native";
 
@@ -46,7 +45,7 @@ export default function Developer() {
                         label={Strings.DEBUGGER_URL}
                         placeholder="127.0.0.1:9090"
                         size="md"
-                        leadingIcon={() => <FormText style={styles.leadingText}>ws://</FormText>}
+                        leadingIcon={() => <LegacyFormText style={styles.leadingText}>ws://</LegacyFormText>}
                         defaultValue={settings.debuggerUrl}
                         onChange={(v: string) => settings.debuggerUrl = v}
                     />

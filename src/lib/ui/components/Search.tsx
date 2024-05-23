@@ -1,6 +1,6 @@
 import { Strings } from "@core/i18n";
 import { requireAssetIndex } from "@lib/api/assets";
-import { TextInput } from "@ui/components/discord/Redesign";
+import { TextInput } from "@metro/common/components";
 import ErrorBoundary from "@ui/components/ErrorBoundary";
 import { Image, View } from "react-native";
 

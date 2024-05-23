@@ -1,10 +1,9 @@
 import { requireAssetIndex } from "@lib/api/assets";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { ReactNative as RN } from "@metro/common";
+import { FormCheckbox, FormSwitch, IconButton, LegacyFormRow } from "@metro/common/components";
 import { findByProps } from "@metro/utils";
 import { semanticColors } from "@ui/color";
-import { FormRow } from "@ui/components/discord/Forms";
-import { FormCheckbox, FormSwitch, IconButton } from "@ui/components/discord/Redesign";
 import { createStyles, TextStyleSheet } from "@ui/styles";
 import { ImageBackground, View } from "react-native";
 
@@ -100,7 +99,7 @@ export default function Card(props: CardProps) {
                 resizeMode="cover"
                 imageStyle={styles.iconStyle}
             >
-                <FormRow
+                <LegacyFormRow
                     style={styles.header}
                     label={
                         <View style={styles.headerLeading}>
@@ -119,7 +118,7 @@ export default function Card(props: CardProps) {
                                             key: "CardOverflow",
                                             header: {
                                                 title: props.overflowTitle,
-                                                icon: props.headerIcon && <FormRow.Icon style={{ marginRight: 8 }} source={requireAssetIndex(props.headerIcon)} />,
+                                                icon: props.headerIcon && <LegacyFormRow.Icon style={{ marginRight: 8 }} source={requireAssetIndex(props.headerIcon)} />,
                                                 onClose: () => hideActionSheet(),
                                             },
                                             options: props.overflowActions?.map(i => ({ ...i, icon: requireAssetIndex(i.icon) })),
@@ -153,7 +152,7 @@ export default function Card(props: CardProps) {
                         </View>
                     }
                 />
-                <FormRow
+                <LegacyFormRow
                     label={
                         <RN.View>
                             <RN.Text style={styles.descriptionLabel}>{props.descriptionLabel}</RN.Text>

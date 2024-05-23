@@ -1,5 +1,5 @@
 // Discord
-export * as discord from "./discord";
+// export * as discord from "./discord";
 
 // Vendetta
 export { default as Codeblock } from "@ui/components/Codeblock";

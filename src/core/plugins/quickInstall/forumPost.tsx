@@ -7,9 +7,9 @@ import { installPlugin, plugins, removePlugin } from "@lib/managers/plugins";
 import { installTheme, removeTheme, themes } from "@lib/managers/themes";
 import { DISCORD_SERVER_ID, HTTP_REGEX_MULTI, PLUGINS_CHANNEL_ID, PROXY_PREFIX, THEMES_CHANNEL_ID } from "@lib/utils/constants";
 import { lazyDestructure } from "@lib/utils/lazy";
+import { Button } from "@metro/common/components";
 import { findByProps, findByPropsProxy } from "@metro/utils";
 import { ErrorBoundary } from "@ui/components";
-import { Button } from "@ui/components/discord/Redesign";
 import { showToast } from "@ui/toasts";
 
 type PostType = "Plugin" | "Theme";

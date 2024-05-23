@@ -1,8 +1,8 @@
 import { after } from "@lib/api/patcher";
 import { findInReactTree } from "@lib/utils";
 import { i18n, NavigationNative } from "@metro/common";
+import { LegacyFormIcon, LegacyFormRow, LegacyFormSection } from "@metro/common/components";
 import { findByNameProxy } from "@metro/utils";
-import { FormIcon, FormRow, FormSection } from "@ui/components/discord/Forms";
 import { registeredSections } from "@ui/settings";
 
 import { CustomPageRenderer, wrapOnPress } from "./shared";
@@ -12,17 +12,17 @@ function SettingsSection() {
 
     return <>
         {Object.keys(registeredSections).map(sect => (
-            <FormSection key={sect} title={sect}>
+            <LegacyFormSection key={sect} title={sect}>
                 { /** Is usePredicate here safe? */}
                 {registeredSections[sect].filter(r => r.usePredicate?.() ?? true).map(row => (
-                    <FormRow
+                    <LegacyFormRow
                         label={row.title()}
-                        leading={<FormIcon source={row.icon} />}
-                        trailing={FormRow.Arrow}
+                        leading={<LegacyFormIcon source={row.icon} />}
+                        trailing={LegacyFormRow.Arrow}
                         onPress={wrapOnPress(row.onPress, navigation, row.render, row.title())}
                     />
                 ))}
-            </FormSection>
+            </LegacyFormSection>
         ))}
     </>;
 }
@@ -49,7 +49,7 @@ export function patchPanelUI(unpatches: (() => void | boolean)[]) {
 
             const sections = findInReactTree(
                 res.props.children,
-                n => n?.children?.[1]?.type === FormSection
+                n => n?.children?.[1]?.type === LegacyFormSection
             ).children;
 
             const index = sections.findIndex((c: any) => titles.includes(c?.props.label));

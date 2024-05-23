@@ -3,7 +3,7 @@ import { CardWrapper } from "@core/ui/components/Card";
 import { requireAssetIndex } from "@lib/api/assets";
 import { useProxy } from "@lib/api/storage";
 import { FontDefinition, fonts, removeFont, selectFont } from "@lib/managers/fonts";
-import { FormCheckbox, IconButton, TableRow, TableRowGroup } from "@ui/components/discord/Redesign";
+import { FormCheckbox, IconButton, TableRow, TableRowGroup } from "@metro/common/components";
 import { showToast } from "@ui/toasts";
 import { useContext } from "react";
 import { Pressable, View } from "react-native";

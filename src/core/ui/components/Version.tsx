@@ -1,7 +1,6 @@
 import { requireAssetIndex } from "@lib/api/assets";
 import { clipboard } from "@metro/common";
-import { FormText } from "@ui/components/discord/Forms";
-import { TableRow } from "@ui/components/discord/Redesign";
+import { LegacyFormText, TableRow } from "@metro/common/components";
 import { showToast } from "@ui/toasts";
 
 interface VersionProps {
@@ -15,7 +14,7 @@ export default function Version({ label, version, icon }: VersionProps) {
         <TableRow
             label={label}
             icon={<TableRow.Icon source={requireAssetIndex(icon)} />}
-            trailing={<FormText>{version}</FormText>}
+            trailing={<LegacyFormText>{version}</LegacyFormText>}
             onPress={() => {
                 clipboard.setString(`${label} - ${version}`);
                 showToast.showCopyToClipboard();

@@ -5,8 +5,8 @@ import { useProxy } from "@lib/api/storage";
 import { getDebugInfo, toggleSafeMode } from "@lib/debug";
 import { settings } from "@lib/settings";
 import { DISCORD_SERVER, GITHUB } from "@lib/utils/constants";
-import { url } from "@metro/common";
-import { Stack, TableRow, TableRowGroup, TableSwitchRow, useNavigation } from "@ui/components/discord/Redesign";
+import { NavigationNative, url } from "@metro/common";
+import { Stack, TableRow, TableRowGroup, TableSwitchRow } from "@metro/common/components";
 import { NativeModules, ScrollView } from "react-native";
 
 import About from "./About";
@@ -15,7 +15,7 @@ export default function General() {
     useProxy(settings);
 
     const debugInfo = getDebugInfo();
-    const navigation = useNavigation();
+    const navigation = NavigationNative.useNavigation();
 
     return (
         <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 38 }}>

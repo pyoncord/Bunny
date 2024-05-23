@@ -4,9 +4,10 @@ import { createProxy, useProxy } from "@lib/api/storage";
 import { FontDefinition, saveFont, validateFont } from "@lib/managers/fonts";
 import { getCurrentTheme } from "@lib/managers/themes";
 import { safeFetch } from "@lib/utils";
+import { NavigationNative } from "@metro/common";
+import { ActionSheet, BottomSheetTitleHeader, Button, IconButton, Stack, TableRow, TableRowGroup, Text, TextInput } from "@metro/common/components";
 import { findByPropsProxy } from "@metro/utils";
 import { ErrorBoundary } from "@ui/components";
-import { ActionSheet, BottomSheetTitleHeader, Button, IconButton, Stack, TableRow, TableRowGroup, Text, TextInput, useNavigation } from "@ui/components/discord/Redesign";
 import { useMemo, useRef, useState } from "react";
 import { ScrollView, View } from "react-native";
 
@@ -35,7 +36,7 @@ function RevengeFontsExtractor({ fonts, setName }: {
     const themeFonts = currentTheme!.fonts as Record<string, string>;
 
     const [fontName, setFontName] = useState(guessFontName(Object.values(themeFonts)));
-    const [error, setError] = useState<string | void>(undefined);
+    const [error, setError] = useState<string | undefined>(undefined);
 
     return <View style={{ padding: 8, paddingBottom: 16, gap: 12 }}>
         <TextInput
@@ -84,7 +85,7 @@ function JsonFontImporter({ fonts, setName }: {
 }) {
     const [fontLink, setFontLink] = useState<string>("");
     const [saving, setSaving] = useState(false);
-    const [error, setError] = useState<string | void>(undefined);
+    const [error, setError] = useState<string | undefined>(undefined);
 
     return <View style={{ padding: 8, paddingBottom: 16, gap: 12 }}>
         <TextInput
@@ -144,7 +145,7 @@ function EntryRow({ fontEntry }: { fontEntry: Record<string, string>; }) {
     const urlRef = useRef<string>();
 
     const [nameSet, setNameSet] = useState(false);
-    const [error, setError] = useState<string | void>();
+    const [error, setError] = useState<string | undefined>();
 
     return <View style={{ flexDirection: "row", gap: 8, justifyContent: "flex-start" }}>
         <View style={{ flex: 1 }}>
@@ -203,7 +204,7 @@ export default function FontImporter() {
     const memoEntry = useMemo(() => createProxy({}).proxy, []);
     const fontEntries: Record<string, string> = useProxy(memoEntry);
 
-    const navigation = useNavigation();
+    const navigation = NavigationNative.useNavigation();
 
     return <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 38 }}>
         <Stack style={{ paddingVertical: 24, paddingHorizontal: 12 }} spacing={12}>

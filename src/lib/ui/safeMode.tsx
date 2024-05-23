@@ -5,10 +5,10 @@ import { toggleSafeMode } from "@lib/debug";
 import { settings } from "@lib/settings";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { ButtonColors } from "@lib/utils/types";
+import { Button, SafeAreaView } from "@metro/common/components";
 import { findByNameProxy, findByProps } from "@metro/utils";
 import { semanticColors } from "@ui/color";
 import { Codeblock, ErrorBoundary as _ErrorBoundary } from "@ui/components";
-import { Button, SafeAreaView } from "@ui/components/discord";
 import { createThemedStyleSheet, TextStyleSheet } from "@ui/styles";
 import { Text, View } from "react-native";
 

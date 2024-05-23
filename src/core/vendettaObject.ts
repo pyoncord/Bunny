@@ -10,11 +10,11 @@ import { loaderConfig, settings } from "@lib/settings";
 import * as utils from "@lib/utils";
 import * as metro from "@metro";
 import * as common from "@metro/common";
+import { Forms } from "@metro/common/components";
+import * as commonComponents from "@metro/common/components";
 import * as alerts from "@ui/alerts";
 import * as color from "@ui/color";
 import * as components from "@ui/components";
-import { Forms } from "@ui/components/discord/Forms";
-import { CompatfulRedesign } from "@ui/components/discord/Redesign";
 import { createThemedStyleSheet } from "@ui/styles";
 import * as toasts from "@ui/toasts";
 import SparkMD5 from "spark-md5";
@@ -64,7 +64,6 @@ export const initVendettaObject = (): any => {
                 url: common.url,
                 toasts: common.toasts,
                 stylesheet: {
-                    ...CompatfulRedesign,
                     createThemedStyleSheet
                 },
                 clipboard: common.clipboard,
@@ -109,10 +108,10 @@ export const initVendettaObject = (): any => {
             components: {
                 Forms,
                 General: common.ReactNative,
-                Alert: components.discord.Alert,
-                Button: components.discord.Button,
-                HelpMessage: components.discord.HelpMessage,
-                SafeAreaView: components.discord.SafeAreaView,
+                Alert: commonComponents.Alert,
+                Button: commonComponents.Button,
+                HelpMessage: commonComponents.HelpMessage,
+                SafeAreaView: commonComponents.SafeAreaView,
                 Summary: components.Summary,
                 ErrorBoundary: components.ErrorBoundary,
                 Codeblock: components.Codeblock,
