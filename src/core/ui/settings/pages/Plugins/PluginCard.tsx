@@ -2,12 +2,16 @@ import { CardWrapper } from "@core/ui/components/AddonCard";
 import { requireAssetIndex } from "@lib/api/assets";
 import { useProxy } from "@lib/api/storage";
 import { BunnyPlugin, startPlugin, stopPlugin } from "@lib/managers/plugins";
+import { lazyDestructure } from "@lib/utils/lazy";
+import { findByProps } from "@metro";
+import { tokens } from "@metro/common";
 import { Card, IconButton, Stack, TableSwitch, Text } from "@metro/common/components";
 import { createContext, useContext } from "react";
 import { Image, View } from "react-native";
 
 import { usePluginCardStyles } from "./usePluginCardStyles";
 
+const { useToken } = lazyDestructure(() => findByProps("useToken"));
 const PluginContext = createContext<BunnyPlugin>(null!);
 const usePlugin = () => useContext(PluginContext);
 
@@ -50,6 +54,30 @@ function Title() {
     </Text>;
 }
 
+// TODO: Allow glacing at the error's stack
+function Status() {
+    const plugin = usePlugin();
+    const TEXT_NORMAL = useToken(tokens.colors.TEXT_NORMAL);
+
+    if (!plugin.error) return null;
+
+    return <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+        <Image
+            tintColor={TEXT_NORMAL}
+            source={{
+                ...Image.resolveAssetSource(
+                    requireAssetIndex("WarningIcon")
+                ),
+                height: 18,
+                width: 18
+            }}
+        />
+        <Text variant="text-sm/semibold">
+            There was an error while attempting to start this plugin.
+        </Text>
+    </View>;
+}
+
 export default function PluginCard({ item: plugin }: CardWrapper<BunnyPlugin>) {
     useProxy(plugin);
 
@@ -57,6 +85,7 @@ export default function PluginCard({ item: plugin }: CardWrapper<BunnyPlugin>) {
         <PluginContext.Provider value={plugin}>
             <Card>
                 <Stack spacing={16}>
+                    <Status />
                     <View style={{ flexDirection: "row", alignItems: "center" }}>
                         <Stack spacing={0}>
                             <Title />

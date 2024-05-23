@@ -31,6 +31,7 @@ export interface BunnyPlugin {
     manifest: PluginManifest;
     enabled: boolean;
     update: boolean;
+    error?: string;
     js: string;
 }
 
@@ -74,6 +75,7 @@ export async function fetchPlugin(id: string) {
         enabled: existingPlugin?.enabled ?? false,
         update: existingPlugin?.update ?? true,
         js: pluginJs ?? existingPlugin.js,
+        error: existingPlugin?.error
     };
 }
 
@@ -107,9 +109,12 @@ export async function startPlugin(id: string) {
             loadedPlugins[id] = pluginRet;
             pluginRet.onLoad?.();
         }
+
+        delete plugin.error;
         plugin.enabled = true;
     } catch (e) {
         logger.error(`Plugin ${plugin.id} errored whilst loading, and will be unloaded`, e);
+        plugin.error = e instanceof Error ? e.stack : String(e);
 
         try {
             loadedPlugins[plugin.id]?.onUnload?.();
