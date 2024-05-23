@@ -47,7 +47,7 @@ export function createFindProxy<A extends unknown[]>(filter: FilterFn<A>) {
         indexed: !!moduleId,
         moduleId,
         getExports(cb: (exports: any) => void) {
-            if (moduleId && metroModules[moduleId!]?.isInitialized) {
+            if (!moduleId || metroModules[moduleId]?.isInitialized) {
                 return cb(findExports(filter)), () => { };
             }
             return this.subscribe(cb);

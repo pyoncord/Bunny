@@ -1,5 +1,6 @@
 import { Strings } from "@core/i18n";
 import { PyoncordIcon } from "@core/ui/settings";
+import About from "@core/ui/settings/pages/General/About";
 import { requireAssetIndex } from "@lib/api/assets";
 import { useProxy } from "@lib/api/storage";
 import { getDebugInfo, toggleSafeMode } from "@lib/debug";
@@ -8,8 +9,6 @@ import { DISCORD_SERVER, GITHUB } from "@lib/utils/constants";
 import { NavigationNative, url } from "@metro/common";
 import { Stack, TableRow, TableRowGroup, TableSwitchRow } from "@metro/common/components";
 import { NativeModules, ScrollView } from "react-native";
-
-import About from "./About";
 
 export default function General() {
     useProxy(settings);

@@ -47,7 +47,7 @@ function RevengeFontsExtractor({ fonts, setName }: {
             placeholder={fontName || "Whitney"}
             onChange={setFontName}
             errorMessage={error}
-            status={error ? "error" : void 0}
+            state={error ? "error" : void 0}
         />
         <Text variant="text-xs/normal" color="text-muted">
             {formatString("THEME_EXTRACTOR_DESC", {
@@ -96,7 +96,7 @@ function JsonFontImporter({ fonts, setName }: {
             placeholder={"https://link.to/font/pack.json"}
             onChange={setFontLink}
             errorMessage={error}
-            status={error ? "error" : void 0}
+            state={error ? "error" : void 0}
         />
         <Button
             size="md"

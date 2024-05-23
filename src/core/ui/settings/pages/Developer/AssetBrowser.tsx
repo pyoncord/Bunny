@@ -1,4 +1,4 @@
-import AssetDisplay from "@core/ui/components/AssetDisplay";
+import AssetDisplay from "@core/ui/settings/pages/Developer/AssetDisplay";
 import { assetsMap } from "@lib/api/assets";
 import { LegacyFormDivider } from "@metro/common/components";
 import { ErrorBoundary, Search } from "@ui/components";

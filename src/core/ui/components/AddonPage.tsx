@@ -1,13 +1,11 @@
 import { Strings } from "@core/i18n";
-import { CardWrapper } from "@core/ui/components/Card";
+import { CardWrapper } from "@core/ui/components/AddonCard";
 import { requireAssetIndex } from "@lib/api/assets";
 import { useProxy } from "@lib/api/storage";
 import { settings } from "@lib/settings";
 import { HTTP_REGEX_MULTI } from "@lib/utils/constants";
-import { lazyDestructure } from "@lib/utils/lazy";
 import { clipboard } from "@metro/common";
-import { HelpMessage } from "@metro/common/components";
-import { findByProps, findByPropsProxy } from "@metro/utils";
+import { FloatingActionButton, HelpMessage } from "@metro/common/components";
 import { showInputAlert } from "@ui/alerts";
 import { ErrorBoundary, Search } from "@ui/components";
 import fuzzysort from "fuzzysort";
@@ -18,14 +16,12 @@ export const RemoveModeContext = createContext(false);
 
 interface AddonPageProps<T> {
     title: string;
-    floatingButtonText: string;
     fetchFunction: (url: string) => Promise<void>;
     items: Record<string, T & ({ id: string; } | { name: string; })>;
     safeModeMessage: string;
     safeModeExtras?: JSX.Element | JSX.Element[];
     card: React.ComponentType<CardWrapper<T>>;
     isRemoveMode?: boolean;
-    headerComponent?: JSX.Element;
     onFABPress?: () => void;
 }
 
@@ -44,57 +40,42 @@ function getItemsByQuery<T extends AddonPageProps<unknown>["items"][string]>(ite
     }).map(r => r.obj);
 }
 
-const reanimated = findByPropsProxy("useSharedValue");
-const { FloatingActionButton } = lazyDestructure(() => findByProps("FloatingActionButton"));
-
-export default function AddonPage<T>({ floatingButtonText, fetchFunction, items, safeModeMessage, safeModeExtras, card: CardComponent, isRemoveMode, headerComponent, onFABPress }: AddonPageProps<T>) {
-    useProxy(items);
+export default function AddonPage<T>({ card: CardComponent, ...props }: AddonPageProps<T>) {
+    useProxy(props.items);
     useProxy(settings);
 
-    const collapseText = reanimated.useSharedValue(0);
-    const yOffset = React.useRef<number>(0);
     const [search, setSearch] = React.useState("");
 
     return (
         <ErrorBoundary>
             {/* TODO: Implement better searching than just by ID */}
             <FlatList
-                ListHeaderComponent={<>
+                ListHeaderComponent={<View>
                     {settings.safeMode?.enabled && <View style={{ marginBottom: 10 }}>
-                        <HelpMessage messageType={0}>{safeModeMessage}</HelpMessage>
-                        {safeModeExtras}
+                        <HelpMessage messageType={0}>{props.safeModeMessage}</HelpMessage>
+                        {props.safeModeExtras}
                     </View>}
                     <Search
-                        style={{ marginBottom: 15 }}
                         onChangeText={(v: string) => setSearch(v.toLowerCase())}
                         placeholder={Strings.SEARCH}
                     />
-                    {headerComponent}
-                </>}
-                onScroll={e => {
-                    if (e.nativeEvent.contentOffset.y <= 0) return;
-                    collapseText.value = Number(e.nativeEvent.contentOffset.y > yOffset.current);
-                    yOffset.current = e.nativeEvent.contentOffset.y;
-                }}
+                </View>}
                 style={{ paddingHorizontal: 10, paddingTop: 10 }}
-                contentContainerStyle={{ paddingBottom: 90, paddingHorizontal: 5 }}
-                data={getItemsByQuery(Object.values(items).filter(i => typeof i === "object"), search)}
-                renderItem={({ item, index }) => <RemoveModeContext.Provider value={!!isRemoveMode}>
+                contentContainerStyle={{ paddingBottom: 90, paddingHorizontal: 5, gap: 12 }}
+                data={getItemsByQuery(Object.values(props.items).filter(i => typeof i === "object"), search)}
+                renderItem={({ item, index }) => <RemoveModeContext.Provider value={!!props.isRemoveMode}>
                     <CardComponent item={item} index={index} />
                 </RemoveModeContext.Provider>}
             />
             <FloatingActionButton
-                text={floatingButtonText}
                 icon={requireAssetIndex("PlusLargeIcon")}
-                state={{ collapseText }}
-                onPress={onFABPress ?? (() => {
+                onPress={props.onFABPress ?? (() => {
                     // from ./InstallButton.tsx
                     clipboard.getString().then(content =>
                         showInputAlert({
-                            title: floatingButtonText,
                             initialValue: content.match(HTTP_REGEX_MULTI)?.[0] ?? "",
                             placeholder: Strings.URL_PLACEHOLDER,
-                            onConfirm: (input: string) => fetchFunction(input),
+                            onConfirm: (input: string) => props.fetchFunction(input),
                             confirmText: Strings.INSTALL,
                             cancelText: Strings.CANCEL,
                         })

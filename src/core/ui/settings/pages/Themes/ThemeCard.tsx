@@ -1,8 +1,8 @@
 import { formatString, Strings } from "@core/i18n";
-import Card, { CardWrapper } from "@core/ui/components/Card";
+import AddonCard, { CardWrapper } from "@core/ui/components/AddonCard";
 import { requireAssetIndex } from "@lib/api/assets";
 import { useProxy } from "@lib/api/storage";
-import { applyTheme, fetchTheme, removeTheme, selectTheme, Theme } from "@lib/managers/themes";
+import { applyTheme, fetchTheme, removeTheme, selectTheme, Theme, themes } from "@lib/managers/themes";
 import { settings } from "@lib/settings";
 import { ButtonColors } from "@lib/utils/types";
 import { clipboard } from "@metro/common";
@@ -29,13 +29,13 @@ export default function ThemeCard({ item: theme, index }: CardWrapper<Theme>) {
     const { authors } = theme.data;
 
     return (
-        <Card
+        <AddonCard
             index={index}
             headerLabel={theme.data.name}
             headerSublabel={authors ? `by ${authors.map(i => i.name).join(", ")}` : ""}
             descriptionLabel={theme.data.description ?? "No description."}
             toggleType={!settings.safeMode?.enabled ? "radio" : undefined}
-            toggleValue={theme.selected}
+            toggleValue={() => themes[theme.id].selected}
             onToggleChange={(v: boolean) => {
                 selectAndApply(v, theme);
             }}

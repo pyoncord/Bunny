@@ -16,6 +16,7 @@ export const toasts = proxyLazy(() => findByFilePath("modules/toast/native/Toast
 export const messageUtil = findByPropsProxy("sendBotMessage");
 export const navigationStack = findByPropsProxy("createStackNavigator");
 export const NavigationNative = findByPropsProxy("NavigationContainer");
+export const tokens = findByPropsProxy("colors", "unsafe_rawColors");
 
 // Flux
 export const Flux = findByPropsProxy("connectStores");

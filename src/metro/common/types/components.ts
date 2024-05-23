@@ -1,5 +1,5 @@
-import { DiscordTextStyles } from "@lib/ui/types";
 import { Nullish } from "@lib/utils/types";
+import { DiscordTextStyles } from "@ui/types";
 import { ReactNode } from "react";
 import type * as RN from "react-native";
 import { ImageSourcePropType, PressableProps } from "react-native";
@@ -83,7 +83,7 @@ interface TextInputProps extends Omit<RN.TextInputProps, "onChange" | "onChangeT
     leadingText?: string;
     onChange?: (text: string) => void;
     size?: "sm" | "md" | "lg";
-    status?: "error" | "default";
+    state?: "error" | "default";
     style?: Style;
     trailingIcon?: React.FC<any>;
     trailingPressableProps?: PressableProps;
@@ -127,7 +127,7 @@ type TextProps = React.ComponentProps<typeof RN.Text> & {
     color?: string; // TODO: type this
     lineClamp?: number;
     maxFontSizeMultiplier?: number;
-    style?: Style;
+    style?: RN.TextStyle;
 };
 
 export type Text = React.FC<TextProps>;

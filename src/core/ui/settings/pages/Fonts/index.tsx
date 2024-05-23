@@ -1,6 +1,6 @@
 import { Strings } from "@core/i18n";
 import AddonPage from "@core/ui/components/AddonPage";
-import FontCard from "@core/ui/components/FontCard";
+import FontImporter from "@core/ui/settings/pages/Fonts/FontImporter";
 import { useProxy } from "@lib/api/storage";
 import { FontDefinition, fonts, installFont } from "@lib/managers/fonts";
 import { settings } from "@lib/settings";
@@ -9,7 +9,7 @@ import { LegacyFormText } from "@metro/common/components";
 import { useEffect, useState } from "react";
 import { TouchableOpacity } from "react-native";
 
-import FontImporter from "./FontImporter";
+import FontCard from "./FontCard";
 
 export default function Plugins() {
     useProxy(settings);
@@ -36,7 +36,6 @@ export default function Plugins() {
     return (
         <AddonPage<FontDefinition>
             title={Strings.FONTS}
-            floatingButtonText={Strings.INSTALL_FONT}
             fetchFunction={installFont}
             items={fonts as Record<string, FontDefinition>}
             safeModeMessage={Strings.SAFE_MODE_NOTICE_FONTS}

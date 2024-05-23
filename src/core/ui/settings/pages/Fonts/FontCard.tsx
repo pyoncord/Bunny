@@ -1,5 +1,6 @@
 import { Strings } from "@core/i18n";
-import { CardWrapper } from "@core/ui/components/Card";
+import { CardWrapper } from "@core/ui/components/AddonCard";
+import { RemoveModeContext } from "@core/ui/components/AddonPage";
 import { requireAssetIndex } from "@lib/api/assets";
 import { useProxy } from "@lib/api/storage";
 import { FontDefinition, fonts, removeFont, selectFont } from "@lib/managers/fonts";
@@ -7,8 +8,6 @@ import { FormCheckbox, IconButton, TableRow, TableRowGroup } from "@metro/common
 import { showToast } from "@ui/toasts";
 import { useContext } from "react";
 import { Pressable, View } from "react-native";
-
-import { RemoveModeContext } from "./AddonPage";
 
 export default function FontCard({ item: font, index }: CardWrapper<FontDefinition>) {
     useProxy(fonts);

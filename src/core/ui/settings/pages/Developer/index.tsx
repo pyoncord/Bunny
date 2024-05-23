@@ -1,6 +1,6 @@
 import { Strings } from "@core/i18n";
 import { CheckState, useFileExists } from "@core/ui/settings/hooks/useFS";
-import AssetBrowser from "@core/ui/settings/pages/AssetBrowser";
+import AssetBrowser from "@core/ui/settings/pages/Developer/AssetBrowser";
 import { requireAssetIndex } from "@lib/api/assets";
 import { getReactDevToolsProp, getReactDevToolsVersion, isLoaderConfigSupported, isReactDevToolsPreloaded, isVendettaLoader } from "@lib/api/native/loader";
 import { useProxy } from "@lib/api/storage";

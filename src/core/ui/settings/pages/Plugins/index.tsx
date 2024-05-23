@@ -1,6 +1,6 @@
 import { Strings } from "@core/i18n";
 import AddonPage from "@core/ui/components/AddonPage";
-import PluginCard from "@core/ui/components/PluginCard";
+import PluginCard from "@core/ui/settings/pages/Plugins/PluginCard";
 import { useProxy } from "@lib/api/storage";
 import { BunnyPlugin, installPlugin, plugins } from "@lib/managers/plugins";
 import { settings } from "@lib/settings";
@@ -11,7 +11,6 @@ export default function Plugins() {
     return (
         <AddonPage<BunnyPlugin>
             title={Strings.PLUGINS}
-            floatingButtonText={Strings.INSTALL_PLUGIN}
             fetchFunction={installPlugin}
             items={plugins}
             safeModeMessage={Strings.SAFE_MODE_NOTICE_PLUGINS}
