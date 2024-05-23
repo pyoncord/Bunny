@@ -17,6 +17,8 @@ import * as color from "@ui/color";
 import * as components from "@ui/components";
 import { createThemedStyleSheet } from "@ui/styles";
 import * as toasts from "@ui/toasts";
+import { createElement, useEffect } from "react";
+import { View } from "react-native";
 import SparkMD5 from "spark-md5";
 
 export const initVendettaObject = (): any => {
@@ -34,17 +36,35 @@ export const initVendettaObject = (): any => {
             findAll: (filter: (m: any) => boolean) => {
                 return metro.findAllExports(metro.createSimpleFilter(filter, SparkMD5.hash(new Error().stack!)));
             },
-            findByProps: (...props: any) => {
-                // Decor fix hack
+            findByProps: (...props: any[]) => {
+                // TODO: remove this hack to fix Decor
                 if (props.length === 1 && props[0] === "KeyboardAwareScrollView") {
                     props.push("listenToKeyboardEvents");
                 }
 
-                return metro.findByProps(...props);
+                const ret = metro.findByProps(...props);
+                if (ret == null) {
+                    if (props.includes("ActionSheetTitleHeader")) {
+                        const module = metro.findByProps("ActionSheetRow");
+
+                        // returning a fake object probably wouldn't cause an issue,
+                        // since the original object are full of getters anyway
+                        return {
+                            ...module,
+                            ActionSheetTitleHeader: module.BottomSheetTitleHeader,
+                            ActionSheetContentContainer: ({ children }: any) => {
+                                useEffect(() => console.warn("Discord has removed 'ActionSheetContentContainer', please move into something else. This has been temporarily replaced with View"), []);
+                                return createElement(View, null, children);
+                            }
+                        };
+                    }
+                }
+
+                return ret;
             },
             findByPropsAll: (...props: any) => metro.findByPropsAll(...props),
             findByName: (name: string, defaultExp?: boolean | undefined) => {
-                // Decor fix hack
+                // TODO: remove this hack to fix Decor
                 if (name === "create" && typeof defaultExp === "undefined") {
                     return metro.findByName("create", false).default;
                 }
