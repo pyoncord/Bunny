@@ -5,7 +5,7 @@ import { toggleSafeMode } from "@lib/debug";
 import { settings } from "@lib/settings";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { ButtonColors } from "@lib/utils/types";
-import { Button, SafeAreaView } from "@metro/common/components";
+import { Button, CompatButton, SafeAreaView } from "@metro/common/components";
 import { findByNameProxy, findByProps } from "@metro/utils";
 import { semanticColors } from "@ui/color";
 import { Codeblock, ErrorBoundary as _ErrorBoundary } from "@ui/components";
@@ -117,12 +117,21 @@ export default () => after.proxy("render", [ErrorBoundary, r => r.prototype], fu
                     {buttons.map(button => {
                         const buttonIndex = buttons.indexOf(button) !== 0 ? 8 : 0;
 
-                        return <Button
+                        return <CompatButton
                             text={button.text}
                             color={button.color ?? ButtonColors.BRAND}
                             size={button.size ?? "small"}
                             onPress={button.onPress}
-                            style={DeviceManager.isTablet ? { flex: `0.${buttons.length}`, marginLeft: buttonIndex } : { marginTop: buttonIndex }}
+                            style={{
+                                ...(DeviceManager.isTablet ? {
+                                    flex: `0.${buttons.length}`,
+                                    marginLeft: buttonIndex
+                                } : {
+                                    marginTop: buttonIndex
+                                }),
+
+                                borderRadius: 16
+                            }}
                         />;
                     })}
                 </View>

@@ -11,13 +11,13 @@ export interface CodeblockProps {
 
 const useStyles = createStyles({
     codeBlock: {
-        fontFamily: constants.Fonts.CODE_SEMIBOLD,
+        fontFamily: constants.Fonts.CODE_NORMAL,
         fontSize: 12,
         textAlignVertical: "center",
         backgroundColor: semanticColors.BACKGROUND_SECONDARY,
         color: semanticColors.TEXT_NORMAL,
         borderWidth: 1,
-        borderRadius: 4,
+        borderRadius: 12,
         borderColor: semanticColors.BACKGROUND_TERTIARY,
         padding: 10,
     },
