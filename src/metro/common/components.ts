@@ -57,7 +57,7 @@ export const SegmentedControl = findProp("SegmentedControl") as t.SegmentedContr
 export const CompatSegmentedControl = findProp("CompatSegmentedControl") as t.CompatSegmentedControl;
 
 export const FloatingActionButton = findProp("FloatingActionButton") as t.FloatingActionButton;
-export const ActionSheet = findProp("ActionSheet");
+export const ActionSheet = findProp("ActionSheet") as t.ActionSheet;
 export const BottomSheetTitleHeader = findProp("BottomSheetTitleHeader");
 
 const textsModule = findByPropsProxy("Text", "LegacyText");

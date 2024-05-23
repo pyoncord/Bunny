@@ -122,6 +122,12 @@ interface FABProps {
 
 export type FloatingActionButton = React.FC<FABProps>;
 
+interface ActionSheetProps {
+    scrollable?: boolean;
+}
+
+export type ActionSheet = React.FC<React.PropsWithChildren<ActionSheetProps>>;
+
 type TextProps = React.ComponentProps<typeof RN.Text> & {
     variant?: DiscordTextStyles;
     color?: string; // TODO: type this

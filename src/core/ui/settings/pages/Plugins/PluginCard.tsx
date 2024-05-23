@@ -2,9 +2,10 @@ import { CardWrapper } from "@core/ui/components/AddonCard";
 import { requireAssetIndex } from "@lib/api/assets";
 import { useProxy } from "@lib/api/storage";
 import { BunnyPlugin, startPlugin, stopPlugin } from "@lib/managers/plugins";
+import { showSheet } from "@lib/ui/sheets";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { findByProps } from "@metro";
-import { tokens } from "@metro/common";
+import { NavigationNative, tokens } from "@metro/common";
 import { Card, IconButton, Stack, TableSwitch, Text } from "@metro/common/components";
 import { createContext, useContext } from "react";
 import { Image, View } from "react-native";
@@ -79,6 +80,7 @@ function Status() {
 }
 
 export default function PluginCard({ item: plugin }: CardWrapper<BunnyPlugin>) {
+    const navigation = NavigationNative.useNavigation();
     useProxy(plugin);
 
     return (
@@ -94,10 +96,16 @@ export default function PluginCard({ item: plugin }: CardWrapper<BunnyPlugin>) {
                         <View style={{ marginLeft: "auto" }}>
                             <Stack spacing={12} direction="horizontal">
                                 <IconButton
-                                    onPress={() => { }}
+                                    onPress={() => {
+                                        showSheet(
+                                            "PluginInfoActionSheet",
+                                            import("./sheets/PluginInfoActionSheet"),
+                                            { plugin, navigation }
+                                        );
+                                    }}
                                     size="sm"
                                     variant="secondary"
-                                    icon={requireAssetIndex("SettingsIcon")}
+                                    icon={requireAssetIndex("MoreHorizontalIcon")}
                                 />
                                 <TableSwitch
                                     value={plugin.enabled}
