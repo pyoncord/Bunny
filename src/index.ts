@@ -1,8 +1,8 @@
 import initFixes from "@core/fixes";
 import { initFetchI18nStrings } from "@core/i18n";
 import { initCorePlugins } from "@core/plugins";
+import { initVendettaObject } from "@core/polyfills/vendettaObject";
 import initSettings from "@core/ui/settings";
-import { initVendettaObject } from "@core/vendettaObject";
 import { patchCommands } from "@lib/api/commands";
 import { injectFluxInterceptor } from "@lib/api/flux";
 import { removeFile, writeFile } from "@lib/api/native/fs";

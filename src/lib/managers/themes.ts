@@ -2,7 +2,7 @@
  * Theming system in Bunny is currently a prototype, expect an unreadable theme implementation below
  */
 
-import { allSettled } from "@core/polyfills";
+import { allSettled } from "@core/polyfills/allSettled";
 import { getStoredTheme, getThemeFilePath } from "@lib/api/native/loader";
 import { ThemeManager } from "@lib/api/native/modules";
 import { after, before, instead } from "@lib/api/patcher";

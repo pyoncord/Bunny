@@ -3,11 +3,13 @@ import * as commands from "@lib/api/commands";
 import { getVendettaLoaderIdentity, isPyonLoader } from "@lib/api/native/loader";
 import patcher from "@lib/api/patcher";
 import * as storage from "@lib/api/storage";
+import { createStorage } from "@lib/api/storage";
 import * as debug from "@lib/debug";
 import * as plugins from "@lib/managers/plugins";
 import * as themes from "@lib/managers/themes";
 import { loaderConfig, settings } from "@lib/settings";
 import * as utils from "@lib/utils";
+import { logModule } from "@lib/utils/logger";
 import * as metro from "@metro";
 import * as common from "@metro/common";
 import { Forms } from "@metro/common/components";
@@ -20,6 +22,19 @@ import * as toasts from "@ui/toasts";
 import { createElement, useEffect } from "react";
 import { View } from "react-native";
 import SparkMD5 from "spark-md5";
+
+export async function createVdPluginObject(plugin: plugins.BunnyPlugin) {
+    return {
+        ...window.vendetta,
+        plugin: {
+            id: plugin.id,
+            manifest: plugin.manifest,
+            // Wrapping this with wrapSync is NOT an option.
+            storage: await createStorage<Record<string, any>>(storage.createMMKVBackend(plugin.id)),
+        },
+        logger: new logModule(`Bunny » ${plugin.manifest.name}`),
+    };
+}
 
 export const initVendettaObject = (): any => {
     const api = window.vendetta = {

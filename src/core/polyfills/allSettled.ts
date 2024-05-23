@@ -1,4 +1,4 @@
-//! Starting from 202.4, Promise.allSettled may be undefined due to conflicting then/promise versions, so we use our own.
+//! Around 202.4, Promise.allSettled was undefined due to conflicting then/promise versions(?), so we use our own.
 const allSettledFulfill = <T>(value: T) => ({ status: "fulfilled", value });
 const allSettledReject = <T>(reason: T) => ({ status: "rejected", reason });
 const mapAllSettled = <T>(item: T) => Promise.resolve(item).then(allSettledFulfill, allSettledReject);

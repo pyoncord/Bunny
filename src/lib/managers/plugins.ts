@@ -1,9 +1,10 @@
-import { allSettled } from "@core/polyfills";
+import { allSettled } from "@core/polyfills/allSettled";
+import { createVdPluginObject } from "@core/polyfills/vendettaObject";
 import { awaitSyncWrapper, createMMKVBackend, createStorage, purgeStorage, wrapSync } from "@lib/api/storage";
 import { settings } from "@lib/settings";
 import { safeFetch } from "@lib/utils";
 import { BUNNY_PROXY_PREFIX, PROXY_PREFIX } from "@lib/utils/constants";
-import { logger, logModule } from "@lib/utils/logger";
+import { logger } from "@lib/utils/logger";
 import { Author } from "@lib/utils/types";
 
 type EvaledPlugin = {
@@ -87,19 +88,10 @@ export async function installPlugin(id: string, enabled = true) {
  * @internal
  */
 export async function evalPlugin(plugin: BunnyPlugin) {
-    const vendettaForPlugins = {
-        ...window.vendetta,
-        plugin: {
-            id: plugin.id,
-            manifest: plugin.manifest,
-            // Wrapping this with wrapSync is NOT an option.
-            storage: await createStorage<Record<string, any>>(createMMKVBackend(plugin.id)),
-        },
-        logger: new logModule(`Bunny » ${plugin.manifest.name}`),
-    };
+    const vdObject = await createVdPluginObject(plugin);
     const pluginString = `vendetta=>{return ${plugin.js}}\n//# sourceURL=${plugin.id}?hash=${plugin.manifest.hash}`;
 
-    const raw = (0, eval)(pluginString)(vendettaForPlugins);
+    const raw = (0, eval)(pluginString)(vdObject);
     const ret = typeof raw === "function" ? raw() : raw;
     return ret?.default ?? ret ?? {};
 }
