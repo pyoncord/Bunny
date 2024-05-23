@@ -2,7 +2,7 @@ import { getCacherForUniq } from "./caches";
 import { getModules, requireModule } from "./modules";
 import { FilterFn } from "./types";
 
-export function filterExports<A extends unknown[]>(
+function filterExports<A extends unknown[]>(
     moduleExports: any,
     moduleId: number, filter:
         FilterFn<A>

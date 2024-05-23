@@ -68,7 +68,7 @@ const tabs: Tab[] = [
     { id: "componentStack", title: () => Strings.COMPONENT, trimWhitespace: true },
 ];
 
-export default () => after("render", ErrorBoundary.prototype, function (this: any, _, ret) {
+export default () => after.proxy("render", [ErrorBoundary, r => r.prototype], function (this: any, _, ret) {
     if (!this.state.error) return;
 
     // Not using setState here as we don't want to cause a re-render, we want this to be set in the initial render

@@ -1,8 +1,8 @@
 import { proxyLazy } from "@lib/utils/lazy";
 
 import { getMetroCache } from "./caches";
-import { filterExports, findExports } from "./finders";
-import { requireModule, subscribeModule } from "./modules";
+import { findExports } from "./finders";
+import { metroModules, subscribeModule } from "./modules";
 import type { FilterFn } from "./types";
 
 const proxyInfoMap = new WeakMap<{}, FindProxyInfo<any[]>>();
@@ -11,6 +11,7 @@ interface FindProxyInfo<A extends unknown[]> {
     filter: FilterFn<A>;
     indexed: boolean;
     moduleId: number | undefined;
+    getExports(cb: (exports: any) => void): () => void;
     subscribe(cb: (exports: any) => void): () => void;
     unproxy(): any;
     get cache(): any;
@@ -29,12 +30,7 @@ function subscribeModuleForFind(proxy: any, callback: (exports: any) => void) {
     if (!info.indexed) throw new Error("Attempting to subscribe to a non-indexed find");
 
     return subscribeModule(info.moduleId!, () => {
-        const [exp] = filterExports(
-            requireModule(info.moduleId!),
-            info.moduleId!,
-            info.filter
-        );
-        callback(exp);
+        callback(findExports(info.filter));
     });
 }
 
@@ -50,6 +46,12 @@ export function createFindProxy<A extends unknown[]>(filter: FilterFn<A>) {
         filter,
         indexed: !!moduleId,
         moduleId,
+        getExports(cb: (exports: any) => void) {
+            if (moduleId && metroModules[moduleId!]?.isInitialized) {
+                return cb(findExports(filter)), () => { };
+            }
+            return this.subscribe(cb);
+        },
         subscribe(cb: (exports: any) => void) {
             return subscribeModuleForFind(proxy, cb);
         },
