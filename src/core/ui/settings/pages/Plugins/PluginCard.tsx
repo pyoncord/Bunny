@@ -2,8 +2,8 @@ import { CardWrapper } from "@core/ui/components/AddonCard";
 import { requireAssetIndex } from "@lib/api/assets";
 import { useProxy } from "@lib/api/storage";
 import { BunnyPlugin, startPlugin, stopPlugin } from "@lib/managers/plugins";
-import { Card, IconButton, Stack, TableSwitch, Text } from "@metro/common/components";
-import { createContext, useContext } from "react";
+import { Button, Card, IconButton, Stack, Text } from "@metro/common/components";
+import { createContext, useContext, useState } from "react";
 import { Image, View } from "react-native";
 
 import { usePluginCardStyles } from "./usePluginCardStyles";
@@ -50,6 +50,28 @@ function Title() {
     </Text>;
 }
 
+function Toggle() {
+    const plugin = usePlugin();
+    const [loading, setLoading] = useState(false);
+
+    const wrap = (promise: any) => {
+        setLoading(true);
+        Promise.resolve(promise).finally(() => setLoading(false));
+    };
+
+    return <Button
+        size="sm"
+        text={plugin.enabled ? "Disable" : "Enable"}
+        variant={plugin.enabled ? "secondary" : "primary"}
+        loading={loading}
+        disabled={loading}
+        onPress={() => {
+            if (plugin.enabled) wrap(stopPlugin(plugin.id));
+            else wrap(startPlugin(plugin.id));
+        }}
+    />;
+}
+
 export default function PluginCard({ item: plugin }: CardWrapper<BunnyPlugin>) {
     useProxy(plugin);
 
@@ -70,13 +92,7 @@ export default function PluginCard({ item: plugin }: CardWrapper<BunnyPlugin>) {
                                     variant="secondary"
                                     icon={requireAssetIndex("SettingsIcon")}
                                 />
-                                <TableSwitch
-                                    value={plugin.enabled}
-                                    onValueChange={(v: boolean) => {
-                                        if (v) startPlugin(plugin.id);
-                                        else stopPlugin(plugin.id);
-                                    }}
-                                />
+                                <Toggle />
                             </Stack>
                         </View>
                     </View>
