@@ -12,7 +12,6 @@ export function createFilterDefinition<A extends unknown[]>(
         return Object.assign(func, {
             filter: fn,
             raw,
-            args,
             uniq: [
                 raw && "raw::",
                 uniqMaker(args)

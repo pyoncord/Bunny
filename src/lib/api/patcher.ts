@@ -1,4 +1,4 @@
-import { getFindProxyInfo } from "@metro/proxy";
+import { getFindContext } from "@metro/proxy";
 import {
     after as _after,
     before as _before,
@@ -10,7 +10,7 @@ type ProxyPatchParameters<T, P> = [func: string, parent: [P, (t: P) => any], ...
 
 function shim<T extends (func: string, parent: any, ...args: ParametersAfterOneArgs<T>) => any>(fn: T) {
     function shimmed(this: any, ...args: Parameters<T>) {
-        const proxyInfo = getFindProxyInfo(args[1]);
+        const proxyInfo = getFindContext(args[1]);
         if (proxyInfo && !proxyInfo.cache && proxyInfo.indexed) {
             let cancel = false;
             let unpatch = () => cancel = true;
@@ -27,7 +27,7 @@ function shim<T extends (func: string, parent: any, ...args: ParametersAfterOneA
 
     shimmed.proxy = function proxyPatch<P>(this: any, ...args: ProxyPatchParameters<T, P>) {
         const [target, resolve] = args[1];
-        const proxyInfo = getFindProxyInfo(target);
+        const proxyInfo = getFindContext(target);
         if (!proxyInfo) {
             args[1] = resolve(target);
             return shimmed(...args as unknown as Parameters<T>);

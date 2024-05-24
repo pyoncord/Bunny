@@ -5,9 +5,9 @@ import { findExports } from "./finders";
 import { metroModules, subscribeModule } from "./modules";
 import type { FilterFn } from "./types";
 
-const proxyInfoMap = new WeakMap<{}, FindProxyInfo<any[]>>();
+const proxyContextMap = new WeakMap<any, FindProxyContext<any[]>>();
 
-interface FindProxyInfo<A extends unknown[]> {
+interface FindProxyContext<A extends unknown[]> {
     filter: FilterFn<A>;
     indexed: boolean;
     moduleId: number | undefined;
@@ -24,8 +24,8 @@ function getIndexedSingleFind<A extends unknown[]>(filter: FilterFn<A>) {
     return id ? Number(id) : void 0;
 }
 
-function subscribeModuleForFind(proxy: any, callback: (exports: any) => void) {
-    const info = getFindProxyInfo(proxy);
+function subscribeModuleOfFind(proxy: any, callback: (exports: any) => void) {
+    const info = getFindContext(proxy);
     if (!info) throw new Error("Subscribing a module for non-proxy-find");
     if (!info.indexed) throw new Error("Attempting to subscribe to a non-indexed find");
 
@@ -34,37 +34,39 @@ function subscribeModuleForFind(proxy: any, callback: (exports: any) => void) {
     });
 }
 
-export function getFindProxyInfo<A extends unknown[]>(proxy: any): FindProxyInfo<A> | void {
-    return proxyInfoMap.get(proxy) as unknown as FindProxyInfo<A>;
+export function getFindContext<A extends unknown[]>(proxy: any): FindProxyContext<A> | void {
+    return proxyContextMap.get(proxy) as unknown as FindProxyContext<A>;
 }
 
 export function createFindProxy<A extends unknown[]>(filter: FilterFn<A>) {
     let cache: any = undefined;
 
     const moduleId = getIndexedSingleFind(filter);
-    const info: FindProxyInfo<A> = {
+    const context: FindProxyContext<A> = {
         filter,
         indexed: !!moduleId,
         moduleId,
         getExports(cb: (exports: any) => void) {
             if (!moduleId || metroModules[moduleId]?.isInitialized) {
-                return cb(findExports(filter)), () => { };
+                return cb(this.unproxy()), () => { };
             }
             return this.subscribe(cb);
         },
         subscribe(cb: (exports: any) => void) {
-            return subscribeModuleForFind(proxy, cb);
+            return subscribeModuleOfFind(proxy, cb);
         },
         get cache() {
             return cache;
         },
         unproxy() {
-            return cache ??= findExports(filter);
+            cache ??= findExports(filter);
+            if (!cache) throw new Error(`${filter.uniq} is ${typeof cache}! (id ${context.moduleId ?? "unknown"})`);
+            return cache;
         }
     };
 
-    const proxy = proxyLazy(() => cache ??= findExports(filter));
-    proxyInfoMap.set(proxy, info as FindProxyInfo<any>);
+    const proxy = proxyLazy(() => context.unproxy());
+    proxyContextMap.set(proxy, context as FindProxyContext<any>);
 
     return proxy;
 }

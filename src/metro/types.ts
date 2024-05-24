@@ -138,7 +138,6 @@ export type FilterCheckDef<A extends unknown[]> = (
 export interface FilterFn<A extends unknown[]> {
     (m: any, id: number, defaultCheck: boolean): boolean;
     filter: FilterCheckDef<A>;
-    args: A;
     raw: boolean;
     uniq: string;
 }
