@@ -1,34 +1,44 @@
 {
-    "exclude": ["dist"],
-
+    "exclude": [
+        "dist"
+    ],
     "compilerOptions": {
         "strict": true,
-
         "paths": {
-            "@core/*": ["./src/core/*"],
-            "@lib": ["./src/lib"],
-            "@lib/*": ["./src/lib/*"],
-            "@metro": ["./src/metro"],
-            "@metro/*": ["./src/metro/*"],
-            "@ui": ["./src/lib/ui"],
-            "@ui/*": ["./src/lib/ui/*"],
-            "@types": ["./src/lib/utils/types.ts"],
-            "bunny-build": ["./src/modules.d.ts"]
+            "@core/*": [
+                "./src/core/*"
+            ],
+            "@lib": [
+                "./src/lib"
+            ],
+            "@lib/*": [
+                "./src/lib/*"
+            ],
+            "@metro": [
+                "./src/metro"
+            ],
+            "@metro/*": [
+                "./src/metro/*"
+            ],
+            "@ui": [
+                "./src/lib/ui"
+            ],
+            "@ui/*": [
+                "./src/lib/ui/*"
+            ],
+            "@types": [
+                "./src/lib/utils/types.ts"
+            ],
+            "@assets/*": [
+                "./src/assets/*"
+            ]
         },
-
         "module": "esnext",
         "moduleResolution": "bundler",
         "resolveJsonModule": true,
-
         "noEmit": true,
-
         "allowJs": true,
         "checkJs": true,
-
-        "plugins": [
-            { "transform": "typescript-transform-paths", "afterDeclarations": true }
-        ],
-
         "jsx": "react",
         "target": "esnext"
     }

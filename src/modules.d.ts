@@ -1,5 +1,8 @@
-declare module "bunny-build" {
+declare module "bunny-build-info" {
     const version: string;
 }
 
-export * from "bunny-build";
+declare module "*.png" {
+    const str: string;
+    export default str;
+}

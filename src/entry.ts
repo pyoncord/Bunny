@@ -1,5 +1,5 @@
 import { getFactoryOfProxy } from "@lib/utils/lazy";
-import { version } from "bunny-build";
+import { version } from "bunny-build-info";
 import { instead } from "spitroast";
 
 // @ts-ignore - shut up fr

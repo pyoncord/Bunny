@@ -1,16 +1,13 @@
+import PyoncordIcon from "@assets/icons/pyoncord.png";
 import { Strings } from "@core/i18n";
 import { requireAssetIndex } from "@lib/api/assets";
 import { isFontSupported, isThemeSupported } from "@lib/api/native/loader";
 import { useProxy } from "@lib/api/storage";
 import { settings } from "@lib/settings";
 import { registerSection } from "@ui/settings";
-import { version } from "bunny-build";
+import { version } from "bunny-build-info";
 
-// @ts-ignore
-// eslint-disable-next-line import-alias/import-alias
-import _PyoncordIcon from "../../../assets/icons/pyon64.png";
-
-export const PyoncordIcon = _PyoncordIcon as string;
+export { PyoncordIcon };
 
 export default function initSettings() {
     registerSection({
