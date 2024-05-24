@@ -1,7 +1,7 @@
 import { CardWrapper } from "@core/ui/components/AddonCard";
 import { requireAssetIndex } from "@lib/api/assets";
 import { useProxy } from "@lib/api/storage";
-import { BunnyPlugin, startPlugin, stopPlugin } from "@lib/managers/plugins";
+import { BunnyPlugin, getSettings, startPlugin, stopPlugin } from "@lib/managers/plugins";
 import { showSheet } from "@lib/ui/sheets";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { findByProps } from "@metro";
@@ -55,6 +55,7 @@ function Title() {
     </Text>;
 }
 
+// TODO: Wrap in a Card-ish component with red bg
 // TODO: Allow glacing at the error's stack
 function Status() {
     const plugin = usePlugin();
@@ -105,7 +106,9 @@ export default function PluginCard({ item: plugin }: CardWrapper<BunnyPlugin>) {
                                     }}
                                     size="sm"
                                     variant="secondary"
-                                    icon={requireAssetIndex("MoreHorizontalIcon")}
+                                    icon={requireAssetIndex(
+                                        getSettings(plugin.id) ? "SettingsIcon" : "MoreHorizontalIcon"
+                                    )}
                                 />
                                 <TableSwitch
                                     value={plugin.enabled}

@@ -7,7 +7,7 @@ import { hideSheet } from "@lib/ui/sheets";
 import { showToast } from "@lib/ui/toasts";
 import { ButtonColors } from "@lib/utils/types";
 import { clipboard } from "@metro/common";
-import { ActionSheet, ActionSheetRow, IconButton, TableRow, Text } from "@metro/common/components";
+import { ActionSheet, ActionSheetRow, Button, TableRow, Text } from "@metro/common/components";
 import { ScrollView, View } from "react-native";
 
 interface InfoProps {
@@ -27,10 +27,11 @@ export default function PluginInfoActionSheet({ plugin, navigation }: InfoProps)
                     {plugin.manifest.name}
                 </Text>
                 <View style={{ marginLeft: "auto" }}>
-                    {Settings && <IconButton
+                    {Settings && <Button
                         size="md"
+                        text="Configure"
                         variant="secondary"
-                        icon={requireAssetIndex("SettingsIcon")}
+                        icon={requireAssetIndex("WrenchIcon")}
                         onPress={() => {
                             hideSheet("PluginInfoActionSheet");
                             navigation.push("VendettaCustomPage", {
