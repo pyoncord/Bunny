@@ -1,4 +1,4 @@
-import { lazyDestructure } from "@lib/utils/lazy";
+import { lazyDestructure, proxyLazy } from "@lib/utils/lazy";
 import { findByProps, findByPropsProxy } from "@metro/utils";
 import { isSemanticColor, resolveSemanticColor } from "@ui/color";
 import { DiscordTextStyles } from "@ui/types";
@@ -13,7 +13,7 @@ export const { TextStyleSheet } = lazyDestructure(() => findByProps("TextStyleSh
 };
 
 export function createStyles<T extends NamedStyles<T>>(sheet: T | ((props: any) => T)): () => T {
-    return CompatfulRedesign.createStyles(sheet);
+    return proxyLazy(() => CompatfulRedesign.createStyles(sheet));
 }
 
 // Reimplementation of Discord's createThemedStyleSheet, which was removed since 204201
