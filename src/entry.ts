@@ -1,4 +1,4 @@
-import { version } from "bunny-build";
+import { version } from "bunny-build-info";
 import { instead } from "spitroast";
 
 // @ts-ignore - shut up fr
@@ -7,7 +7,7 @@ globalThis.window = globalThis;
 const init = () => {
     try {
         // This logs in the native logging implementation, e.g. logcat
-        console.log("Hello from Bunny! Pyon!");
+        console.log("Hello from Bunny!");
 
         // Make 'freeze' and 'seal' do nothing
         Object.freeze = Object.seal = Object;

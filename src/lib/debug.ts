@@ -6,7 +6,7 @@ import { getThemeFromLoader, selectTheme, themes } from "@lib/managers/themes";
 import { settings } from "@lib/settings";
 import { logger } from "@lib/utils/logger";
 import { showToast } from "@ui/toasts";
-import { version } from "bunny-build";
+import { version } from "bunny-build-info";
 import { Platform, type PlatformConstants } from "react-native";
 export let socket: WebSocket;
 

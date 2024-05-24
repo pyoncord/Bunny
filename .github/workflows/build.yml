@@ -17,7 +17,7 @@ jobs:
           - name: Checkout builds
             uses: actions/checkout@v4
             with:
-                repository: "pyoncord/bunny-builds"
+                repository: "pyoncord/bunny-build-infos"
                 path: "builds"
                 token: ${{ secrets.BUILDS_TOKEN }}
                 ref: ${{ github.ref_name }}
@@ -49,5 +49,5 @@ jobs:
 
           - name: Purge CDN cache
             run: |
-                curl https://purge.jsdelivr.net/gh/pyoncord/bunny-builds@${{ github.ref_name }}/bunny.js
+                curl https://purge.jsdelivr.net/gh/pyoncord/bunny-build-infos@${{ github.ref_name }}/bunny.js
                 
