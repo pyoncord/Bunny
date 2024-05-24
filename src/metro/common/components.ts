@@ -20,6 +20,9 @@ export const HelpMessage = findByNameProxy("HelpMessage");
 // React Native's included SafeAreaView only adds padding on iOS.
 export const SafeAreaView = proxyLazy(() => findByProps("useSafeAreaInsets").SafeAreaView);
 
+// ActionSheet
+export const ActionSheetRow = findProp("ActionSheetRow");
+
 // Buttons
 export const Button = findSingular("Button") as t.Button;
 export const TwinButtons = findProp("TwinButtons");

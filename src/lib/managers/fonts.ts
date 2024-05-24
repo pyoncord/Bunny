@@ -7,9 +7,10 @@ type FontMap = Record<string, string>;
 export interface FontDefinition {
     spec: 1;
     name: string;
-    previewText?: string;
+    description?: string;
     main: FontMap;
     __source?: string;
+    __edited?: boolean;
 }
 
 type FontStorage = Record<string, FontDefinition> & { __selected?: string; };
@@ -43,7 +44,7 @@ export async function saveFont(data: string | FontDefinition, selected = false) 
 
     if (typeof data === "string") {
         try {
-            fontDefJson = await (await safeFetch(data, { cache: "no-store" })).json();
+            fontDefJson = await (await safeFetch(data)).json();
             fontDefJson.__source = data;
         } catch (e) {
             throw new Error(`Failed to fetch fonts at ${data}`, { cause: e });

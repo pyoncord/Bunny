@@ -1,7 +1,7 @@
 import { formatString, Strings } from "@core/i18n";
 import { requireAssetIndex } from "@lib/api/assets";
 import { createProxy, useProxy } from "@lib/api/storage";
-import { FontDefinition, saveFont, validateFont } from "@lib/managers/fonts";
+import { FontDefinition, fonts, removeFont, saveFont, validateFont } from "@lib/managers/fonts";
 import { getCurrentTheme } from "@lib/managers/themes";
 import { safeFetch } from "@lib/utils";
 import { NavigationNative } from "@metro/common";
@@ -79,9 +79,10 @@ function RevengeFontsExtractor({ fonts, setName }: {
     </View>;
 }
 
-function JsonFontImporter({ fonts, setName }: {
+function JsonFontImporter({ fonts, setName, setSource }: {
     fonts: Record<string, string>;
     setName: (name: string) => void;
+    setSource: (source: string) => void;
 }) {
     const [fontLink, setFontLink] = useState<string>("");
     const [saving, setSaving] = useState(false);
@@ -113,6 +114,8 @@ function JsonFontImporter({ fonts, setName }: {
                     validateFont(json);
 
                     setName(json.name);
+                    setSource(fontLink);
+
                     Object.assign(fonts, json.main);
                 })()
                     .then(() => actionSheet.hideActionSheet())
@@ -124,23 +127,62 @@ function JsonFontImporter({ fonts, setName }: {
     </View>;
 }
 
-function promptActionSheet(Component: any, fontEntries: Record<string, string>, setName: (name: string) => void) {
+function EntryEditorActionSheet(props: {
+    fontEntries: Record<string, string>;
+    name: string;
+}) {
+    const [familyName, setFamilyName] = useState<string>(props.name);
+    const [fontUrl, setFontUrl] = useState<string>(props.fontEntries[props.name]);
+
+    return <View style={{ padding: 8, paddingBottom: 16, gap: 12 }}>
+        <TextInput
+            autoFocus
+            size="md"
+            label={"Family Name (to override)"}
+            value={familyName}
+            placeholder={"ggsans-Bold"}
+            onChange={setFamilyName}
+        />
+        <TextInput
+            size="md"
+            label={"Font URL"}
+            value={fontUrl}
+            placeholder={"https://link.to/the/font.ttf"}
+            onChange={setFontUrl}
+        />
+        <Button
+            size="md"
+            variant="primary"
+            text={"Apply"}
+            onPress={() => {
+                delete props.fontEntries[props.name];
+                props.fontEntries[familyName] = fontUrl;
+            }}
+        />
+    </View>;
+}
+
+function promptActionSheet(
+    Component: any,
+    fontEntries: Record<string, string>,
+    props: any
+) {
     actionSheet.openLazy(
         Promise.resolve({
             default: () => (
                 <ErrorBoundary>
                     <ActionSheet>
-                        <BottomSheetTitleHeader title={"Import Font"} />
-                        <Component fonts={fontEntries} setName={setName} />
+                        <BottomSheetTitleHeader title="Import Font" />
+                        <Component fonts={fontEntries} {...props} />
                     </ActionSheet>
                 </ErrorBoundary>
             )
         }),
-        "FontImporterActionSheet"
+        "FontEditorActionSheet"
     );
 }
 
-function EntryRow({ fontEntry }: { fontEntry: Record<string, string>; }) {
+function NewEntryRow({ fontEntry }: { fontEntry: Record<string, string>; }) {
     const nameRef = useRef<string>();
     const urlRef = useRef<string>();
 
@@ -197,53 +239,88 @@ function EntryRow({ fontEntry }: { fontEntry: Record<string, string>; }) {
     </View>;
 }
 
-export default function FontImporter() {
-    const [name, setName] = useState<string>();
+export default function FontEditor(props: {
+    name?: string;
+}) {
+    const [name, setName] = useState<string | undefined>(props.name);
+    const [source, setSource] = useState<string>();
     const [importing, setIsImporting] = useState<boolean>(false);
 
-    const memoEntry = useMemo(() => createProxy({}).proxy, []);
+    const memoEntry = useMemo(() => {
+        return createProxy(props.name ? { ...fonts[props.name].main } : {}).proxy;
+    }, [props.name]);
+
     const fontEntries: Record<string, string> = useProxy(memoEntry);
 
     const navigation = NavigationNative.useNavigation();
 
     return <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 38 }}>
         <Stack style={{ paddingVertical: 24, paddingHorizontal: 12 }} spacing={12}>
-            <TableRowGroup title="Import">
-                {/** @ts-ignore */}
-                {getCurrentTheme()?.data?.fonts && <TableRow
-                    label={Strings.LABEL_EXTRACT_FONTS_FROM_THEME}
-                    subLabel={Strings.DESC_EXTRACT_FONTS_FROM_THEME}
-                    icon={<TableRow.Icon source={requireAssetIndex("HammerIcon")} />}
-                    onPress={() => promptActionSheet(RevengeFontsExtractor, fontEntries, setName)}
-                />}
-                <TableRow
-                    label={"Import font entries from a link"}
-                    subLabel={"Directly import from a link with a pre-configured JSON file"}
-                    icon={<TableRow.Icon source={requireAssetIndex("LinkIcon")} />}
-                    onPress={() => promptActionSheet(JsonFontImporter, fontEntries, setName)}
-                />
-            </TableRowGroup>
+            {!props.name
+                ? <TableRowGroup title="Import">
+                    {/** @ts-ignore */}
+                    {getCurrentTheme()?.data?.fonts && <TableRow
+                        label={Strings.LABEL_EXTRACT_FONTS_FROM_THEME}
+                        subLabel={Strings.DESC_EXTRACT_FONTS_FROM_THEME}
+                        icon={<TableRow.Icon source={requireAssetIndex("HammerIcon")} />}
+                        onPress={() => promptActionSheet(RevengeFontsExtractor, fontEntries, { setName })}
+                    />}
+                    <TableRow
+                        label={"Import font entries from a link"}
+                        subLabel={"Directly import from a link with a pre-configured JSON file"}
+                        icon={<TableRow.Icon source={requireAssetIndex("LinkIcon")} />}
+                        onPress={() => promptActionSheet(JsonFontImporter, fontEntries, { setName, setSource })}
+                    />
+                </TableRowGroup>
+                : <TableRowGroup title="Actions">
+                    <TableRow
+                        label={"Refetch fonts from source"}
+                        icon={<TableRow.Icon source={requireAssetIndex("RetryIcon")} />}
+                        onPress={async () => {
+                            const ftCopy = { ...fonts[props.name!] };
+                            await removeFont(props.name!);
+                            await saveFont(ftCopy);
+                            navigation.goBack();
+                        }}
+                    />
+                    <TableRow
+                        label={"Delete font pack"}
+                        icon={<TableRow.Icon source={requireAssetIndex("TrashIcon")} />}
+                        onPress={() => removeFont(props.name!).then(() => navigation.goBack())}
+                    />
+                </TableRowGroup>}
             <TextInput
-                size="md"
+                size="lg"
                 value={name}
                 label={Strings.FONT_NAME}
-                placeholder={"ggsans"}
+                placeholder={"Whitney"}
                 onChange={setName}
             />
-            <TableRowGroup title={"Font Entries"}>
+            <TableRowGroup title="Font Entries">
                 {Object.entries(fontEntries).map(([name, url]) => {
                     return <TableRow
                         label={name}
                         subLabel={url}
-                        trailing={<IconButton
-                            size="sm"
-                            variant="secondary"
-                            icon={requireAssetIndex("TrashIcon")}
-                            onPress={() => delete fontEntries[name]}
-                        />}
+                        trailing={<Stack spacing={2} direction="horizontal">
+                            <IconButton
+                                size="sm"
+                                variant="secondary"
+                                icon={requireAssetIndex("PencilIcon")}
+                                onPress={() => promptActionSheet(EntryEditorActionSheet, fontEntries, {
+                                    name,
+                                    fontEntries,
+                                })}
+                            />
+                            <IconButton
+                                size="sm"
+                                variant="secondary"
+                                icon={requireAssetIndex("TrashIcon")}
+                                onPress={() => delete fontEntries[name]}
+                            />
+                        </Stack>}
                     />;
                 })}
-                <TableRow label={<EntryRow fontEntry={fontEntries} />} />
+                <TableRow label={<NewEntryRow fontEntry={fontEntries} />} />
             </TableRowGroup>
             <View style={{ flexDirection: "row", justifyContent: "flex-end", bottom: 0, left: 0 }}>
                 <Button
@@ -251,25 +328,35 @@ export default function FontImporter() {
                     loading={importing}
                     disabled={importing || !name || Object.keys(fontEntries).length === 0}
                     variant="primary"
-                    text={"Import"}
+                    text={props.name ? "Save" : "Import"}
                     onPress={async () => {
                         if (!name) return;
 
                         setIsImporting(true);
 
-                        saveFont({
-                            spec: 1,
-                            name: name,
-                            main: fontEntries
-                        })
-                            .then(() => navigation.goBack())
-                            .finally(() => setIsImporting(false));
+                        if (!props.name) {
+                            saveFont({
+                                spec: 1,
+                                name: name,
+                                main: fontEntries,
+                                __source: source
+                            })
+                                .then(() => navigation.goBack())
+                                .finally(() => setIsImporting(false));
+                        } else {
+                            Object.assign(fonts[props.name], {
+                                name: name,
+                                main: fontEntries,
+                                __edited: true
+                            });
+                            setIsImporting(false);
+                            navigation.goBack();
+                        }
                     }}
-                    icon={requireAssetIndex("DownloadIcon")}
+                    icon={requireAssetIndex(props.name ? "toast_image_saved" : "DownloadIcon")}
                     style={{ marginLeft: 8 }}
                 />
             </View>
-
         </Stack>
     </ScrollView>;
 }

@@ -1,13 +1,13 @@
 import { formatString, Strings } from "@core/i18n";
 import { requireAssetIndex } from "@lib/api/assets";
-import { purgeStorage } from "@lib/api/storage";
+import { purgeStorage, useProxy } from "@lib/api/storage";
 import { BunnyPlugin, fetchPlugin, getSettings, removePlugin, startPlugin, stopPlugin } from "@lib/managers/plugins";
 import { showConfirmationAlert } from "@lib/ui/alerts";
 import { hideSheet } from "@lib/ui/sheets";
 import { showToast } from "@lib/ui/toasts";
 import { ButtonColors } from "@lib/utils/types";
 import { clipboard } from "@metro/common";
-import { ActionSheet, IconButton, TableRow, TableRowGroup, Text } from "@metro/common/components";
+import { ActionSheet, ActionSheetRow, IconButton, TableRow, Text } from "@metro/common/components";
 import { ScrollView, View } from "react-native";
 
 interface InfoProps {
@@ -16,16 +16,18 @@ interface InfoProps {
 }
 
 export default function PluginInfoActionSheet({ plugin, navigation }: InfoProps) {
-    const settings = getSettings(plugin.id);
+    useProxy(plugin);
 
-    return <ActionSheet scrollable>
-        <ScrollView style={{ gap: 12 }}>
+    const Settings = getSettings(plugin.id);
+
+    return <ActionSheet>
+        <ScrollView>
             <View style={{ flexDirection: "row", alignItems: "center", paddingVertical: 24 }}>
                 <Text variant="heading-xl/semibold">
                     {plugin.manifest.name}
                 </Text>
                 <View style={{ marginLeft: "auto" }}>
-                    {settings && <IconButton
+                    {Settings && <IconButton
                         size="md"
                         variant="secondary"
                         icon={requireAssetIndex("SettingsIcon")}
@@ -33,14 +35,14 @@ export default function PluginInfoActionSheet({ plugin, navigation }: InfoProps)
                             hideSheet("PluginInfoActionSheet");
                             navigation.push("VendettaCustomPage", {
                                 title: plugin.manifest.name,
-                                render: settings,
+                                render: Settings,
                             });
                         }}
                     />}
                 </View>
             </View>
-            <TableRowGroup>
-                <TableRow
+            <ActionSheetRow.Group>
+                <ActionSheetRow
                     label={Strings.REFETCH}
                     icon={<TableRow.Icon source={requireAssetIndex("RetryIcon")} />}
                     onPress={async () => {
@@ -54,9 +56,10 @@ export default function PluginInfoActionSheet({ plugin, navigation }: InfoProps)
                         }
 
                         if (plugin.enabled) await startPlugin(plugin.id);
+                        hideSheet("PluginInfoActionSheet");
                     }}
                 />
-                <TableRow
+                <ActionSheetRow
                     label={Strings.COPY_URL}
                     icon={<TableRow.Icon source={requireAssetIndex("copy")} />}
                     onPress={() => {
@@ -64,7 +67,7 @@ export default function PluginInfoActionSheet({ plugin, navigation }: InfoProps)
                         showToast.showCopyToClipboard();
                     }}
                 />
-                <TableRow
+                <ActionSheetRow
                     label={plugin.update ? Strings.DISABLE_UPDATES : Strings.ENABLE_UPDATES}
                     icon={<TableRow.Icon source={requireAssetIndex("ic_download_24px")} />}
                     onPress={() => {
@@ -75,7 +78,7 @@ export default function PluginInfoActionSheet({ plugin, navigation }: InfoProps)
                         }), requireAssetIndex("toast_image_saved"));
                     }}
                 />
-                <TableRow
+                <ActionSheetRow
                     label={Strings.CLEAR_DATA}
                     icon={<TableRow.Icon source={requireAssetIndex("ic_duplicate")} />}
                     onPress={() => showConfirmationAlert({
@@ -108,10 +111,11 @@ export default function PluginInfoActionSheet({ plugin, navigation }: InfoProps)
                             );
 
                             if (plugin.enabled) await startPlugin(plugin.id);
+                            hideSheet("PluginInfoActionSheet");
                         }
                     })}
                 />
-                <TableRow
+                <ActionSheetRow
                     label={Strings.DELETE}
                     icon={<TableRow.Icon source={requireAssetIndex("ic_message_delete")} />}
                     onPress={() => showConfirmationAlert({
@@ -126,10 +130,11 @@ export default function PluginInfoActionSheet({ plugin, navigation }: InfoProps)
                             } catch (e) {
                                 showToast(String(e), requireAssetIndex("Small"));
                             }
+                            hideSheet("PluginInfoActionSheet");
                         }
                     })}
                 />
-            </TableRowGroup>
+            </ActionSheetRow.Group>
         </ScrollView>
     </ActionSheet>;
 }

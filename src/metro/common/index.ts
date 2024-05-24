@@ -36,6 +36,9 @@ export const chroma = findByPropsProxy("brewer") as typeof import("chroma-js");
 // Lodash
 export const lodash = findByPropsProxy("forEachRight") as typeof import("lodash");
 
+// Skia
+export const Skia = findByPropsProxy("useFont") as typeof import("@shopify/react-native-skia");
+
 // The node:util polyfill for RN
 // TODO: Find types for this
 export const util = findByPropsProxy("inspect", "isNullOrUndefined");
