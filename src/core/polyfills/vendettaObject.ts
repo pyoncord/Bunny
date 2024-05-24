@@ -14,6 +14,7 @@ import * as metro from "@metro";
 import * as common from "@metro/common";
 import { Forms } from "@metro/common/components";
 import * as commonComponents from "@metro/common/components";
+import { getFindContext } from "@metro/proxy";
 import * as alerts from "@ui/alerts";
 import * as color from "@ui/color";
 import * as components from "@ui/components";
@@ -142,10 +143,10 @@ export const initVendettaObject = (): any => {
             components: {
                 Forms,
                 General: common.ReactNative,
-                Alert: commonComponents.Alert,
-                Button: commonComponents.Button,
-                HelpMessage: commonComponents.HelpMessage,
-                SafeAreaView: commonComponents.SafeAreaView,
+                get Alert() { return getFindContext(commonComponents.Alert)!.unproxy(); },
+                get Button() { return getFindContext(commonComponents.Button)!.unproxy(); },
+                get HelpMessage() { return getFindContext(commonComponents.HelpMessage)!.unproxy(); },
+                get SafeAreaView() { return getFindContext(commonComponents.SafeAreaView)!.unproxy(); },
                 Summary: components.Summary,
                 ErrorBoundary: components.ErrorBoundary,
                 Codeblock: components.Codeblock,
