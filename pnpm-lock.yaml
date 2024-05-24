@@ -8,9 +8,6 @@ dependencies:
   fuzzysort:
     specifier: ^2.0.4
     version: 2.0.4
-  spark-md5:
-    specifier: ^3.0.2
-    version: 3.0.2
   spitroast:
     specifier: ^1.4.4
     version: 1.4.4
@@ -2219,10 +2216,6 @@ packages:
     resolution: {integrity: sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==}
     engines: {node: '>=8'}
     dev: true
-
-  /spark-md5@3.0.2:
-    resolution: {integrity: sha512-wcFzz9cDfbuqe0FZzfi2or1sgyIrsDwmPwfZC4hiNidPdPINjeUwNfv5kldczoEAcjl9Y1L3SM7Uz2PUEQzxQw==}
-    dev: false
 
   /spitroast@1.4.4:
     resolution: {integrity: sha512-S69rzIFjbGoEW5YCLpm1kEdqMEYqC09lmE1ZMY4gyUXfke0wi9qZjKYa0DDSv5eIy/D+/UGJT8yxgJddU3oqlA==}
