@@ -17,7 +17,7 @@ jobs:
           - name: Checkout builds
             uses: actions/checkout@v4
             with:
-                repository: "pyoncord/bunny-build-infos"
+                repository: "pyoncord/bunny-builds"
                 path: "builds"
                 token: ${{ secrets.BUILDS_TOKEN }}
                 ref: ${{ github.ref_name }}
@@ -26,13 +26,13 @@ jobs:
             with:
                 node-version: 20
 
-          - name: Install dependencies
+          - name: Install pnpm and dependencies
             run: |
                 npm i -g pnpm
-                pnpm i
+                pnpm i\
 
           - name: Build
-            run: pnpm build
+            run: pnpm build --release-branch=${{ github.ref_name }} --build-minify
           
           # TODO: Check for linting?
 
