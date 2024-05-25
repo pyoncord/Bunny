@@ -1,15 +1,12 @@
 import { ClientInfoManager, MMKVManager } from "@lib/api/native/modules";
 import { throttle } from "@lib/utils/throttle";
 
-const CACHE_VERSION = 19;
+const CACHE_VERSION = 24;
 const BUNNY_METRO_CACHE_KEY = `__bunny_metro_cache_key_v${CACHE_VERSION}__`;
 
 export enum ExportsFlags {
     EXISTS = 1 << 0,
-    ES_MODULE = 1 << 1,
-    BLACKLISTED = 1 << 2,
-    FUNCTION = 1 << 3,
-    PRIMITIVE = 1 << 4,
+    BLACKLISTED = 1 << 1
 }
 
 type ModulesMap = {
@@ -25,7 +22,7 @@ function buildInitCache() {
     const cache = {
         _v: CACHE_VERSION,
         _buildNumber: ClientInfoManager.Build as number,
-        exportsIndex: {} as Record<string, [number, number]>,
+        exportsIndex: {} as Record<string, number>,
         findIndex: {} as Record<string, ModulesMap | undefined>,
         polyfillIndex: {} as Record<string, ModulesMap | undefined>,
         assetsIndex: {} as Record<string, number>
@@ -65,28 +62,19 @@ const saveCache = throttle(() => {
 function extractExportsFlags(moduleExports: any) {
     if (!moduleExports) return 0;
 
-    let bit = ExportsFlags.EXISTS;
-    bit |= moduleExports.__esModule ? ExportsFlags.ES_MODULE : 0;
-    bit |= typeof moduleExports === "function" ? ExportsFlags.FUNCTION : 0;
-    if (typeof moduleExports === "string" || typeof moduleExports === "number") {
-        bit |= ExportsFlags.PRIMITIVE;
-    }
-
+    const bit = ExportsFlags.EXISTS;
     return bit;
 }
 
 export function indexExportsFlags(moduleId: number, moduleExports: any) {
-    const flags: [number, number] = moduleExports.default && moduleExports.__esModule
-        ? [extractExportsFlags(moduleExports), extractExportsFlags(moduleExports.default)]
-        : [extractExportsFlags(moduleExports), 0];
-
-    if (flags[0] !== ExportsFlags.EXISTS && flags[1] !== ExportsFlags.EXISTS) {
+    const flags = extractExportsFlags(moduleExports);
+    if (flags !== ExportsFlags.EXISTS) {
         _metroCache.exportsIndex[moduleId] = flags;
     }
 }
 
 export function indexBlacklistFlag(id: number) {
-    _metroCache.exportsIndex[id] ??= [ExportsFlags.BLACKLISTED, 0];
+    _metroCache.exportsIndex[id] |= ExportsFlags.BLACKLISTED;
 }
 
 export function getCacherForUniq(uniq: string, allFind: boolean) {

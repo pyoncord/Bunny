@@ -20,7 +20,7 @@ for (const key in metroModules) {
     const metroModule = metroModules[id];
 
     const cache = getMetroCache().exportsIndex[id];
-    if (cache?.[0] & ExportsFlags.BLACKLISTED) {
+    if (cache & ExportsFlags.BLACKLISTED) {
         blacklistModule(id);
         continue;
     }
@@ -166,7 +166,7 @@ export function requireModule(id: Metro.ModuleID) {
     if (!metroModules[0]?.isInitialized) metroRequire(0);
     if (blacklistedIds.has(id)) return undefined;
 
-    if (Number(id) === -1) return require("@metro/polyfills/redesign");
+    if (Number(id) === -1) return require("@metro/polyfills/redesign").default;
 
     if (metroModules[id]?.isInitialized && !metroModules[id]?.hasError) {
         return metroRequire(id);
@@ -191,7 +191,7 @@ export function requireModule(id: Metro.ModuleID) {
 }
 
 export function* getModules(uniq: string, all = false) {
-    yield [-1, require("@metro/polyfills/redesign")];
+    yield [-1, require("@metro/polyfills/redesign").default];
 
     let cache = getMetroCache().findIndex[uniq];
     if (all && !cache?._) cache = undefined;

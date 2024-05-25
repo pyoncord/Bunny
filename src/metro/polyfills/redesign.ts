@@ -138,4 +138,10 @@ export default new Proxy({}, {
 
         return _cache[prop] = bestCandidate[prop];
     },
+    ownKeys() {
+        redesignProps.forEach(prop => {
+            this.get!({}, prop, {});
+        });
+        return Reflect.ownKeys(_cache);
+    }
 });
