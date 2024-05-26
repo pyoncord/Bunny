@@ -11,7 +11,7 @@ export interface SearchProps {
 }
 
 function SearchIcon() {
-    return <Image style={{ transform: [{ scale: 0.8 }] }} source={requireAssetIndex("search")} />;
+    return <Image style={{ width: 16, height: 16 }} source={requireAssetIndex("search")} />;
 }
 
 export default ({ onChangeText, placeholder, style }: SearchProps) => {
