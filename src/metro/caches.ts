@@ -1,7 +1,7 @@
 import { ClientInfoManager, MMKVManager } from "@lib/api/native/modules";
 import { throttle } from "@lib/utils/throttle";
 
-const CACHE_VERSION = 24;
+const CACHE_VERSION = 29;
 const BUNNY_METRO_CACHE_KEY = `__bunny_metro_cache_key_v${CACHE_VERSION}__`;
 
 export enum ExportsFlags {
@@ -9,9 +9,13 @@ export enum ExportsFlags {
     BLACKLISTED = 1 << 1
 }
 
+export enum ModulesMapInternal {
+    FULL_LOOKUP,
+    NOT_FOUND
+}
+
 type ModulesMap = {
-    _?: 1;
-    [id: number]: number;
+    [flag in number | `_${ModulesMapInternal}`]?: 0 | ExportsFlags | undefined;
 };
 
 let _metroCache = null as unknown as ReturnType<typeof buildInitCache>;
@@ -22,6 +26,7 @@ function buildInitCache() {
     const cache = {
         _v: CACHE_VERSION,
         _buildNumber: ClientInfoManager.Build as number,
+        _modulesCount: Object.keys(window.modules).length,
         exportsIndex: {} as Record<string, number>,
         findIndex: {} as Record<string, ModulesMap | undefined>,
         polyfillIndex: {} as Record<string, ModulesMap | undefined>,
@@ -49,6 +54,10 @@ export async function initMetroCache() {
         if (_metroCache._buildNumber !== ClientInfoManager.Build) {
             _metroCache = null!;
             throw "cache invalidated; version mismatch";
+        }
+        if (_metroCache._modulesCount !== Object.keys(window.modules).length) {
+            _metroCache = null!;
+            throw "cache invalidated; modules count mismatch";
         }
     } catch {
         buildInitCache();
@@ -78,33 +87,32 @@ export function indexBlacklistFlag(id: number) {
 }
 
 export function getCacherForUniq(uniq: string, allFind: boolean) {
-    let indexObject = _metroCache.findIndex[uniq];
+    const indexObject = _metroCache.findIndex[uniq] ??= {};
 
     return {
         cacheId(moduleId: number, exports: any) {
-            indexObject ??= _metroCache.findIndex[uniq] ??= {};
-            // TODO: A log here perhaps
             indexObject[moduleId] ??= extractExportsFlags(exports);
 
             saveCache();
         },
-        finish() {
-            indexObject ??= _metroCache.findIndex[uniq] ??= {};
-            if (allFind) indexObject._ = 1;
+        // Finish may not be called by single find
+        finish(notFound: boolean) {
+            if (allFind) indexObject[`_${ModulesMapInternal.FULL_LOOKUP}`] = 1;
+            if (notFound) indexObject[`_${ModulesMapInternal.NOT_FOUND}`] = 1;
+
             saveCache();
         }
     };
 }
 
 export function getPolyfillModuleCacher(name: string) {
-    let indexObject = _metroCache.polyfillIndex[name];
+    const indexObject = _metroCache.polyfillIndex[name] ??= {};
 
     return {
         getModules() {
             return require("@metro/modules").getCachedPolyfillModules(name);
         },
         cacheId(moduleId: number) {
-            indexObject ??= _metroCache.polyfillIndex[name] ??= {};
             indexObject[moduleId] = 1;
             saveCache();
         }

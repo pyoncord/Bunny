@@ -1,4 +1,4 @@
-import { ExportsFlags, getMetroCache, indexBlacklistFlag, indexExportsFlags } from "@metro/caches";
+import { ExportsFlags, getMetroCache, indexBlacklistFlag, indexExportsFlags, ModulesMapInternal } from "@metro/caches";
 import { Metro } from "@metro/types";
 import { before, instead } from "spitroast";
 
@@ -166,7 +166,7 @@ export function requireModule(id: Metro.ModuleID) {
     if (!metroModules[0]?.isInitialized) metroRequire(0);
     if (blacklistedIds.has(id)) return undefined;
 
-    if (Number(id) === -1) return require("@metro/polyfills/redesign").default;
+    if (Number(id) === -1) return require("@metro/polyfills/redesign");
 
     if (metroModules[id]?.isInitialized && !metroModules[id]?.hasError) {
         return metroRequire(id);
@@ -191,12 +191,20 @@ export function requireModule(id: Metro.ModuleID) {
 }
 
 export function* getModules(uniq: string, all = false) {
-    yield [-1, require("@metro/polyfills/redesign").default];
+    yield [-1, require("@metro/polyfills/redesign")];
 
     let cache = getMetroCache().findIndex[uniq];
-    if (all && !cache?._) cache = undefined;
+    if (all && !cache?.[`_${ModulesMapInternal.FULL_LOOKUP}`]) cache = undefined;
+    if (cache?.[`_${ModulesMapInternal.NOT_FOUND}`]) return;
 
-    for (const id in cache ?? metroModules) {
+    for (const id in cache) {
+        if (id[0] === "_") continue;
+        const exports = requireModule(Number(id));
+        if (isBadExports(exports)) continue;
+        yield [id, exports];
+    }
+
+    for (const id in metroModules) {
         const exports = requireModule(Number(id));
         if (isBadExports(exports)) continue;
         yield [id, exports];
@@ -205,7 +213,14 @@ export function* getModules(uniq: string, all = false) {
 
 export function* getCachedPolyfillModules(name: string) {
     const cache = getMetroCache().polyfillIndex[name];
-    for (const id in cache ?? metroModules) {
+
+    for (const id in cache) {
+        const exports = requireModule(Number(id));
+        if (isBadExports(exports)) continue;
+        yield [id, exports];
+    }
+
+    for (const id in metroModules) {
         const exports = requireModule(Number(id));
         if (isBadExports(exports)) continue;
         yield [id, exports];

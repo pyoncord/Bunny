@@ -33,7 +33,7 @@ export function findModule<A extends unknown[]>(filter: FilterFn<A>) {
         }
     }
 
-    finish();
+    finish(true);
     return [];
 }
 
@@ -71,7 +71,7 @@ export function findAllModule<A extends unknown[]>(filter: FilterFn<A>) {
         }
     }
 
-    finish();
+    finish(foundExports.length === 0);
     return foundExports;
 }
 
