@@ -50,10 +50,12 @@ export function patchPanelUI(unpatches: (() => void | boolean)[]) {
             const sections = findInReactTree(
                 res.props.children,
                 n => n?.children?.[1]?.type === LegacyFormSection
-            ).children;
+            )?.children;
 
-            const index = sections.findIndex((c: any) => titles.includes(c?.props.label));
-            sections.splice(-~index || 4, 0, <SettingsSection />);
+            if (sections) {
+                const index = sections.findIndex((c: any) => titles.includes(c?.props.label));
+                sections.splice(-~index || 4, 0, <SettingsSection />);
+            }
         }));
     }, true);
 
