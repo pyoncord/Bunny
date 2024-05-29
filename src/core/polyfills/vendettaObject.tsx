@@ -14,7 +14,6 @@ import * as metro from "@metro";
 import * as common from "@metro/common";
 import { Forms } from "@metro/common/components";
 import * as commonComponents from "@metro/common/components";
-import { getFindContext } from "@metro/proxy";
 import * as alerts from "@ui/alerts";
 import * as color from "@ui/color";
 import * as components from "@ui/components";
@@ -143,10 +142,10 @@ export const initVendettaObject = (): any => {
             components: {
                 Forms,
                 General: common.ReactNative,
-                get Alert() { return getFindContext(commonComponents.Alert)!.unproxy(); },
-                get Button() { return getFindContext(commonComponents.Button)!.unproxy(); },
-                get HelpMessage() { return getFindContext(commonComponents.HelpMessage)!.unproxy(); },
-                get SafeAreaView() { return getFindContext(commonComponents.SafeAreaView)!.unproxy(); },
+                Alert: commonComponents.Alert,
+                Button: commonComponents.Button,
+                HelpMessage: (...props: any[]) => <commonComponents.HelpMessage {...props} />,
+                SafeAreaView: (...props: any[]) => <commonComponents.SafeAreaView {...props} />,
                 Summary: components.Summary,
                 ErrorBoundary: components.ErrorBoundary,
                 Codeblock: components.Codeblock,
@@ -193,7 +192,7 @@ export const initVendettaObject = (): any => {
         },
         storage: {
             createProxy: (target: any) => storage.createProxy(target),
-            useProxy: <T>(_storage: T) => storage.useProxy(_storage),
+            useProxy: (_storage: any) => storage.useProxy(_storage),
             createStorage: (backend: any) => storage.createStorage(backend),
             wrapSync: (store: any) => storage.wrapSync(store),
             awaitSyncWrapper: (store: any) => storage.awaitSyncWrapper(store),
