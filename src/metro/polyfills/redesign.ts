@@ -102,46 +102,37 @@ type Keys = LiteralUnion<typeof redesignProps extends Set<infer U> ? U : string,
 
 const cacher = getPolyfillModuleCacher("redesign_module");
 
-const _cache = {} as Record<Keys, any>;
+const _module = {} as Record<Keys, any>;
+export default _module;
 
-export default new Proxy({}, {
-    get(_, p) {
-        if (typeof p !== "string" || !redesignProps.has(p as any)) return;
-        if (_cache[p]) return _cache[p];
+for (const prop of redesignProps) {
+    const filter = byProps(prop);
+    const candidates: any[] = [];
 
-        const prop = p as Keys;
-        const filter = byProps(prop);
-        const candidates: any[] = [];
-
-        for (const [id, moduleExports] of cacher.getModules()) {
-            if (filter(moduleExports, id, false)) {
-                cacher.cacheId(id);
-                candidates.push(moduleExports);
-            } else if (
-                moduleExports.__esModule
-                && moduleExports.default
-                && filter(moduleExports.default, id, false)
-            ) {
-                cacher.cacheId(id);
-                candidates.push(moduleExports.default);
-            }
+    for (const [id, moduleExports] of cacher.getModules()) {
+        if (filter(moduleExports, id, false)) {
+            cacher.cacheId(id);
+            candidates.push(moduleExports);
+        } else if (
+            moduleExports.__esModule
+            && moduleExports.default
+            && filter(moduleExports.default, id, false)
+        ) {
+            cacher.cacheId(id);
+            candidates.push(moduleExports.default);
         }
-
-        if (candidates.length === 0) return undefined;
-
-        const bestCandidate = candidates.reduce(
-            (c1, c2) =>
-                (Object.keys(c2).length < Object.keys(c1).length)
-                    ? c2
-                    : c1
-        );
-
-        return _cache[prop] = bestCandidate[prop];
-    },
-    ownKeys() {
-        redesignProps.forEach(prop => {
-            this.get!({}, prop, {});
-        });
-        return Reflect.ownKeys(_cache);
     }
-});
+
+    if (candidates.length === 0) continue;
+
+    const bestCandidate = candidates.reduce(
+        (c1, c2) =>
+            (Object.keys(c2).length < Object.keys(c1).length)
+                ? c2
+                : c1
+    );
+
+    _module[prop] = bestCandidate[prop];
+}
+
+cacher.finish();

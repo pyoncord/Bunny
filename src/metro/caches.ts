@@ -1,7 +1,7 @@
 import { ClientInfoManager, MMKVManager } from "@lib/api/native/modules";
 import { throttle } from "@lib/utils/throttle";
 
-const CACHE_VERSION = 29;
+const CACHE_VERSION = 31;
 const BUNNY_METRO_CACHE_KEY = `__bunny_metro_cache_key_v${CACHE_VERSION}__`;
 
 export enum ExportsFlags {
@@ -114,6 +114,10 @@ export function getPolyfillModuleCacher(name: string) {
         },
         cacheId(moduleId: number) {
             indexObject[moduleId] = 1;
+            saveCache();
+        },
+        finish() {
+            indexObject[`_${ModulesMapInternal.FULL_LOOKUP}`] = 1;
             saveCache();
         }
     };

@@ -212,7 +212,7 @@ export function* getModules(uniq: string, all = false) {
 }
 
 export function* getCachedPolyfillModules(name: string) {
-    const cache = getMetroCache().polyfillIndex[name];
+    const cache = getMetroCache().polyfillIndex[name]!;
 
     for (const id in cache) {
         const exports = requireModule(Number(id));
@@ -220,9 +220,11 @@ export function* getCachedPolyfillModules(name: string) {
         yield [id, exports];
     }
 
-    for (const id in metroModules) {
-        const exports = requireModule(Number(id));
-        if (isBadExports(exports)) continue;
-        yield [id, exports];
+    if (!cache[`_${ModulesMapInternal.FULL_LOOKUP}`]) {
+        for (const id in metroModules) {
+            const exports = requireModule(Number(id));
+            if (isBadExports(exports)) continue;
+            yield [id, exports];
+        }
     }
 }
