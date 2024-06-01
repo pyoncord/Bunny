@@ -1,7 +1,7 @@
 import { ClientInfoManager, MMKVManager } from "@lib/api/native/modules";
 import { throttle } from "@lib/utils/throttle";
 
-const CACHE_VERSION = 31;
+const CACHE_VERSION = 32;
 const BUNNY_METRO_CACHE_KEY = `__bunny_metro_cache_key_v${CACHE_VERSION}__`;
 
 export enum ExportsFlags {
@@ -30,7 +30,7 @@ function buildInitCache() {
         exportsIndex: {} as Record<string, number>,
         findIndex: {} as Record<string, ModulesMap | undefined>,
         polyfillIndex: {} as Record<string, ModulesMap | undefined>,
-        assetsIndex: {} as Record<string, number>
+        assetsIndex: {} as Record<string, ModulesMap | undefined>
     } as const;
 
     // Make sure all assets are cached. Delay by a second
@@ -125,7 +125,7 @@ export function getPolyfillModuleCacher(name: string) {
 
 export function registerAssetCacheId(name: string, moduleId: number) {
     if (!isNaN(moduleId)) {
-        _metroCache.assetsIndex[name] = moduleId;
+        (_metroCache.assetsIndex[name] ??= {})[moduleId] = 1;
         saveCache();
     }
 }
