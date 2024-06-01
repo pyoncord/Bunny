@@ -10,7 +10,7 @@ import { Author } from "@lib/utils/types";
 type EvaledPlugin = {
     onLoad?(): void;
     onUnload(): void;
-    settings: JSX.Element;
+    settings: () => JSX.Element;
 };
 
 // See https://github.com/vendetta-mod/polymanifest

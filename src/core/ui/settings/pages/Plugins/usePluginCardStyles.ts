@@ -1,37 +1,23 @@
-import { createStyles, TextStyleSheet } from "@lib/ui/styles";
+import { createStyles } from "@lib/ui/styles";
 import { tokens } from "@metro/common";
 
 export const usePluginCardStyles = createStyles({
-    header: {
-        paddingVertical: 2,
+    pluginIcon: {
+        tintColor: tokens.colors.LOGO_PRIMARY,
+        height: 18,
+        width: 18,
     },
-    headerLeading: {
-        flexDirection: "column",
+    actionIconContainer: {
+        width: 32,
+        height: 32,
+        borderRadius: 20,
+        backgroundColor: tokens.colors.BACKGROUND_ACCENT,
         justifyContent: "center",
-        scale: 1.2
-    },
-    headerTrailing: {
-        display: "flex",
-        flexDirection: "row",
-        gap: 15,
-        alignItems: "center"
-    },
-    headerLabel: {
-        ...TextStyleSheet["heading-md/semibold"],
-        color: tokens.colors.TEXT_NORMAL,
-    },
-    headerSubtitle: {
-    },
-    descriptionLabel: {
-        ...TextStyleSheet["text-md/semibold"],
-        color: tokens.colors.TEXT_NORMAL,
-    },
-    actions: {
-        flexDirection: "row-reverse",
         alignItems: "center",
-        gap: 5
     },
-    iconStyle: {
-        tintColor: tokens.colors.LOGO_PRIMARY
-    }
+    actionIcon: {
+        tintColor: tokens.colors.INTERACTIVE_NORMAL,
+        width: 18,
+        height: 18,
+    },
 });
