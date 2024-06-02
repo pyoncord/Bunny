@@ -14,9 +14,10 @@ const findSingular = (prop: string) => proxyLazy(() => findExports(bySingularPro
 const findProp = (prop: string) => proxyLazy(() => findByProps(prop)[prop]);
 
 // Discord
-export const Alert = findByDisplayNameProxy("FluxContainer(Alert)");
+export const LegacyAlert = findByDisplayNameProxy("FluxContainer(Alert)");
 export const CompatButton = findByPropsProxy("Looks", "Colors", "Sizes");
 export const HelpMessage = findByNameProxy("HelpMessage");
+
 // React Native's included SafeAreaView only adds padding on iOS.
 export const SafeAreaView = proxyLazy(() => findByProps("useSafeAreaInsets").SafeAreaView);
 

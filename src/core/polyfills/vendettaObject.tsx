@@ -142,8 +142,8 @@ export const initVendettaObject = (): any => {
             components: {
                 Forms,
                 General: common.ReactNative,
-                Alert: commonComponents.Alert,
-                Button: commonComponents.Button,
+                Alert: commonComponents.LegacyAlert,
+                Button: commonComponents.CompatButton,
                 HelpMessage: (...props: any[]) => <commonComponents.HelpMessage {...props} />,
                 SafeAreaView: (...props: any[]) => <commonComponents.SafeAreaView {...props} />,
                 Summary: components.Summary,

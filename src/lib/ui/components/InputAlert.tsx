@@ -1,5 +1,5 @@
 import { ButtonColors } from "@lib/utils/types";
-import { Alert, LegacyFormInput } from "@metro/common/components";
+import { LegacyAlert, LegacyFormInput } from "@metro/common/components";
 import { findByPropsProxy } from "@metro/utils";
 
 const Alerts = findByPropsProxy("openLazy", "close");
@@ -30,7 +30,7 @@ export default function InputAlert({ title, confirmText, confirmColor, onConfirm
     }
 
     return (
-        <Alert
+        <LegacyAlert
             title={title}
             confirmText={confirmText}
             confirmColor={confirmColor}
@@ -54,6 +54,6 @@ export default function InputAlert({ title, confirmText, confirmColor, onConfirm
                 showBorder={true}
                 style={{ alignSelf: "stretch" }}
             />
-        </Alert>
+        </LegacyAlert>
     );
 }
