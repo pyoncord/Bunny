@@ -4,15 +4,16 @@ import { requireAssetIndex } from "@lib/api/assets";
 import { useProxy } from "@lib/api/storage";
 import { settings } from "@lib/settings";
 import { HTTP_REGEX_MULTI } from "@lib/utils/constants";
+import { findByProps } from "@metro";
 import { clipboard } from "@metro/common";
 import { FloatingActionButton, HelpMessage } from "@metro/common/components";
 import { showInputAlert } from "@ui/alerts";
 import { ErrorBoundary, Search } from "@ui/components";
 import fuzzysort from "fuzzysort";
-import { createContext } from "react";
-import { FlatList, View } from "react-native";
+import { useMemo } from "react";
+import { View } from "react-native";
 
-export const RemoveModeContext = createContext(false);
+type SearchKeywords = Array<string | ((obj: any & {}) => string)>;
 
 interface AddonPageProps<T> {
     title: string;
@@ -21,51 +22,54 @@ interface AddonPageProps<T> {
     safeModeMessage: string;
     safeModeExtras?: JSX.Element | JSX.Element[];
     card: React.ComponentType<CardWrapper<T>>;
-    isRemoveMode?: boolean;
+    searchKeywords: SearchKeywords;
     onFABPress?: () => void;
 }
 
-function getItemsByQuery<T extends AddonPageProps<unknown>["items"][string]>(items: T[], query: string): T[] {
-    if (!query) return items;
-
-    return fuzzysort.go(query, items, {
-        keys: [
-            "id",
-            "name",
-            "manifest.name",
-            "manifest.description",
-            "manifest.authors.0.name",
-            "manifest.authors.1.name"
-        ]
-    }).map(r => r.obj);
-}
+// TODO: Move to somewhere else
+const { FlashList } = findByProps("FlashList");
 
 export default function AddonPage<T>({ card: CardComponent, ...props }: AddonPageProps<T>) {
-    useProxy(props.items);
     useProxy(settings);
+    useProxy(props.items);
 
     const [search, setSearch] = React.useState("");
 
+    const items = useMemo(() => {
+        return Object.values(props.items).filter(i => typeof i === "object");
+    }, [props.items]);
+
+    const data = useMemo(() => {
+        if (!search) return items;
+        return fuzzysort.go(search, items, { keys: props.searchKeywords }).map(r => r.obj);
+    }, [items, search]);
+
+    const headerElement = useMemo(() => (
+        <View>
+            {settings.safeMode?.enabled && <View style={{ marginBottom: 10 }}>
+                <HelpMessage messageType={0}>{props.safeModeMessage}</HelpMessage>
+                {props.safeModeExtras}
+            </View>}
+            <Search
+                style={{ padding: 8 }}
+                onChangeText={(v: string) => setSearch(v.toLowerCase())}
+                placeholder={Strings.SEARCH}
+            />
+        </View>
+    ), []);
+
     return (
         <ErrorBoundary>
-            {/* TODO: Implement better searching than just by ID */}
-            <FlatList
-                ListHeaderComponent={<View>
-                    {settings.safeMode?.enabled && <View style={{ marginBottom: 10 }}>
-                        <HelpMessage messageType={0}>{props.safeModeMessage}</HelpMessage>
-                        {props.safeModeExtras}
-                    </View>}
-                    <Search
-                        onChangeText={(v: string) => setSearch(v.toLowerCase())}
-                        placeholder={Strings.SEARCH}
-                    />
-                </View>}
-                style={{ paddingHorizontal: 10, paddingTop: 10 }}
-                contentContainerStyle={{ paddingBottom: 90, paddingHorizontal: 5, gap: 12 }}
-                data={getItemsByQuery(Object.values(props.items).filter(i => typeof i === "object"), search)}
-                renderItem={({ item, index }) => <RemoveModeContext.Provider value={!!props.isRemoveMode}>
-                    <CardComponent item={item} index={index} />
-                </RemoveModeContext.Provider>}
+            <FlashList
+                data={data}
+                estimatedItemSize={136}
+                ListHeaderComponent={headerElement}
+                contentContainerStyle={{ paddingBottom: 90, paddingHorizontal: 5 }}
+                renderItem={({ item }: any) => (
+                    <View style={{ paddingVertical: 6, paddingHorizontal: 8 }}>
+                        <CardComponent item={item} />
+                    </View>
+                )}
             />
             <FloatingActionButton
                 icon={requireAssetIndex("PlusLargeIcon")}

@@ -71,7 +71,6 @@ interface OverflowAction extends Action {
 
 export interface CardWrapper<T> {
     item: T;
-    index: number;
 }
 
 interface CardProps {

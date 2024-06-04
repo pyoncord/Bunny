@@ -25,12 +25,12 @@ export default ({ onChangeText, placeholder, style }: SearchProps) => {
     return <ErrorBoundary>
         <View style={style}>
             <TextInput
-                grow
-                isClearable
+                grow={true}
+                isClearable={true}
                 leadingIcon={SearchIcon}
                 placeholder={placeholder ?? Strings.SEARCH}
                 onChange={onChange}
-                returnKeyType={"search"}
+                returnKeyType="search"
                 size="md"
                 autoCapitalize="none"
                 autoCorrect={false}

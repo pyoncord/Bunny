@@ -17,6 +17,7 @@ export default function Fonts() {
     return (
         <AddonPage<FontDefinition>
             title={Strings.FONTS}
+            searchKeywords={["name", "description"]}
             fetchFunction={installFont}
             items={fonts as Record<string, FontDefinition>}
             safeModeMessage={Strings.SAFE_MODE_NOTICE_FONTS}

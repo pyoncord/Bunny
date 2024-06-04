@@ -6,7 +6,7 @@ import { showSheet } from "@lib/ui/sheets";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { findByProps } from "@metro";
 import { NavigationNative, tokens } from "@metro/common";
-import { Card, PressableScale, Stack, TableSwitch, Text } from "@metro/common/components";
+import { Card, IconButton, Stack, TableSwitch, Text } from "@metro/common/components";
 import { createContext, useContext } from "react";
 import { Image, View } from "react-native";
 
@@ -41,12 +41,12 @@ function Title() {
 
     return <Text
         numberOfLines={1}
-        adjustsFontSizeToFit={true}
-        variant="heading-md/semibold"
+        variant="heading-lg/semibold"
     >
         {icon && <>
+            {/* TODO: Image appears invisible for some devices/installs */}
             <Image
-                style={styles.pluginIcon}
+                style={styles.smallIcon}
                 source={icon}
             />
             {" "}
@@ -65,7 +65,7 @@ function Status() {
     if (!plugin.error) return null;
 
     return <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-        <View style={styles.actionIcon}>
+        <View style={styles.smallIcon}>
             <Image
                 tintColor={INTERACTIVE_NORMAL}
                 source={requireAssetIndex("WarningIcon")}
@@ -77,28 +77,8 @@ function Status() {
     </View>;
 }
 
-function ActionIcon(props: {
-    onPress: () => void;
-    icon: string;
-    disabled?: boolean;
-}) {
-    const styles = usePluginCardStyles();
-
-    return <View style={props.disabled && { opacity: 0.4, pointerEvents: "none" }}>
-        <PressableScale onPress={() => !props.disabled && props.onPress()}>
-            <View style={styles.actionIconContainer}>
-                <Image
-                    source={requireAssetIndex(props.icon)}
-                    style={styles.actionIcon}
-                />
-            </View>
-        </PressableScale>
-    </View>;
-}
-
 export default function PluginCard({ item: plugin }: CardWrapper<BunnyPlugin>) {
     const navigation = NavigationNative.useNavigation();
-    const styles = usePluginCardStyles();
 
     useProxy(plugin);
 
@@ -107,24 +87,28 @@ export default function PluginCard({ item: plugin }: CardWrapper<BunnyPlugin>) {
             <Card>
                 <Stack spacing={16}>
                     <Status />
-                    <View style={{ flexDirection: "row", alignItems: "center" }}>
-                        <Stack spacing={0}>
+                    <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+                        <View style={{ flexShrink: 1 }}>
                             <Title />
                             <Authors />
-                        </Stack>
-                        <View style={{ marginLeft: "auto" }}>
+                        </View>
+                        <View>
                             <Stack spacing={12} direction="horizontal">
                                 <View style={{ flexDirection: "row", gap: 6 }}>
-                                    <ActionIcon
-                                        icon="WrenchIcon"
+                                    <IconButton
+                                        size="sm"
+                                        variant="secondary"
+                                        icon={requireAssetIndex("WrenchIcon")}
                                         disabled={!getSettings(plugin.id)}
                                         onPress={() => navigation.push("VendettaCustomPage", {
                                             title: plugin.manifest.name,
                                             render: getSettings(plugin.id),
                                         })}
                                     />
-                                    <ActionIcon
-                                        icon="CircleInformationIcon-primary"
+                                    <IconButton
+                                        size="sm"
+                                        variant="secondary"
+                                        icon={requireAssetIndex("CircleInformationIcon-primary")}
                                         onPress={() => void showSheet(
                                             "PluginInfoActionSheet",
                                             import("./sheets/PluginInfoActionSheet"),
