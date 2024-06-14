@@ -19,6 +19,9 @@ export const assetsMap: Record<string, Asset> = new Proxy<any>({}, {
             const assetIndex = requireModule(Number(id));
             const assetDefinition = assetsModule.getAssetByID(assetIndex);
 
+            // TODO: we shouldn't need this, this should never happen (unreproducible)
+            if (!assetDefinition) continue;
+
             assetDefinition.index ??= assetDefinition.id ??= assetIndex;
             assetDefinition.moduleId ??= id;
 

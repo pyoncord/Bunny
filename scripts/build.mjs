@@ -101,7 +101,8 @@ const config = {
                                 "transform-named-capturing-groups-regex",
                                 "transform-nullish-coalescing-operator",
                                 "transform-object-rest-spread",
-                                "transform-optional-chaining"
+                                "transform-optional-chaining",
+                                "transform-logical-assignment-operators"
                             ]
                         },
                     });
