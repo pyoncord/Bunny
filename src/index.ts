@@ -57,7 +57,7 @@ export default async () => {
     window.bunny = lib;
 
     // Once done, load plugins
-    lib.unload.push(await initPlugins());
+    initPlugins().then(u => lib.unload.push(u));
 
     // Update the fonts
     updateFonts();
