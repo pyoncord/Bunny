@@ -1,11 +1,11 @@
 import { after } from "@lib/api/patcher";
-import { getMetroCache, registerAssetCacheId } from "@metro/caches";
+import { getMetroCache, indexAssetName } from "@metro/caches";
 import { getImportingModuleId, requireModule } from "@metro/modules";
 
 // TODO: Deprecate this map, make another that maps to an array of assets (Asset[]) instead
 /**
  * Pitfall: Multiple assets may have the same name, this is fine if we require the asset only for display,\
- * but not when used to get the registered id/index. In some condition, this would break some plugins like HideGiftButton that gets id by name.\
+ * but not when used to get the registered id/index. In some condition, this would break some plugins like HideGiftButton that gets id by name for patching.\
  */
 export const assetsMap: Record<string, Asset> = new Proxy<any>({}, {
     get(cache, p) {
@@ -13,13 +13,13 @@ export const assetsMap: Record<string, Asset> = new Proxy<any>({}, {
         if (cache[p]) return cache[p];
 
         const moduleIds = getMetroCache().assetsIndex[p];
-        if (moduleIds == null || Object.keys(moduleIds).length === 0) return undefined;
+        if (moduleIds == null) return undefined;
 
         for (const id in moduleIds) {
             const assetIndex = requireModule(Number(id));
-            const assetDefinition = assetsModule.getAssetByID(assetIndex);
+            if (typeof assetIndex !== "number") continue;
 
-            // TODO: we shouldn't need this, this should never happen (unreproducible)
+            const assetDefinition = assetsModule.getAssetByID(assetIndex);
             if (!assetDefinition) continue;
 
             assetDefinition.index ??= assetDefinition.id ??= assetIndex;
@@ -34,8 +34,11 @@ export const assetsMap: Record<string, Asset> = new Proxy<any>({}, {
         return cache[p];
     },
     ownKeys(cache) {
-        const keys = Reflect.ownKeys(getMetroCache().assetsIndex);
-        for (const key of keys) cache[key] = this.get!(cache, key, {});
+        const keys = [] as Array<string>;
+        for (const key in getMetroCache().assetsIndex) {
+            cache[key] = this.get!(cache, key, {});
+            if (cache[key]) keys.push(key);
+        }
         return keys;
     },
 });
@@ -64,7 +67,7 @@ export function patchAssets(module: AssetModule) {
 
     const unpatch = after("registerAsset", assetsModule, ([asset]: Asset[]) => {
         const moduleId = getImportingModuleId();
-        if (moduleId !== -1) registerAssetCacheId(asset.name, moduleId);
+        if (moduleId !== -1) indexAssetName(asset.name, moduleId);
     });
 
     return unpatch;

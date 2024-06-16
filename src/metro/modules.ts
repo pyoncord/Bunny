@@ -27,7 +27,9 @@ for (const key in metroModules) {
 
     if (metroModule!.factory) {
         instead("factory", metroModule, ((args: Parameters<Metro.FactoryFn>, origFunc: Metro.FactoryFn) => {
+            const originalImportingId = _importingModuleId;
             _importingModuleId = id;
+
             const { 1: metroRequire, 4: moduleObject } = args;
 
             args[2 /* metroImportDefault */] = id => {
@@ -52,7 +54,7 @@ for (const key in metroModules) {
                 blacklistModule(id);
             }
 
-            _importingModuleId = -1;
+            _importingModuleId = originalImportingId;
         }) as any); // If only spitroast had better types
     }
 }

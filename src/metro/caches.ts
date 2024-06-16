@@ -1,7 +1,7 @@
 import { ClientInfoManager, MMKVManager } from "@lib/api/native/modules";
 import { throttle } from "@lib/utils/throttle";
 
-const CACHE_VERSION = 33;
+const CACHE_VERSION = 34;
 const BUNNY_METRO_CACHE_KEY = "__bunny_metro_cache_key__";
 
 export enum ExportsFlags {
@@ -45,6 +45,7 @@ function buildInitCache() {
     return cache;
 }
 
+// Store in file system
 export async function initMetroCache() {
     const rawCache = await MMKVManager.getItem(BUNNY_METRO_CACHE_KEY);
     if (rawCache == null) return void buildInitCache();
@@ -123,7 +124,7 @@ export function getPolyfillModuleCacher(name: string) {
     };
 }
 
-export function registerAssetCacheId(name: string, moduleId: number) {
+export function indexAssetName(name: string, moduleId: number) {
     if (!isNaN(moduleId)) {
         (_metroCache.assetsIndex[name] ??= {})[moduleId] = 1;
         saveCache();
