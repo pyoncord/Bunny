@@ -1,6 +1,6 @@
 import { Strings } from "@core/i18n";
 import { ApplicationCommand, ApplicationCommandOptionType } from "@lib/api/commands/types";
-import { plugins as pluginStorage } from "@lib/managers/plugins";
+import { BunnyPlugin, sourceToObject as pluginStorage } from "@lib/managers/plugins";
 import { messageUtil } from "@metro/common";
 
 export default () => <ApplicationCommand>{
@@ -15,7 +15,8 @@ export default () => <ApplicationCommand>{
         }
     ],
     execute([ephemeral], ctx) {
-        const plugins = Object.values(pluginStorage).sort((a, b) => a.manifest.name.localeCompare(b.manifest.name));
+        const plugins = Object.values(pluginStorage).filter(Boolean) as unknown as BunnyPlugin[];
+        plugins.sort((a, b) => a.manifest.name.localeCompare(b.manifest.name));
 
         const enabled = plugins.filter(p => p.enabled).map(p => p.manifest.name);
         const disabled = plugins.filter(p => !p.enabled).map(p => p.manifest.name);

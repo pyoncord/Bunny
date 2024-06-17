@@ -6,7 +6,7 @@ import { allSettled } from "@core/polyfills/allSettled";
 import { getStoredTheme, getThemeFilePath } from "@lib/api/native/loader";
 import { ThemeManager } from "@lib/api/native/modules";
 import { after, before, instead } from "@lib/api/patcher";
-import { awaitSyncWrapper, createFileBackend, createMMKVBackend, createStorage, wrapSync } from "@lib/api/storage";
+import { awaitStorage, createFileBackend, createMMKVBackend, createStorage, wrapSync } from "@lib/api/storage";
 import { findInReactTree, safeFetch } from "@lib/utils";
 import { lazyDestructure, proxyLazy } from "@lib/utils/lazy";
 import { Author } from "@lib/utils/types";
@@ -230,7 +230,7 @@ export function getThemeFromLoader(): Theme | null {
 }
 
 export async function updateThemes() {
-    await awaitSyncWrapper(themes);
+    await awaitStorage(themes);
     const currentTheme = getThemeFromLoader();
     await allSettled(Object.keys(themes).map(id => fetchTheme(id, currentTheme?.id === id)));
 }

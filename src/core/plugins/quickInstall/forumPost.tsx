@@ -3,9 +3,9 @@ import { requireAssetIndex } from "@lib/api/assets";
 import { isThemeSupported } from "@lib/api/native/loader";
 import { after } from "@lib/api/patcher";
 import { useProxy } from "@lib/api/storage";
-import { installPlugin, plugins, removePlugin } from "@lib/managers/plugins";
+import { installPlugin, sourceToObject, removePlugin } from "@lib/managers/plugins";
 import { installTheme, removeTheme, themes } from "@lib/managers/themes";
-import { DISCORD_SERVER_ID, HTTP_REGEX_MULTI, PLUGINS_CHANNEL_ID, PROXY_PREFIX, THEMES_CHANNEL_ID } from "@lib/utils/constants";
+import { DISCORD_SERVER_ID, HTTP_REGEX_MULTI, PLUGINS_CHANNEL_ID, THEMES_CHANNEL_ID, VD_PROXY_PREFIX } from "@lib/utils/constants";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { Button } from "@metro/common/components";
 import { findByProps, findByPropsProxy } from "@metro/utils";
@@ -21,8 +21,8 @@ const forumReactions = findByPropsProxy("MostCommonForumPostReaction");
 
 const postMap = {
     Plugin: {
-        storage: plugins,
-        urlsFilter: (url: string) => url.startsWith(PROXY_PREFIX),
+        storage: sourceToObject,
+        urlsFilter: (url: string) => url.startsWith(VD_PROXY_PREFIX),
         installOrRemove: (url: string) => {
             const isInstalled = postMap.Plugin.storage[url];
             return isInstalled ? removePlugin(url) : installPlugin(url);
@@ -63,7 +63,7 @@ function useExtractThreadContent(thread: any, _firstMessage = null, actionSheet 
 function useInstaller(thread: any, firstMessage = null, actionSheet = false): [true] | [false, PostType, boolean, boolean, () => Promise<void>] {
     const [postType, url] = useExtractThreadContent(thread, firstMessage, actionSheet) ?? [];
 
-    useProxy(plugins);
+    useProxy(sourceToObject);
     useProxy(themes);
 
     const [isInstalling, setIsInstalling] = React.useState(false);

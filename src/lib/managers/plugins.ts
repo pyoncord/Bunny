@@ -1,9 +1,10 @@
-import { allSettled } from "@core/polyfills/allSettled";
 import { createVdPluginObject } from "@core/polyfills/vendettaObject";
-import { awaitSyncWrapper, createMMKVBackend, createStorage, purgeStorage, wrapSync } from "@lib/api/storage";
+import { awaitStorage, createMMKVBackend, createStorage, purgeStorage, wrapSync } from "@lib/api/storage";
 import { settings } from "@lib/settings";
 import { safeFetch } from "@lib/utils";
-import { BUNNY_PROXY_PREFIX, PROXY_PREFIX } from "@lib/utils/constants";
+import { VD_PROXY_PREFIX } from "@lib/utils/constants";
+import invariant from "@lib/utils/invariant";
+import { proxyLazy } from "@lib/utils/lazy";
 import { logger } from "@lib/utils/logger";
 import { Author } from "@lib/utils/types";
 
@@ -13,8 +14,7 @@ type EvaledPlugin = {
     settings: () => JSX.Element;
 };
 
-// See https://github.com/vendetta-mod/polymanifest
-export interface PluginManifest {
+interface PluginManifest {
     name: string;
     description: string;
     authors: Author[];
@@ -24,38 +24,81 @@ export interface PluginManifest {
     vendetta?: {
         icon?: string;
     };
+    bunny?: {};
 }
 
 export interface BunnyPlugin {
-    id: string;
+    source: string;
+    pluginId: string;
     manifest: PluginManifest;
     enabled: boolean;
     update: boolean;
+    /**
+     * Message of plugin startup error. Gone after plugin boots successfully
+     * */
     error?: string;
+    // TODO: Use fs to avoid unnecessary memory usage
     js: string;
+
+    /**
+     * @deprecated use `source` (for URL) or `pluginId` (plugin's unique ID)
+     * */
+    id: string;
 }
 
-export const plugins = wrapSync(createStorage<Record<string, BunnyPlugin>>(createMMKVBackend("VENDETTA_PLUGINS")));
-const loadedPlugins: Record<string, EvaledPlugin> = {};
+const BUNNY_PROXY_PREFIX = "https://bn-plugins.github.io/vd-proxy";
+const OLD_BUNNY_PROXY_PREFIX = "https://bunny-mod.github.io/plugins-proxy";
 
-async function pluginFetch(url: string) {
-    if (url.startsWith(PROXY_PREFIX)) {
-        url = url.replace(PROXY_PREFIX, BUNNY_PROXY_PREFIX);
+const pluginsEnabled = () => !settings.safeMode?.enabled;
+
+const _pluginInstances: Record<string, EvaledPlugin> = {};
+
+export const idToSource = wrapSync(createStorage<Record<string, string | undefined>>(createMMKVBackend("SELECTED_PLUGINS")));
+
+export const sourceToObject = proxyLazy(() => {
+    type StorageInterface = Record<string, BunnyPlugin | undefined>;
+    const storagePromise = createStorage<StorageInterface>(createMMKVBackend("VENDETTA_PLUGINS"));
+
+    storagePromise.then(st => {
+        for (const plugin of Object.values(st)) if (plugin) {
+            plugin.pluginId ??= `${plugin.manifest.name}-${plugin.manifest.authors?.[0]?.name}`.toLowerCase();
+            plugin.source ??= plugin.id;
+        }
+    });
+
+    return wrapSync(storagePromise);
+});
+
+export function getPluginById(id: string) {
+    if (!idToSource[id]) {
+        for (const plugin of Object.values(sourceToObject)) {
+            if (plugin?.pluginId === id) {
+                idToSource[id] = plugin.source;
+                break;
+            }
+        }
     }
 
-    return await safeFetch(url, { cache: "no-store" });
+    return idToSource[id] ? sourceToObject[idToSource[id]!] : undefined;
 }
 
-export async function fetchPlugin(id: string) {
-    if (!id.endsWith("/")) id += "/";
-    const existingPlugin = plugins[id];
+export async function fetchPlugin(source: string) {
+    if (!source.endsWith("/")) source += "/";
+    const existingPlugin = sourceToObject[source];
+
+    const fetch = (url: string) => safeFetch(
+        url
+            .replace(VD_PROXY_PREFIX, BUNNY_PROXY_PREFIX)
+            .replace(OLD_BUNNY_PROXY_PREFIX, BUNNY_PROXY_PREFIX),
+        { cache: "no-store" }
+    );
 
     let pluginManifest: PluginManifest;
 
     try {
-        pluginManifest = await (await pluginFetch(id + "manifest.json")).json();
+        pluginManifest = await (await fetch(source + "manifest.json")).json();
     } catch {
-        throw new Error(`Failed to fetch manifest for ${id}`);
+        throw new Error(`Failed to fetch manifest for ${source}`);
     }
 
     let pluginJs: string | undefined;
@@ -63,35 +106,38 @@ export async function fetchPlugin(id: string) {
     if (existingPlugin?.manifest.hash !== pluginManifest.hash) {
         try {
             // by polymanifest spec, plugins should always specify their main file, but just in case
-            pluginJs = await (await pluginFetch(id + (pluginManifest.main || "index.js"))).text();
+            pluginJs = await (await fetch(source + (pluginManifest.main || "index.js"))).text();
         } catch { } // Empty catch, checked below
     }
 
-    if (!pluginJs && !existingPlugin) throw new Error(`Failed to fetch JS for ${id}`);
+    invariant(pluginJs || existingPlugin, `Failed to fetch JS from ${source}`);
 
-    plugins[id] = {
-        id: id,
+    return sourceToObject[source] = {
+        id: source,
+        source: source,
+        pluginId: pluginManifest.name,
         manifest: pluginManifest,
         enabled: existingPlugin?.enabled ?? false,
         update: existingPlugin?.update ?? true,
-        js: pluginJs ?? existingPlugin.js,
+        js: pluginJs ?? existingPlugin!.js,
         error: existingPlugin?.error
     };
 }
 
-export async function installPlugin(id: string, enabled = true) {
-    if (!id.endsWith("/")) id += "/";
-    if (typeof id !== "string" || id in plugins) throw new Error("Plugin already installed");
-    await fetchPlugin(id);
-    if (enabled) await startPlugin(id);
+export async function installPlugin(source: string, enabled = true) {
+    if (!source.endsWith("/")) source += "/";
+    invariant(!(source in sourceToObject), "Source was already installed");
+
+    const plugin = await fetchPlugin(source);
+    if (enabled) await startPlugin(plugin.pluginId);
 }
 
 /**
  * @internal
  */
-export async function evalPlugin(plugin: BunnyPlugin) {
+async function evalPlugin(plugin: BunnyPlugin) {
     const vdObject = await createVdPluginObject(plugin);
-    const pluginString = `vendetta=>{return ${plugin.js}}\n//# sourceURL=${plugin.id}?hash=${plugin.manifest.hash}`;
+    const pluginString = `vendetta=>{return ${plugin.js}}\n//# sourceURL=${plugin.source}?hash=${plugin.manifest.hash}`;
 
     const raw = (0, eval)(pluginString)(vdObject);
     const ret = typeof raw === "function" ? raw() : raw;
@@ -99,79 +145,91 @@ export async function evalPlugin(plugin: BunnyPlugin) {
 }
 
 export async function startPlugin(id: string) {
-    if (!id.endsWith("/")) id += "/";
-    const plugin = plugins[id];
-    if (!plugin) throw new Error("Attempted to start non-existent plugin");
+    const plugin = getPluginById(id);
+    invariant(plugin, "Attempted to start non-existent plugin");
 
     try {
-        if (!settings.safeMode?.enabled) {
+        if (pluginsEnabled()) {
             const pluginRet: EvaledPlugin = await evalPlugin(plugin);
-            loadedPlugins[id] = pluginRet;
+            _pluginInstances[id] = pluginRet;
             pluginRet.onLoad?.();
         }
 
         delete plugin.error;
         plugin.enabled = true;
     } catch (e) {
-        logger.error(`Plugin ${plugin.id} errored whilst loading, and will be unloaded`, e);
+        logger.error(`Plugin ${plugin.source} errored whilst loading, and will be unloaded`, e);
         plugin.error = e instanceof Error ? e.stack : String(e);
 
         try {
-            loadedPlugins[plugin.id]?.onUnload?.();
+            _pluginInstances[id]?.onUnload?.();
         } catch (e2) {
-            logger.error(`Plugin ${plugin.id} errored whilst unloading`, e2);
+            logger.error(`Plugin ${plugin.source} errored whilst unloading`, e2);
         }
 
-        delete loadedPlugins[id];
+        delete _pluginInstances[id];
         plugin.enabled = false;
     }
 }
 
 export function stopPlugin(id: string, disable = true) {
-    if (!id.endsWith("/")) id += "/";
-    const plugin = plugins[id];
-    const pluginRet = loadedPlugins[id];
-    if (!plugin) throw new Error("Attempted to stop non-existent plugin");
+    const plugin = getPluginById(id);
+    const pluginInstance = _pluginInstances[id];
+    invariant(plugin, "Attempted to stop non-existent plugin");
 
-    if (!settings.safeMode?.enabled) {
+    if (pluginsEnabled()) {
         try {
-            pluginRet?.onUnload?.();
+            pluginInstance?.onUnload?.();
         } catch (e) {
-            logger.error(`Plugin ${plugin.id} errored whilst unloading`, e);
+            logger.error(`Plugin ${plugin.source} errored whilst unloading`, e);
         }
 
-        delete loadedPlugins[id];
+        delete _pluginInstances[id];
     }
 
-    disable && (plugin.enabled = false);
+    if (disable) plugin.enabled = false;
 }
 
 export async function removePlugin(id: string) {
-    if (!id.endsWith("/")) id += "/";
-    const plugin = plugins[id];
+    const plugin = getPluginById(id);
+    invariant(plugin, "Removing non-existent plugin");
     if (plugin.enabled) stopPlugin(id);
-    delete plugins[id];
-    await purgeStorage(id);
+    delete sourceToObject[plugin.source];
+    await purgeStorage(plugin.source);
 }
 
 /**
  * @internal
  */
 export async function initPlugins() {
-    await awaitSyncWrapper(settings);
-    await awaitSyncWrapper(plugins);
-    const allIds = Object.keys(plugins);
+    await awaitStorage(sourceToObject, idToSource, settings);
 
-    if (!settings.safeMode?.enabled) {
-        // Loop over any plugin that is enabled, update it if allowed, then start it.
-        await allSettled(allIds.filter(pl => plugins[pl].enabled).map(async pl => (plugins[pl].update && await fetchPlugin(pl).catch((e: Error) => logger.error(e.message)), await startPlugin(pl))));
-        // Wait for the above to finish, then update all disabled plugins that are allowed to.
-        allIds.filter(pl => !plugins[pl].enabled && plugins[pl].update).forEach(pl => fetchPlugin(pl));
+    // TODO: Optimize this
+    if (pluginsEnabled()) {
+        const allIds = [...new Set(Object.values(sourceToObject).map(s => s!.pluginId))];
+
+        // Loop over enabled plugins, update and start them
+        const enabledPlugins = allIds.filter(id => getPluginById(id)?.enabled);
+        await Promise.all(enabledPlugins.map(async pl => {
+            if (getPluginById(pl)!.update) {
+                try {
+                    await fetchPlugin(pl);
+                } catch (e) {
+                    logger.error(e);
+                }
+            }
+            await startPlugin(pl);
+        }));
+
+        // Loop over disabled plugins that are allowed to update
+        allIds
+            .filter(id => !getPluginById(id)?.enabled && getPluginById(id)!.update)
+            .forEach(id => fetchPlugin(id));
     }
 
-    return stopAllPlugins;
+    return () => Object.keys(_pluginInstances).forEach(p => stopPlugin(p, false));
 }
 
-const stopAllPlugins = () => Object.keys(loadedPlugins).forEach(p => stopPlugin(p, false));
-
-export const getSettings = (id: string) => loadedPlugins[id]?.settings;
+export function getSettingsComponent(id: string) {
+    return _pluginInstances[id]?.settings;
+}

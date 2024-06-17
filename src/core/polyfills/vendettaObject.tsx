@@ -170,13 +170,13 @@ export const initVendettaObject = (): any => {
             rawColors: color.rawColors
         },
         plugins: {
-            plugins: plugins.plugins,
-            fetchPlugin: (id: string) => plugins.fetchPlugin(id),
-            installPlugin: (id: string, enabled?: boolean | undefined) => plugins.installPlugin(id, enabled),
-            startPlugin: (id: string) => plugins.startPlugin(id),
-            stopPlugin: (id: string, disable?: boolean | undefined) => plugins.stopPlugin(id, disable),
-            removePlugin: (id: string) => plugins.removePlugin(id),
-            getSettings: (id: string) => plugins.getSettings(id)
+            plugins: plugins.sourceToObject,
+            fetchPlugin: (source: string) => plugins.fetchPlugin(source),
+            installPlugin: (source: string, enabled = true) => plugins.installPlugin(source, enabled),
+            startPlugin: (id: string) => plugins.startPlugin(plugins.sourceToObject[id]!.pluginId),
+            stopPlugin: (id: string, disable = true) => plugins.stopPlugin(plugins.sourceToObject[id]!.pluginId, disable),
+            removePlugin: (id: string) => plugins.removePlugin(plugins.sourceToObject[id]!.pluginId),
+            getSettings: (id: string) => plugins.getSettingsComponent(plugins.sourceToObject[id]!.pluginId)
         },
         themes: {
             themes: themes.themes,
@@ -195,7 +195,7 @@ export const initVendettaObject = (): any => {
             useProxy: (_storage: any) => storage.useProxy(_storage),
             createStorage: (backend: any) => storage.createStorage(backend),
             wrapSync: (store: any) => storage.wrapSync(store),
-            awaitSyncWrapper: (store: any) => storage.awaitSyncWrapper(store),
+            awaitSyncWrapper: (store: any) => storage.awaitStorage(store),
             createMMKVBackend: (store: string) => storage.createMMKVBackend(store),
             createFileBackend: (file: string) => {
                 // Redirect path to vendetta_theme.json

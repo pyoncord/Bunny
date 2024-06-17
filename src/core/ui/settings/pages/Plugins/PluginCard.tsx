@@ -1,7 +1,7 @@
 import { CardWrapper } from "@core/ui/components/AddonCard";
 import { requireAssetIndex } from "@lib/api/assets";
 import { useProxy } from "@lib/api/storage";
-import { BunnyPlugin, getSettings, startPlugin, stopPlugin } from "@lib/managers/plugins";
+import { BunnyPlugin, getSettingsComponent, startPlugin, stopPlugin } from "@lib/managers/plugins";
 import { showSheet } from "@lib/ui/sheets";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { findByProps } from "@metro";
@@ -39,20 +39,31 @@ function Title() {
     const iconName = plugin.manifest.vendetta?.icon;
     const icon = iconName && requireAssetIndex(iconName);
 
-    return <Text
-        numberOfLines={1}
-        variant="heading-lg/semibold"
+    const textElement = (
+        <Text
+            numberOfLines={1}
+            variant="heading-lg/semibold"
+        >
+            {plugin.manifest.name}
+        </Text>
+    );
+
+    if (!icon) return textElement;
+
+    return <View
+        style={{
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 4
+        }}
     >
-        {icon && <>
-            {/* TODO: Image appears invisible for some devices/installs */}
-            <Image
-                style={styles.smallIcon}
-                source={icon}
-            />
-            {" "}
-        </>}
-        {plugin.manifest.name}
-    </Text>;
+        <Image
+            style={styles.smallIcon}
+            source={icon}
+        />
+        {textElement}
+    </View>;
 }
 
 // TODO: Wrap in a Card-ish component with red bg
@@ -99,10 +110,10 @@ export default function PluginCard({ item: plugin }: CardWrapper<BunnyPlugin>) {
                                         size="sm"
                                         variant="secondary"
                                         icon={requireAssetIndex("WrenchIcon")}
-                                        disabled={!getSettings(plugin.id)}
+                                        disabled={!getSettingsComponent(plugin.id)}
                                         onPress={() => navigation.push("VendettaCustomPage", {
                                             title: plugin.manifest.name,
-                                            render: getSettings(plugin.id),
+                                            render: getSettingsComponent(plugin.id),
                                         })}
                                     />
                                     <IconButton

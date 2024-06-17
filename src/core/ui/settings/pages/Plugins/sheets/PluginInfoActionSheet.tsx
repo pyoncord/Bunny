@@ -1,7 +1,7 @@
 import { formatString, Strings } from "@core/i18n";
 import { requireAssetIndex } from "@lib/api/assets";
 import { purgeStorage, useProxy } from "@lib/api/storage";
-import { BunnyPlugin, fetchPlugin, getSettings, removePlugin, startPlugin, stopPlugin } from "@lib/managers/plugins";
+import { BunnyPlugin, fetchPlugin, getSettingsComponent, removePlugin, startPlugin, stopPlugin } from "@lib/managers/plugins";
 import { showConfirmationAlert } from "@lib/ui/alerts";
 import { hideSheet } from "@lib/ui/sheets";
 import { showToast } from "@lib/ui/toasts";
@@ -18,7 +18,7 @@ interface InfoProps {
 export default function PluginInfoActionSheet({ plugin, navigation }: InfoProps) {
     useProxy(plugin);
 
-    const Settings = getSettings(plugin.id);
+    const Settings = getSettingsComponent(plugin.id);
 
     return <ActionSheet>
         <ScrollView>

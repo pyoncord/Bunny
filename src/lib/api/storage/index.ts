@@ -111,7 +111,11 @@ export function wrapSync<T extends Promise<any>>(store: T): Awaited<T> {
     });
 }
 
-export const awaitSyncWrapper = (store: any) => new Promise<void>(res => store[syncAwaitSymbol](res));
+export function awaitStorage(...stores: any[]) {
+    return Promise.all(
+        stores.map(store => new Promise<void>(res => store[syncAwaitSymbol](res)))
+    );
+}
 
 export {
     createFileBackend,

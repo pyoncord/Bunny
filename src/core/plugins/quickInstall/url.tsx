@@ -4,7 +4,7 @@ import { isThemeSupported } from "@lib/api/native/loader";
 import { after, instead } from "@lib/api/patcher";
 import { installPlugin } from "@lib/managers/plugins";
 import { installTheme } from "@lib/managers/themes";
-import { PROXY_PREFIX, THEMES_CHANNEL_ID } from "@lib/utils/constants";
+import { THEMES_CHANNEL_ID, VD_PROXY_PREFIX } from "@lib/utils/constants";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { channels, url } from "@metro/common";
 import { byMutableProp } from "@metro/filters";
@@ -20,7 +20,7 @@ const { getChannelId } = lazyDestructure(() => channels);
 const { getChannel } = lazyDestructure(() => findByProps("getChannel"));
 
 function typeFromUrl(url: string) {
-    if (url.startsWith(PROXY_PREFIX)) {
+    if (url.startsWith(VD_PROXY_PREFIX)) {
         return "plugin";
     } else if (url.endsWith(".json") && isThemeSupported()) {
         return "theme";

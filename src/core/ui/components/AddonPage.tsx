@@ -18,7 +18,8 @@ type SearchKeywords = Array<string | ((obj: any & {}) => string)>;
 interface AddonPageProps<T> {
     title: string;
     fetchFunction: (url: string) => Promise<void>;
-    items: Record<string, T & ({ id: string; } | { name: string; })>;
+    items: Record<string, any>;
+    resolveItem?: (value: any) => T | undefined;
     safeModeMessage: string;
     safeModeExtras?: JSX.Element | JSX.Element[];
     card: React.ComponentType<CardWrapper<T>>;
@@ -36,7 +37,9 @@ export default function AddonPage<T>({ card: CardComponent, ...props }: AddonPag
     const [search, setSearch] = React.useState("");
 
     const items = useMemo(() => {
-        return Object.values(props.items).filter(i => typeof i === "object");
+        let values = Object.values(props.items);
+        if (props.resolveItem) values = values.map(props.resolveItem);
+        return values.filter(i => i && typeof i === "object");
     }, [props.items]);
 
     const data = useMemo(() => {

@@ -1,5 +1,5 @@
 import { clearFolder, downloadFile, fileExists, removeFile, writeFile } from "@lib/api/native/fs";
-import { awaitSyncWrapper, createMMKVBackend, createStorage, wrapSync } from "@lib/api/storage";
+import { awaitStorage, createMMKVBackend, createStorage, wrapSync } from "@lib/api/storage";
 import { safeFetch } from "@lib/utils";
 
 type FontMap = Record<string, string>;
@@ -107,7 +107,7 @@ export async function removeFont(name: string) {
 }
 
 export async function updateFonts() {
-    await awaitSyncWrapper(fonts);
+    await awaitStorage(fonts);
     await Promise.allSettled(
         Object.keys(fonts).map(
             name => saveFont(fonts[name], fonts.__selected === name)
