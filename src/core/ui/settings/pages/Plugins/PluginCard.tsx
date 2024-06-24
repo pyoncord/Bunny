@@ -7,7 +7,7 @@ import { lazyDestructure } from "@lib/utils/lazy";
 import { findByProps } from "@metro";
 import { NavigationNative, tokens } from "@metro/common";
 import { Card, IconButton, Stack, TableSwitch, Text } from "@metro/common/components";
-import { createContext, useContext } from "react";
+import { createContext, memo, useContext } from "react";
 import { Image, View } from "react-native";
 
 import { usePluginCardStyles } from "./usePluginCardStyles";
@@ -48,14 +48,11 @@ function Title() {
         </Text>
     );
 
-    if (!icon) return textElement;
-
-    return <View
+    return !icon ? textElement : <View
         style={{
             flexDirection: "row",
-            justifyContent: "center",
             alignItems: "center",
-            gap: 4
+            gap: 6
         }}
     >
         <Image
@@ -88,9 +85,35 @@ function Status() {
     </View>;
 }
 
-export default function PluginCard({ item: plugin }: CardWrapper<BunnyPlugin>) {
+const Actions = memo(() => {
+    const plugin = usePlugin();
     const navigation = NavigationNative.useNavigation();
 
+    return <View style={{ flexDirection: "row", gap: 6 }}>
+        <IconButton
+            size="sm"
+            variant="secondary"
+            icon={requireAssetIndex("WrenchIcon")}
+            disabled={!getSettingsComponent(plugin.id)}
+            onPress={() => navigation.push("VendettaCustomPage", {
+                title: plugin.manifest.name,
+                render: getSettingsComponent(plugin.id),
+            })}
+        />
+        <IconButton
+            size="sm"
+            variant="secondary"
+            icon={requireAssetIndex("CircleInformationIcon-primary")}
+            onPress={() => void showSheet(
+                "PluginInfoActionSheet",
+                import("./sheets/PluginInfoActionSheet"),
+                { plugin, navigation }
+            )}
+        />
+    </View>;
+});
+
+export default function PluginCard({ item: plugin }: CardWrapper<BunnyPlugin>) {
     useProxy(plugin);
 
     return (
@@ -105,28 +128,7 @@ export default function PluginCard({ item: plugin }: CardWrapper<BunnyPlugin>) {
                         </View>
                         <View>
                             <Stack spacing={12} direction="horizontal">
-                                <View style={{ flexDirection: "row", gap: 6 }}>
-                                    <IconButton
-                                        size="sm"
-                                        variant="secondary"
-                                        icon={requireAssetIndex("WrenchIcon")}
-                                        disabled={!getSettingsComponent(plugin.id)}
-                                        onPress={() => navigation.push("VendettaCustomPage", {
-                                            title: plugin.manifest.name,
-                                            render: getSettingsComponent(plugin.id),
-                                        })}
-                                    />
-                                    <IconButton
-                                        size="sm"
-                                        variant="secondary"
-                                        icon={requireAssetIndex("CircleInformationIcon-primary")}
-                                        onPress={() => void showSheet(
-                                            "PluginInfoActionSheet",
-                                            import("./sheets/PluginInfoActionSheet"),
-                                            { plugin, navigation }
-                                        )}
-                                    />
-                                </View>
+                                <Actions />
                                 <TableSwitch
                                     value={plugin.enabled}
                                     onValueChange={(v: boolean) => {

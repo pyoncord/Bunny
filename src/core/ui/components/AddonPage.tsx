@@ -15,7 +15,7 @@ import { View } from "react-native";
 
 type SearchKeywords = Array<string | ((obj: any & {}) => string)>;
 
-interface AddonPageProps<T> {
+interface AddonPageProps<T extends object> {
     title: string;
     fetchFunction: (url: string) => Promise<void>;
     items: Record<string, any>;
@@ -30,7 +30,7 @@ interface AddonPageProps<T> {
 // TODO: Move to somewhere else
 const { FlashList } = findByProps("FlashList");
 
-export default function AddonPage<T>({ card: CardComponent, ...props }: AddonPageProps<T>) {
+export default function AddonPage<T extends object>({ card: CardComponent, ...props }: AddonPageProps<T>) {
     useProxy(settings);
     useProxy(props.items);
 
@@ -67,6 +67,7 @@ export default function AddonPage<T>({ card: CardComponent, ...props }: AddonPag
                 data={data}
                 estimatedItemSize={136}
                 ListHeaderComponent={headerElement}
+                onLoad={console.log}
                 contentContainerStyle={{ paddingBottom: 90, paddingHorizontal: 5 }}
                 renderItem={({ item }: any) => (
                     <View style={{ paddingVertical: 6, paddingHorizontal: 8 }}>

@@ -1,6 +1,6 @@
 import { Strings } from "@core/i18n";
 import { ApplicationCommand, ApplicationCommandOptionType } from "@lib/api/commands/types";
-import { BunnyPlugin, sourceToObject as pluginStorage } from "@lib/managers/plugins";
+import { BunnyPlugin, sourceStore as pluginStorage } from "@lib/managers/plugins";
 import { messageUtil } from "@metro/common";
 
 export default () => <ApplicationCommand>{

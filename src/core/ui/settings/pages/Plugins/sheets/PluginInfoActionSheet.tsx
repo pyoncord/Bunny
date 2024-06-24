@@ -1,7 +1,7 @@
 import { formatString, Strings } from "@core/i18n";
 import { requireAssetIndex } from "@lib/api/assets";
 import { purgeStorage, useProxy } from "@lib/api/storage";
-import { BunnyPlugin, fetchPlugin, getSettingsComponent, removePlugin, startPlugin, stopPlugin } from "@lib/managers/plugins";
+import { BunnyPlugin, fetchAndStorePlugin, getSettingsComponent, removePlugin, startPlugin, stopPlugin } from "@lib/managers/plugins";
 import { showConfirmationAlert } from "@lib/ui/alerts";
 import { hideSheet } from "@lib/ui/sheets";
 import { showToast } from "@lib/ui/toasts";
@@ -50,7 +50,7 @@ export default function PluginInfoActionSheet({ plugin, navigation }: InfoProps)
                         if (plugin.enabled) stopPlugin(plugin.id, false);
 
                         try {
-                            await fetchPlugin(plugin.id);
+                            await fetchAndStorePlugin(plugin.id);
                             showToast(Strings.PLUGIN_REFETCH_SUCCESSFUL, requireAssetIndex("toast_image_saved"));
                         } catch {
                             showToast(Strings.PLUGIN_REFETCH_FAILED, requireAssetIndex("Small"));
@@ -92,7 +92,7 @@ export default function PluginInfoActionSheet({ plugin, navigation }: InfoProps)
                             if (plugin.enabled) stopPlugin(plugin.id, false);
 
                             try {
-                                await fetchPlugin(plugin.id);
+                                await fetchAndStorePlugin(plugin.id);
                                 showToast(Strings.PLUGIN_REFETCH_SUCCESSFUL, requireAssetIndex("toast_image_saved"));
                             } catch {
                                 showToast(Strings.PLUGIN_REFETCH_FAILED, requireAssetIndex("Small"));

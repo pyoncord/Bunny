@@ -170,13 +170,13 @@ export const initVendettaObject = (): any => {
             rawColors: color.rawColors
         },
         plugins: {
-            plugins: plugins.sourceToObject,
-            fetchPlugin: (source: string) => plugins.fetchPlugin(source),
+            plugins: plugins.sourceStore,
+            fetchPlugin: (source: string) => plugins.fetchAndStorePlugin(source),
             installPlugin: (source: string, enabled = true) => plugins.installPlugin(source, enabled),
-            startPlugin: (id: string) => plugins.startPlugin(plugins.sourceToObject[id]!.pluginId),
-            stopPlugin: (id: string, disable = true) => plugins.stopPlugin(plugins.sourceToObject[id]!.pluginId, disable),
-            removePlugin: (id: string) => plugins.removePlugin(plugins.sourceToObject[id]!.pluginId),
-            getSettings: (id: string) => plugins.getSettingsComponent(plugins.sourceToObject[id]!.pluginId)
+            startPlugin: (id: string) => plugins.startPlugin(plugins.sourceStore[id]!.pluginId),
+            stopPlugin: (id: string, disable = true) => plugins.stopPlugin(plugins.sourceStore[id]!.pluginId, disable),
+            removePlugin: (id: string) => plugins.removePlugin(plugins.sourceStore[id]!.pluginId),
+            getSettings: (id: string) => plugins.getSettingsComponent(plugins.sourceStore[id]!.pluginId)
         },
         themes: {
             themes: themes.themes,

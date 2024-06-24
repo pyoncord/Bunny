@@ -37,6 +37,7 @@ export interface BunnyPlugin {
      * Message of plugin startup error. Gone after plugin boots successfully
      * */
     error?: string;
+
     // TODO: Use fs to avoid unnecessary memory usage
     js: string;
 
@@ -46,16 +47,16 @@ export interface BunnyPlugin {
     id: string;
 }
 
-const BUNNY_PROXY_PREFIX = "https://bn-plugins.github.io/vd-proxy";
+export const BUNNY_PROXY_PREFIX = "https://bn-plugins.github.io/vd-proxy";
+const VD_PROXY_PREFIX = "https://vd-plugins.github.io/proxy";
 const OLD_BUNNY_PROXY_PREFIX = "https://bunny-mod.github.io/plugins-proxy";
 
 const pluginsEnabled = () => !settings.safeMode?.enabled;
 
 const _pluginInstances: Record<string, EvaledPlugin> = {};
 
-export const idToSource = wrapSync(createStorage<Record<string, string | undefined>>(createMMKVBackend("SELECTED_PLUGINS")));
-
-export const sourceToObject = proxyLazy(() => {
+export const selectedSources = wrapSync(createStorage<Record<string, string | undefined>>(createMMKVBackend("SELECTED_PLUGIN_SOURCES")));
+export const sourceStore = proxyLazy(() => {
     type StorageInterface = Record<string, BunnyPlugin | undefined>;
     const storagePromise = createStorage<StorageInterface>(createMMKVBackend("VENDETTA_PLUGINS"));
 
@@ -70,21 +71,21 @@ export const sourceToObject = proxyLazy(() => {
 });
 
 export function getPluginById(id: string) {
-    if (!idToSource[id]) {
-        for (const plugin of Object.values(sourceToObject)) {
+    if (!selectedSources[id]) {
+        for (const plugin of Object.values(sourceStore)) {
             if (plugin?.pluginId === id) {
-                idToSource[id] = plugin.source;
+                selectedSources[id] = plugin.source;
                 break;
             }
         }
     }
 
-    return idToSource[id] ? sourceToObject[idToSource[id]!] : undefined;
+    return selectedSources[id] ? sourceStore[selectedSources[id]!] : undefined;
 }
 
-export async function fetchPlugin(source: string) {
+export async function fetchAndStorePlugin(source: string) {
     if (!source.endsWith("/")) source += "/";
-    const existingPlugin = sourceToObject[source];
+    const existingPlugin = sourceStore[source];
 
     const fetch = (url: string) => safeFetch(
         url
@@ -112,7 +113,7 @@ export async function fetchPlugin(source: string) {
 
     invariant(pluginJs || existingPlugin, `Failed to fetch JS from ${source}`);
 
-    return sourceToObject[source] = {
+    return sourceStore[source] = {
         id: source,
         source: source,
         pluginId: pluginManifest.name,
@@ -126,9 +127,9 @@ export async function fetchPlugin(source: string) {
 
 export async function installPlugin(source: string, enabled = true) {
     if (!source.endsWith("/")) source += "/";
-    invariant(!(source in sourceToObject), "Source was already installed");
+    invariant(!(source in sourceStore), "Source was already installed");
 
-    const plugin = await fetchPlugin(source);
+    const plugin = await fetchAndStorePlugin(source);
     if (enabled) await startPlugin(plugin.pluginId);
 }
 
@@ -194,7 +195,7 @@ export async function removePlugin(id: string) {
     const plugin = getPluginById(id);
     invariant(plugin, "Removing non-existent plugin");
     if (plugin.enabled) stopPlugin(id);
-    delete sourceToObject[plugin.source];
+    delete sourceStore[plugin.source];
     await purgeStorage(plugin.source);
 }
 
@@ -202,29 +203,30 @@ export async function removePlugin(id: string) {
  * @internal
  */
 export async function initPlugins() {
-    await awaitStorage(sourceToObject, idToSource, settings);
+    await awaitStorage(sourceStore, selectedSources, settings);
 
     // TODO: Optimize this
     if (pluginsEnabled()) {
-        const allIds = [...new Set(Object.values(sourceToObject).map(s => s!.pluginId))];
+        const allIds = [...new Set(Object.values(sourceStore).map(s => s!.pluginId))];
 
         // Loop over enabled plugins, update and start them
         const enabledPlugins = allIds.filter(id => getPluginById(id)?.enabled);
         await Promise.all(enabledPlugins.map(async pl => {
             if (getPluginById(pl)!.update) {
                 try {
-                    await fetchPlugin(pl);
+                    await fetchAndStorePlugin(pl);
                 } catch (e) {
                     logger.error(e);
                 }
             }
+
             await startPlugin(pl);
         }));
 
         // Loop over disabled plugins that are allowed to update
         allIds
             .filter(id => !getPluginById(id)?.enabled && getPluginById(id)!.update)
-            .forEach(id => fetchPlugin(id));
+            .forEach(id => fetchAndStorePlugin(id));
     }
 
     return () => Object.keys(_pluginInstances).forEach(p => stopPlugin(p, false));
