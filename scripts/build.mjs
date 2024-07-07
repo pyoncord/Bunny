@@ -66,7 +66,7 @@ const config = {
         {
             name: "swc",
             setup(build) {
-                build.onLoad({ filter: /\.[jt]sx?$/ }, async args => {
+                build.onLoad({ filter: /\.[cm]?[jt]sx?$/ }, async args => {
                     const result = await swc.transformFile(args.path, {
                         jsc: {
                             externalHelpers: true,

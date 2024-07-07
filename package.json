@@ -40,6 +40,7 @@
         "yargs-parser": "^21.1.1"
     },
     "dependencies": {
+        "es-toolkit": "^1.8.0",
         "fuzzysort": "^3.0.1",
         "spitroast": "^1.4.4"
     },

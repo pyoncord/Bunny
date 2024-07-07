@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  es-toolkit:
+    specifier: ^1.8.0
+    version: 1.8.0
   fuzzysort:
     specifier: ^3.0.1
     version: 3.0.1
@@ -1164,6 +1167,10 @@ packages:
       is-date-object: 1.0.5
       is-symbol: 1.0.4
     dev: true
+
+  /es-toolkit@1.8.0:
+    resolution: {integrity: sha512-ldETiVy9nu3uCHKsALW4pGitzASWivUq79DdMQqdLa2Nx0swhULpvXCqSoJrWYVI69bsgaNRqnFRwpHie8hY+A==}
+    dev: false
 
   /esbuild@0.20.2:
     resolution: {integrity: sha512-WdOOppmUNU+IbZ0PaDiTst80zjnrOkyJNHoKupIcVyU8Lvla3Ugx94VzkQ32Ijqd7UhHJy75gNWDMUekcrSJ6g==}

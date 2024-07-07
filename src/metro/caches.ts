@@ -1,5 +1,5 @@
 import { ClientInfoManager, MMKVManager } from "@lib/api/native/modules";
-import { throttle } from "@lib/utils/throttle";
+import { debounce } from "es-toolkit";
 
 const CACHE_VERSION = 34;
 const BUNNY_METRO_CACHE_KEY = "__bunny_metro_cache_key__";
@@ -65,9 +65,9 @@ export async function initMetroCache() {
     }
 }
 
-const saveCache = throttle(() => {
+const saveCache = debounce(() => {
     MMKVManager.setItem(BUNNY_METRO_CACHE_KEY, JSON.stringify(_metroCache));
-});
+}, 1000);
 
 function extractExportsFlags(moduleExports: any) {
     if (!moduleExports) return 0;
