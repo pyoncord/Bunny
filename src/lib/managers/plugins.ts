@@ -2,7 +2,7 @@ import { createVdPluginObject } from "@core/polyfills/vendettaObject";
 import { awaitStorage, createMMKVBackend, createStorage, purgeStorage, wrapSync } from "@lib/api/storage";
 import { settings } from "@lib/settings";
 import { safeFetch } from "@lib/utils";
-import { VD_PROXY_PREFIX } from "@lib/utils/constants";
+import { BUNNY_PROXY_PREFIX, OLD_BUNNY_PROXY_PREFIX, VD_PROXY_PREFIX } from "@lib/utils/constants";
 import invariant from "@lib/utils/invariant";
 import { proxyLazy } from "@lib/utils/lazy";
 import { logger } from "@lib/utils/logger";
@@ -46,10 +46,6 @@ export interface BunnyPlugin {
      * */
     id: string;
 }
-
-export const BUNNY_PROXY_PREFIX = "https://bn-plugins.github.io/vd-proxy";
-const VD_PROXY_PREFIX = "https://vd-plugins.github.io/proxy";
-const OLD_BUNNY_PROXY_PREFIX = "https://bunny-mod.github.io/plugins-proxy";
 
 const pluginsEnabled = () => !settings.safeMode?.enabled;
 
