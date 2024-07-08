@@ -28,6 +28,7 @@
         "@typescript-eslint/typescript-estree": "^7.1.1",
         "chalk": "^5.3.0",
         "esbuild": "^0.20.2",
+        "esbuild-plugin-globals": "^0.2.0",
         "eslint": "^8.57.0",
         "eslint-plugin-import-alias": "^1.2.0",
         "eslint-plugin-react": "^7.34.0",
@@ -46,10 +47,7 @@
     },
     "pnpm": {
         "peerDependencyRules": {
-            "ignoreMissing": [
-                "react",
-                "react-native"
-            ]
+            "ignoreMissing": ["react", "react-native"]
         }
     }
 }

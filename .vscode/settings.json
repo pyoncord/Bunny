@@ -1,5 +1,4 @@
 {
-    "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": "explicit"
     },
@@ -8,6 +7,9 @@
     },
     "[typescriptreact]": {
         "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
+    "[json]": {
+        "editor.formatOnSave": false
     },
     "javascript.format.semicolons": "insert",
     "typescript.format.semicolons": "insert",

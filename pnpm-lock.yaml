@@ -61,6 +61,9 @@ devDependencies:
   esbuild:
     specifier: ^0.20.2
     version: 0.20.2
+  esbuild-plugin-globals:
+    specifier: ^0.2.0
+    version: 0.2.0
   eslint:
     specifier: ^8.57.0
     version: 8.57.0
@@ -1171,6 +1174,11 @@ packages:
   /es-toolkit@1.8.0:
     resolution: {integrity: sha512-ldETiVy9nu3uCHKsALW4pGitzASWivUq79DdMQqdLa2Nx0swhULpvXCqSoJrWYVI69bsgaNRqnFRwpHie8hY+A==}
     dev: false
+
+  /esbuild-plugin-globals@0.2.0:
+    resolution: {integrity: sha512-y+6utQVWrETQWs0J8EGLV5gEOP59mmjX+fKWoQHn4TYwFMaj0FxQYflc566tHuokBCzl+uNW2iIlM1o1jfNy6w==}
+    engines: {node: '>=7'}
+    dev: true
 
   /esbuild@0.20.2:
     resolution: {integrity: sha512-WdOOppmUNU+IbZ0PaDiTst80zjnrOkyJNHoKupIcVyU8Lvla3Ugx94VzkQ32Ijqd7UhHJy75gNWDMUekcrSJ6g==}

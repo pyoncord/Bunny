@@ -1,6 +1,7 @@
 import { ExportsFlags, getMetroCache, indexBlacklistFlag, indexExportsFlags, ModulesMapInternal } from "@metro/caches";
 import { Metro } from "@metro/types";
-import { before, instead } from "spitroast";
+
+const { before, instead } = require("spitroast");
 
 export const metroModules: Metro.ModuleList = window.modules;
 const metroRequire: Metro.Require = window.__r;
@@ -87,7 +88,7 @@ function onModuleRequire(moduleExports: any, id: Metro.ModuleID) {
 
     // There are modules registering the same native component
     if (moduleExports?.default?.name === "requireNativeComponent") {
-        instead("default", moduleExports, (args, origFunc) => {
+        instead("default", moduleExports, (args: any, origFunc: any) => {
             try {
                 return origFunc(...args);
             } catch {
@@ -112,7 +113,7 @@ function onModuleRequire(moduleExports: any, id: Metro.ModuleID) {
     }
 
     if (!patchedImportTracker && moduleExports.fileFinishedImporting) {
-        before("fileFinishedImporting", moduleExports, ([filePath]) => {
+        before("fileFinishedImporting", moduleExports, ([filePath]: [string]) => {
             if (_importingModuleId === -1 || !filePath) return;
             metroModules[_importingModuleId]!.__filePath = filePath;
         });
@@ -137,7 +138,7 @@ function onModuleRequire(moduleExports: any, id: Metro.ModuleID) {
 
     // Hindi timestamps moment
     if (moduleExports.isMoment) {
-        instead("defineLocale", moduleExports, (args, orig) => {
+        instead("defineLocale", moduleExports, (args: [string], orig: (lcl: string) => string) => {
             const origLocale = moduleExports.locale();
             orig(...args);
             moduleExports.locale(origLocale);

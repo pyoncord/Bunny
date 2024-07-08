@@ -1,16 +1,8 @@
-import { getFactoryOfProxy } from "@lib/utils/lazy";
 import { version } from "bunny-build-info";
-import { instead } from "spitroast";
+const { instead } = require("spitroast");
 
 // @ts-ignore - shut up fr
 globalThis.window = globalThis;
-
-// @ts-ignore && TODO: Move this to a more sensible place
-globalThis.__bunny_createElement = function createElement(type, props, ...children) {
-    const factory = getFactoryOfProxy(type);
-    if (factory) type = factory();
-    return React.createElement(type, props, ...children);
-};
 
 async function initializeBunny() {
     try {
@@ -42,7 +34,7 @@ if (typeof globalThis.__r !== "undefined") {
         const batchedBridge = window.__fbBatchedBridge;
 
         const callQueue = new Array<any>;
-        const unpatchHook = instead("callFunctionReturnFlushedQueue", batchedBridge, (args, orig) => {
+        const unpatchHook = instead("callFunctionReturnFlushedQueue", batchedBridge, (args: any, orig: any) => {
             if (args[0] === "AppRegistry" || !batchedBridge.getCallableModule(args[0])) {
                 callQueue.push(args);
                 return batchedBridge.flushedQueue();

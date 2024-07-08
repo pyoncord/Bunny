@@ -1,14 +1,16 @@
 import { getFindContext } from "@metro/proxy";
-import {
-    after as _after,
-    before as _before,
-    instead as _instead
-} from "spitroast";
+const {
+    after: _after,
+    before: _before,
+    instead: _instead
+} = require("spitroast") as
+    // Temporary
+    typeof import("../../../node_modules/spitroast");
 
-type ParametersAfterOneArgs<F> = F extends (x: any, y: any, ...args: infer P) => unknown ? P : never;
-type ProxyPatchParameters<T, P> = [func: string, parent: [P, (t: P) => any], ...args: ParametersAfterOneArgs<T>];
+type ParametersAfterTwoArgs<F> = F extends (x: any, y: any, ...args: infer P) => unknown ? P : never;
+type ProxyPatchParameters<T, P> = [func: string, parent: [P, (t: P) => any], ...args: ParametersAfterTwoArgs<T>];
 
-function shim<T extends (func: string, parent: any, ...args: ParametersAfterOneArgs<T>) => any>(fn: T) {
+function shim<T extends (func: string, parent: any, ...args: ParametersAfterTwoArgs<T>) => any>(fn: T) {
     function shimmed(this: any, ...args: Parameters<T>) {
         const proxyInfo = getFindContext(args[1]);
         if (proxyInfo && !proxyInfo.cache && proxyInfo.indexed) {

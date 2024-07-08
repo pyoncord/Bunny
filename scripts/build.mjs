@@ -3,6 +3,7 @@
 import swc from "@swc/core";
 import crypto from "crypto";
 import { build } from "esbuild";
+import globalPlugin from "esbuild-plugin-globals";
 import { readFile, writeFile } from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -41,28 +42,15 @@ const config = {
         __DEV__: JSON.stringify(releaseBranch !== "main")
     },
     legalComments: "none",
+    alias: {
+        "spitroast": "./node_modules/spitroast",
+        "react/jsx-runtime": "./shims/jsxRuntime"
+    },
     plugins: [
-        {
-            name: "runtimeGlobalAlias",
-            setup: async build => {
-                const globalMap = {
-                    "react": "globalThis.React",
-                    "react-native": "globalThis.ReactNative"
-                };
-
-                Object.keys(globalMap).forEach(key => {
-                    const filter = new RegExp(`^${key}$`);
-                    build.onResolve({ filter }, args => ({
-                        namespace: "glob-" + key, path: args.path
-                    }));
-                    build.onLoad({ filter, namespace: "glob-" + key }, () => ({
-                        // @ts-ignore
-                        contents: `Object.defineProperty(module, 'exports', { get: () => ${globalMap[key]} })`,
-                        resolveDir: "src",
-                    }));
-                });
-            }
-        },
+        globalPlugin({
+            "react": "React",
+            "react-native": "ReactNative"
+        }),
         {
             name: "swc",
             setup(build) {
@@ -79,7 +67,7 @@ const config = {
                                     }
                                 },
                                 react: {
-                                    pragma: "__bunny_createElement"
+                                    runtime: "automatic"
                                 }
                             },
                         },
