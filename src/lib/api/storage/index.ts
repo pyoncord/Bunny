@@ -1,11 +1,11 @@
 import { StorageBackend } from "@lib/api/storage/backends";
-import { createEmitter, Emitter } from "@lib/utils/emitter";
+import { Emitter } from "@lib/utils/emitter";
 
 const emitterSymbol = Symbol.for("vendetta.storage.emitter");
 const syncAwaitSymbol = Symbol.for("vendetta.storage.accessor");
 
 export function createProxy(target: any = {}): { proxy: any; emitter: Emitter; } {
-    const emitter = createEmitter();
+    const emitter = new Emitter();
 
     function createProxy(target: any, path: string[]): any {
         return new Proxy(target, {

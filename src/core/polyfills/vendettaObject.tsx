@@ -162,7 +162,7 @@ export const initVendettaObject = (): any => {
             },
             assets: {
                 all: assets.assetsMap,
-                find: (filter: (a: any) => void) => assets.findAsset(filter),
+                find: (filter: (a: any) => boolean) => assets.findAsset(filter),
                 getAssetByName: (name: string) => assets.findAsset(name),
                 getAssetByID: (id: number) => assets.findAsset(id),
                 getAssetIDByName: (name: string) => assets.findAssetId(name)
