@@ -1,5 +1,5 @@
 import { formatString, Strings } from "@core/i18n";
-import { requireAssetIndex } from "@lib/api/assets";
+import { findAssetId } from "@lib/api/assets";
 import { purgeStorage, useProxy } from "@lib/api/storage";
 import { BunnyPlugin, fetchAndStorePlugin, getSettingsComponent, removePlugin, startPlugin, stopPlugin } from "@lib/managers/plugins";
 import { showConfirmationAlert } from "@lib/ui/alerts";
@@ -31,7 +31,7 @@ export default function PluginInfoActionSheet({ plugin, navigation }: InfoProps)
                         size="md"
                         text="Configure"
                         variant="secondary"
-                        icon={requireAssetIndex("WrenchIcon")}
+                        icon={findAssetId("WrenchIcon")}
                         onPress={() => {
                             hideSheet("PluginInfoActionSheet");
                             navigation.push("VendettaCustomPage", {
@@ -45,15 +45,15 @@ export default function PluginInfoActionSheet({ plugin, navigation }: InfoProps)
             <ActionSheetRow.Group>
                 <ActionSheetRow
                     label={Strings.REFETCH}
-                    icon={<TableRow.Icon source={requireAssetIndex("RetryIcon")} />}
+                    icon={<TableRow.Icon source={findAssetId("RetryIcon")} />}
                     onPress={async () => {
                         if (plugin.enabled) stopPlugin(plugin.id, false);
 
                         try {
                             await fetchAndStorePlugin(plugin.id);
-                            showToast(Strings.PLUGIN_REFETCH_SUCCESSFUL, requireAssetIndex("toast_image_saved"));
+                            showToast(Strings.PLUGIN_REFETCH_SUCCESSFUL, findAssetId("toast_image_saved"));
                         } catch {
-                            showToast(Strings.PLUGIN_REFETCH_FAILED, requireAssetIndex("Small"));
+                            showToast(Strings.PLUGIN_REFETCH_FAILED, findAssetId("Small"));
                         }
 
                         if (plugin.enabled) await startPlugin(plugin.id);
@@ -62,7 +62,7 @@ export default function PluginInfoActionSheet({ plugin, navigation }: InfoProps)
                 />
                 <ActionSheetRow
                     label={Strings.COPY_URL}
-                    icon={<TableRow.Icon source={requireAssetIndex("copy")} />}
+                    icon={<TableRow.Icon source={findAssetId("copy")} />}
                     onPress={() => {
                         clipboard.setString(plugin.id);
                         showToast.showCopyToClipboard();
@@ -70,18 +70,18 @@ export default function PluginInfoActionSheet({ plugin, navigation }: InfoProps)
                 />
                 <ActionSheetRow
                     label={plugin.update ? Strings.DISABLE_UPDATES : Strings.ENABLE_UPDATES}
-                    icon={<TableRow.Icon source={requireAssetIndex("ic_download_24px")} />}
+                    icon={<TableRow.Icon source={findAssetId("ic_download_24px")} />}
                     onPress={() => {
                         plugin.update = !plugin.update;
                         showToast(formatString("TOASTS_PLUGIN_UPDATE", {
                             update: plugin.update,
                             name: plugin.manifest.name
-                        }), requireAssetIndex("toast_image_saved"));
+                        }), findAssetId("toast_image_saved"));
                     }}
                 />
                 <ActionSheetRow
                     label={Strings.CLEAR_DATA}
-                    icon={<TableRow.Icon source={requireAssetIndex("ic_duplicate")} />}
+                    icon={<TableRow.Icon source={findAssetId("ic_duplicate")} />}
                     onPress={() => showConfirmationAlert({
                         title: Strings.HOLD_UP,
                         content: formatString("ARE_YOU_SURE_TO_CLEAR_DATA", { name: plugin.manifest.name }),
@@ -93,9 +93,9 @@ export default function PluginInfoActionSheet({ plugin, navigation }: InfoProps)
 
                             try {
                                 await fetchAndStorePlugin(plugin.id);
-                                showToast(Strings.PLUGIN_REFETCH_SUCCESSFUL, requireAssetIndex("toast_image_saved"));
+                                showToast(Strings.PLUGIN_REFETCH_SUCCESSFUL, findAssetId("toast_image_saved"));
                             } catch {
-                                showToast(Strings.PLUGIN_REFETCH_FAILED, requireAssetIndex("Small"));
+                                showToast(Strings.PLUGIN_REFETCH_FAILED, findAssetId("Small"));
                             }
 
                             let message: any[];
@@ -108,7 +108,7 @@ export default function PluginInfoActionSheet({ plugin, navigation }: InfoProps)
 
                             showToast(
                                 formatString(message[0], { name: plugin.manifest.name }),
-                                requireAssetIndex(message[1])
+                                findAssetId(message[1])
                             );
 
                             if (plugin.enabled) await startPlugin(plugin.id);
@@ -118,7 +118,7 @@ export default function PluginInfoActionSheet({ plugin, navigation }: InfoProps)
                 />
                 <ActionSheetRow
                     label={Strings.DELETE}
-                    icon={<TableRow.Icon source={requireAssetIndex("ic_message_delete")} />}
+                    icon={<TableRow.Icon source={findAssetId("ic_message_delete")} />}
                     onPress={() => showConfirmationAlert({
                         title: Strings.HOLD_UP,
                         content: formatString("ARE_YOU_SURE_TO_DELETE_PLUGIN", { name: plugin.manifest.name }),
@@ -129,7 +129,7 @@ export default function PluginInfoActionSheet({ plugin, navigation }: InfoProps)
                             try {
                                 removePlugin(plugin.id);
                             } catch (e) {
-                                showToast(String(e), requireAssetIndex("Small"));
+                                showToast(String(e), findAssetId("Small"));
                             }
                             hideSheet("PluginInfoActionSheet");
                         }

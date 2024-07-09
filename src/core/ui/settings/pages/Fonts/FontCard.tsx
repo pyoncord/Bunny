@@ -1,6 +1,6 @@
 import { Strings } from "@core/i18n";
 import { CardWrapper } from "@core/ui/components/AddonCard";
-import { requireAssetIndex } from "@lib/api/assets";
+import { findAssetId } from "@lib/api/assets";
 import { BundleUpdaterManager } from "@lib/api/native/modules";
 import { useProxy } from "@lib/api/storage";
 import { FontDefinition, fonts, selectFont } from "@lib/managers/fonts";
@@ -89,7 +89,7 @@ export default function FontCard({ item: font }: CardWrapper<FontDefinition>) {
                                 size="sm"
                                 variant="secondary"
                                 disabled={selected}
-                                icon={requireAssetIndex("PencilIcon")}
+                                icon={findAssetId("PencilIcon")}
                             />
                             <Button
                                 size="sm"

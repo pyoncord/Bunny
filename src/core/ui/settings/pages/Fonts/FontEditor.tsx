@@ -1,5 +1,5 @@
 import { formatString, Strings } from "@core/i18n";
-import { requireAssetIndex } from "@lib/api/assets";
+import { findAssetId } from "@lib/api/assets";
 import { createProxy, useProxy } from "@lib/api/storage";
 import { FontDefinition, fonts, removeFont, saveFont, validateFont } from "@lib/managers/fonts";
 import { getCurrentTheme } from "@lib/managers/themes";
@@ -196,7 +196,7 @@ function NewEntryRow({ fontEntry }: { fontEntry: Record<string, string>; }) {
                 size="md"
                 label={nameSet ? nameRef.current : void 0}
                 placeholder={nameSet ? "https://path.to/the/file.ttf" : "PostScript name (e.g. ggsans-Bold)"}
-                leadingIcon={() => nameSet ? null : <TableRow.Icon source={requireAssetIndex("PlusSmallIcon")} />}
+                leadingIcon={() => nameSet ? null : <TableRow.Icon source={findAssetId("PlusSmallIcon")} />}
                 leadingText={nameSet ? nameRef.current : ""}
                 onChange={(text: string) => (nameSet ? urlRef : nameRef).current = text}
                 errorMessage={error}
@@ -210,7 +210,7 @@ function NewEntryRow({ fontEntry }: { fontEntry: Record<string, string>; }) {
                 nameRef.current = "";
                 setNameSet(false);
             }}
-            icon={requireAssetIndex("TrashIcon")}
+            icon={findAssetId("TrashIcon")}
         />}
         <IconButton
             size="md"
@@ -234,7 +234,7 @@ function NewEntryRow({ fontEntry }: { fontEntry: Record<string, string>; }) {
                     }
                 }
             }}
-            icon={requireAssetIndex(nameSet ? "PlusSmallIcon" : "ArrowLargeRightIcon")}
+            icon={findAssetId(nameSet ? "PlusSmallIcon" : "ArrowLargeRightIcon")}
         />
     </View>;
 }
@@ -262,20 +262,20 @@ export default function FontEditor(props: {
                     {getCurrentTheme()?.data?.fonts && <TableRow
                         label={Strings.LABEL_EXTRACT_FONTS_FROM_THEME}
                         subLabel={Strings.DESC_EXTRACT_FONTS_FROM_THEME}
-                        icon={<TableRow.Icon source={requireAssetIndex("HammerIcon")} />}
+                        icon={<TableRow.Icon source={findAssetId("HammerIcon")} />}
                         onPress={() => promptActionSheet(RevengeFontsExtractor, fontEntries, { setName })}
                     />}
                     <TableRow
                         label={"Import font entries from a link"}
                         subLabel={"Directly import from a link with a pre-configured JSON file"}
-                        icon={<TableRow.Icon source={requireAssetIndex("LinkIcon")} />}
+                        icon={<TableRow.Icon source={findAssetId("LinkIcon")} />}
                         onPress={() => promptActionSheet(JsonFontImporter, fontEntries, { setName, setSource })}
                     />
                 </TableRowGroup>
                 : <TableRowGroup title="Actions">
                     <TableRow
                         label={"Refetch fonts from source"}
-                        icon={<TableRow.Icon source={requireAssetIndex("RetryIcon")} />}
+                        icon={<TableRow.Icon source={findAssetId("RetryIcon")} />}
                         onPress={async () => {
                             const ftCopy = { ...fonts[props.name!] };
                             await removeFont(props.name!);
@@ -285,7 +285,7 @@ export default function FontEditor(props: {
                     />
                     <TableRow
                         label={"Delete font pack"}
-                        icon={<TableRow.Icon source={requireAssetIndex("TrashIcon")} />}
+                        icon={<TableRow.Icon source={findAssetId("TrashIcon")} />}
                         onPress={() => removeFont(props.name!).then(() => navigation.goBack())}
                     />
                 </TableRowGroup>}
@@ -305,7 +305,7 @@ export default function FontEditor(props: {
                             <IconButton
                                 size="sm"
                                 variant="secondary"
-                                icon={requireAssetIndex("PencilIcon")}
+                                icon={findAssetId("PencilIcon")}
                                 onPress={() => promptActionSheet(EntryEditorActionSheet, fontEntries, {
                                     name,
                                     fontEntries,
@@ -314,7 +314,7 @@ export default function FontEditor(props: {
                             <IconButton
                                 size="sm"
                                 variant="secondary"
-                                icon={requireAssetIndex("TrashIcon")}
+                                icon={findAssetId("TrashIcon")}
                                 onPress={() => delete fontEntries[name]}
                             />
                         </Stack>}
@@ -353,7 +353,7 @@ export default function FontEditor(props: {
                             navigation.goBack();
                         }
                     }}
-                    icon={requireAssetIndex(props.name ? "toast_image_saved" : "DownloadIcon")}
+                    icon={findAssetId(props.name ? "toast_image_saved" : "DownloadIcon")}
                     style={{ marginLeft: 8 }}
                 />
             </View>

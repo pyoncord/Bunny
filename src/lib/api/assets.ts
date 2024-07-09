@@ -26,8 +26,6 @@ export const assetsMap: Record<string, Asset> = new Proxy<any>({}, {
             assetDefinition.moduleId ??= id;
 
             // ??= is intended, we only assign to the first asset registered
-            // Though, VD seems to assign the last registered, but doing that breaks HideGiftButton so idk
-            // https://github.com/vendetta-mod/Vendetta/blob/rewrite/src/ui/assets.ts
             cache[p] ??= assetDefinition;
         }
 
@@ -73,7 +71,23 @@ export function patchAssets(module: AssetModule) {
     return unpatch;
 }
 
-export const findAsset = (filter: (a: any) => void): Asset | null | undefined => Object.values(assetsMap).find(filter);
-export const requireAssetByName = (name: string): Asset => assetsMap[name];
-export const requireAssetByIndex = (id: number): Asset => assetsModule.getAssetByID(id);
-export const requireAssetIndex = (name: string) => assetsMap[name]?.index;
+/**
+ * Returns the first asset registry by its registry id (number), name (string) or given filter (function)
+ */
+export function findAsset(id: number): Asset | undefined;
+export function findAsset(name: string): Asset | undefined;
+export function findAsset(filter: (a: Asset) => boolean): Asset | undefined;
+
+export function findAsset(param: number | string | ((a: any) => void)) {
+    if (typeof param === "number") return assetsModule.getAssetByID(param);
+    if (typeof param === "string") return assetsMap[param];
+    return Object.values(assetsMap).find(param);
+}
+
+/**
+ * Returns the first asset ID in the registry with the given name
+ */
+export function findAssetId(name: string) {
+    return assetsMap[name]?.index;
+}
+

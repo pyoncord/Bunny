@@ -1,4 +1,4 @@
-import { requireAssetIndex } from "@lib/api/assets";
+import { findAssetId } from "@lib/api/assets";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { Card, FormRadio, FormSwitch, IconButton, LegacyFormRow, Stack, Text } from "@metro/common/components";
 import { findByProps } from "@metro/utils";
@@ -108,17 +108,17 @@ export default function AddonCard(props: CardProps) {
                                         key: "CardOverflow",
                                         header: {
                                             title: props.overflowTitle,
-                                            icon: props.headerIcon && <LegacyFormRow.Icon style={{ marginRight: 8 }} source={requireAssetIndex(props.headerIcon)} />,
+                                            icon: props.headerIcon && <LegacyFormRow.Icon style={{ marginRight: 8 }} source={findAssetId(props.headerIcon)} />,
                                             onClose: () => hideActionSheet(),
                                         },
                                         options: props.overflowActions?.map(i => ({
                                             ...i,
-                                            icon: requireAssetIndex(i.icon)
+                                            icon: findAssetId(i.icon)
                                         })),
                                     })}
                                     size="sm"
                                     variant="secondary"
-                                    icon={requireAssetIndex("CircleInformationIcon-primary")}
+                                    icon={findAssetId("CircleInformationIcon-primary")}
                                 />}
                             {props.actions?.map(({ icon, onPress, disabled }) => (
                                 <IconButton
@@ -126,7 +126,7 @@ export default function AddonCard(props: CardProps) {
                                     disabled={disabled}
                                     size="sm"
                                     variant="secondary"
-                                    icon={requireAssetIndex(icon)}
+                                    icon={findAssetId(icon)}
                                 />
                             ))}
                         </View>

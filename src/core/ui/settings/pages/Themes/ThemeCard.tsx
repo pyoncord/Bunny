@@ -1,6 +1,6 @@
 import { formatString, Strings } from "@core/i18n";
 import AddonCard, { CardWrapper } from "@core/ui/components/AddonCard";
-import { requireAssetIndex } from "@lib/api/assets";
+import { findAssetId } from "@lib/api/assets";
 import { useProxy } from "@lib/api/storage";
 import { applyTheme, fetchTheme, removeTheme, selectTheme, Theme, themes } from "@lib/managers/themes";
 import { settings } from "@lib/settings";
@@ -46,9 +46,9 @@ export default function ThemeCard({ item: theme, index }: CardWrapper<Theme>) {
                     label: Strings.REFETCH,
                     onPress: () => {
                         fetchTheme(theme.id, theme.selected).then(() => {
-                            showToast(Strings.THEME_REFETCH_SUCCESSFUL, requireAssetIndex("toast_image_saved"));
+                            showToast(Strings.THEME_REFETCH_SUCCESSFUL, findAssetId("toast_image_saved"));
                         }).catch(() => {
-                            showToast(Strings.THEME_REFETCH_FAILED, requireAssetIndex("Small"));
+                            showToast(Strings.THEME_REFETCH_FAILED, findAssetId("Small"));
                         });
                     },
                 },
@@ -75,7 +75,7 @@ export default function ThemeCard({ item: theme, index }: CardWrapper<Theme>) {
                                 setRemoved(true);
                                 if (wasSelected) selectAndApply(false, theme);
                             }).catch((e: Error) => {
-                                showToast(e.message, requireAssetIndex("Small"));
+                                showToast(e.message, findAssetId("Small"));
                             });
                         }
                     })

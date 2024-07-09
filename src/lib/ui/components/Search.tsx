@@ -1,5 +1,5 @@
 import { Strings } from "@core/i18n";
-import { requireAssetIndex } from "@lib/api/assets";
+import { findAssetId } from "@lib/api/assets";
 import { TextInput } from "@metro/common/components";
 import ErrorBoundary from "@ui/components/ErrorBoundary";
 import { Image, View } from "react-native";
@@ -11,7 +11,7 @@ export interface SearchProps {
 }
 
 function SearchIcon() {
-    return <Image style={{ width: 16, height: 16 }} source={requireAssetIndex("search")} />;
+    return <Image style={{ width: 16, height: 16 }} source={findAssetId("search")} />;
 }
 
 export default ({ onChangeText, placeholder, style }: SearchProps) => {

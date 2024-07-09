@@ -1,4 +1,4 @@
-import { requireAssetIndex } from "@lib/api/assets";
+import { findAssetId } from "@lib/api/assets";
 import { LegacyFormRow, TableRow } from "@metro/common/components";
 import { LayoutAnimation, View } from "react-native";
 
@@ -17,7 +17,7 @@ export default function Summary({ label, icon, noPadding = false, noAnimation = 
         <>
             <TableRow
                 label={label}
-                icon={icon && <TableRow.Icon source={requireAssetIndex(icon)} />}
+                icon={icon && <TableRow.Icon source={findAssetId(icon)} />}
                 trailing={<LegacyFormRow.Arrow style={{ transform: [{ rotate: `${hidden ? 180 : 90}deg` }] }} />}
                 onPress={() => {
                     setHidden(!hidden);

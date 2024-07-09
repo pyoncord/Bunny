@@ -1,7 +1,7 @@
 import { Strings } from "@core/i18n";
 import { PyoncordIcon } from "@core/ui/settings";
 import About from "@core/ui/settings/pages/General/About";
-import { requireAssetIndex } from "@lib/api/assets";
+import { findAssetId } from "@lib/api/assets";
 import { useProxy } from "@lib/api/storage";
 import { getDebugInfo, toggleSafeMode } from "@lib/debug";
 import { settings } from "@lib/settings";
@@ -27,13 +27,13 @@ export default function General() {
                     />
                     <TableRow
                         label={"Discord"}
-                        icon={<TableRow.Icon source={requireAssetIndex("Discord")} />}
+                        icon={<TableRow.Icon source={findAssetId("Discord")} />}
                         trailing={<TableRow.TrailingText text={`${debugInfo.discord.version} (${debugInfo.discord.build})`} />}
                     />
                     <TableRow
                         arrow
                         label={Strings.ABOUT}
-                        icon={<TableRow.Icon source={requireAssetIndex("CircleInformationIcon-primary")} />}
+                        icon={<TableRow.Icon source={findAssetId("CircleInformationIcon-primary")} />}
                         trailing={TableRow.Arrow}
                         onPress={() => navigation.push("VendettaCustomPage", {
                             title: Strings.ABOUT,
@@ -44,13 +44,13 @@ export default function General() {
                 <TableRowGroup title={Strings.LINKS}>
                     <TableRow
                         label={Strings.DISCORD_SERVER}
-                        icon={<TableRow.Icon source={requireAssetIndex("Discord")} />}
+                        icon={<TableRow.Icon source={findAssetId("Discord")} />}
                         trailing={TableRow.Arrow}
                         onPress={() => url.openDeeplink(DISCORD_SERVER)}
                     />
                     <TableRow
                         label={Strings.GITHUB}
-                        icon={<TableRow.Icon source={requireAssetIndex("img_account_sync_github_white")} />}
+                        icon={<TableRow.Icon source={findAssetId("img_account_sync_github_white")} />}
                         trailing={TableRow.Arrow}
                         onPress={() => url.openURL(GITHUB)}
                     />
@@ -58,18 +58,18 @@ export default function General() {
                 <TableRowGroup title={Strings.ACTIONS}>
                     <TableRow
                         label={Strings.RELOAD_DISCORD}
-                        icon={<TableRow.Icon source={requireAssetIndex("ic_message_retry")} />}
+                        icon={<TableRow.Icon source={findAssetId("ic_message_retry")} />}
                         onPress={() => NativeModules.BundleUpdaterManager.reload()}
                     />
                     <TableRow
                         label={settings.safeMode?.enabled ? Strings.RELOAD_IN_NORMAL_MODE : Strings.RELOAD_IN_SAFE_MODE}
                         subLabel={settings.safeMode?.enabled ? Strings.RELOAD_IN_NORMAL_MODE_DESC : Strings.RELOAD_IN_SAFE_MODE_DESC}
-                        icon={<TableRow.Icon source={requireAssetIndex("ic_privacy_24px")} />}
+                        icon={<TableRow.Icon source={findAssetId("ic_privacy_24px")} />}
                         onPress={toggleSafeMode}
                     />
                     <TableSwitchRow
                         label={Strings.DEVELOPER_SETTINGS}
-                        icon={<TableRow.Icon source={requireAssetIndex("ic_progress_wrench_24px")} />}
+                        icon={<TableRow.Icon source={findAssetId("ic_progress_wrench_24px")} />}
                         value={settings.developerSettings}
                         onValueChange={(v: boolean) => {
                             settings.developerSettings = v;
@@ -80,7 +80,7 @@ export default function General() {
                     <TableSwitchRow
                         label={Strings.SETTINGS_ACTIVATE_DISCORD_EXPERIMENTS}
                         subLabel={Strings.SETTINGS_ACTIVATE_DISCORD_EXPERIMENTS_DESC}
-                        icon={<TableRow.Icon source={requireAssetIndex("ic_progress_wrench_24px")} />}
+                        icon={<TableRow.Icon source={findAssetId("ic_progress_wrench_24px")} />}
                         value={settings.enableDiscordDeveloperSettings}
                         onValueChange={(v: boolean) => {
                             settings.enableDiscordDeveloperSettings = v;

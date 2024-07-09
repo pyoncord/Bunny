@@ -163,9 +163,9 @@ export const initVendettaObject = (): any => {
             assets: {
                 all: assets.assetsMap,
                 find: (filter: (a: any) => void) => assets.findAsset(filter),
-                getAssetByName: (name: string) => assets.requireAssetByName(name),
-                getAssetByID: (id: number) => assets.requireAssetByIndex(id),
-                getAssetIDByName: (name: string) => assets.requireAssetIndex(name)
+                getAssetByName: (name: string) => assets.findAsset(name),
+                getAssetByID: (id: number) => assets.findAsset(id),
+                getAssetIDByName: (name: string) => assets.findAssetId(name)
             },
             semanticColors: color.semanticColors,
             rawColors: color.rawColors

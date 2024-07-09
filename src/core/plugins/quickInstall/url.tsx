@@ -1,5 +1,5 @@
 import { formatString, Strings } from "@core/i18n";
-import { requireAssetIndex } from "@lib/api/assets";
+import { findAssetId } from "@lib/api/assets";
 import { isThemeSupported } from "@lib/api/native/loader";
 import { after, instead } from "@lib/api/patcher";
 import { installPlugin } from "@lib/managers/plugins";
@@ -30,10 +30,10 @@ function typeFromUrl(url: string) {
 function installWithToast(type: "plugin" | "theme", url: string) {
     (type === "plugin" ? installPlugin : installTheme)(url)
         .then(() => {
-            showToast(Strings.SUCCESSFULLY_INSTALLED, requireAssetIndex("Check"));
+            showToast(Strings.SUCCESSFULLY_INSTALLED, findAssetId("Check"));
         })
         .catch((e: Error) => {
-            showToast(e.message, requireAssetIndex("Small"));
+            showToast(e.message, findAssetId("Small"));
         });
 }
 

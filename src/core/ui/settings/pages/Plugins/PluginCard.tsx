@@ -1,5 +1,5 @@
 import { CardWrapper } from "@core/ui/components/AddonCard";
-import { requireAssetIndex } from "@lib/api/assets";
+import { findAssetId } from "@lib/api/assets";
 import { useProxy } from "@lib/api/storage";
 import { BunnyPlugin, getSettingsComponent, startPlugin, stopPlugin } from "@lib/managers/plugins";
 import { showSheet } from "@lib/ui/sheets";
@@ -37,7 +37,7 @@ function Title() {
     const plugin = usePlugin();
 
     const iconName = plugin.manifest.vendetta?.icon;
-    const icon = iconName && requireAssetIndex(iconName);
+    const icon = iconName && findAssetId(iconName);
 
     const textElement = (
         <Text
@@ -76,7 +76,7 @@ function Status() {
         <View style={styles.smallIcon}>
             <Image
                 tintColor={INTERACTIVE_NORMAL}
-                source={requireAssetIndex("WarningIcon")}
+                source={findAssetId("WarningIcon")}
             />
         </View>
         <Text variant="text-sm/semibold">
@@ -93,7 +93,7 @@ const Actions = memo(() => {
         <IconButton
             size="sm"
             variant="secondary"
-            icon={requireAssetIndex("WrenchIcon")}
+            icon={findAssetId("WrenchIcon")}
             disabled={!getSettingsComponent(plugin.id)}
             onPress={() => navigation.push("VendettaCustomPage", {
                 title: plugin.manifest.name,
@@ -103,7 +103,7 @@ const Actions = memo(() => {
         <IconButton
             size="sm"
             variant="secondary"
-            icon={requireAssetIndex("CircleInformationIcon-primary")}
+            icon={findAssetId("CircleInformationIcon-primary")}
             onPress={() => void showSheet(
                 "PluginInfoActionSheet",
                 import("./sheets/PluginInfoActionSheet"),

@@ -1,4 +1,4 @@
-import { requireAssetIndex } from "@lib/api/assets";
+import { findAssetId } from "@lib/api/assets";
 import { getLoaderName, getLoaderVersion, isThemeSupported } from "@lib/api/native/loader";
 import { BundleUpdaterManager, ClientInfoManager, DeviceManager } from "@lib/api/native/modules";
 import { after } from "@lib/api/patcher";
@@ -48,13 +48,13 @@ export function connectToDebugger(url: string) {
     if (socket !== undefined && socket.readyState !== WebSocket.CLOSED) socket.close();
 
     if (!url) {
-        showToast("Invalid debugger URL!", requireAssetIndex("Small"));
+        showToast("Invalid debugger URL!", findAssetId("Small"));
         return;
     }
 
     socket = new WebSocket(`ws://${url}`);
 
-    socket.addEventListener("open", () => showToast("Connected to debugger.", requireAssetIndex("Check")));
+    socket.addEventListener("open", () => showToast("Connected to debugger.", findAssetId("Check")));
     socket.addEventListener("message", (message: any) => {
         try {
             (0, eval)(message.data);
@@ -65,7 +65,7 @@ export function connectToDebugger(url: string) {
 
     socket.addEventListener("error", (err: any) => {
         console.log(`Debugger error: ${err.message}`);
-        showToast("An error occurred with the debugger connection!", requireAssetIndex("Small"));
+        showToast("An error occurred with the debugger connection!", findAssetId("Small"));
     });
 }
 

@@ -1,6 +1,6 @@
 import { Strings } from "@core/i18n";
 import { CardWrapper } from "@core/ui/components/AddonCard";
-import { requireAssetIndex } from "@lib/api/assets";
+import { findAssetId } from "@lib/api/assets";
 import { useProxy } from "@lib/api/storage";
 import { settings } from "@lib/settings";
 import { HTTP_REGEX_MULTI } from "@lib/utils/constants";
@@ -76,7 +76,7 @@ export default function AddonPage<T extends object>({ card: CardComponent, ...pr
                 )}
             />
             <FloatingActionButton
-                icon={requireAssetIndex("PlusLargeIcon")}
+                icon={findAssetId("PlusLargeIcon")}
                 onPress={props.onFABPress ?? (() => {
                     // from ./InstallButton.tsx
                     clipboard.getString().then(content =>
