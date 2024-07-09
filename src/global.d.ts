@@ -1,5 +1,5 @@
 declare global {
-        var React: typeof import("react");
+        type React = typeof import("react");
         var SkiaApi: typeof import("@shopify/react-native-skia").Skia;
 
         interface Window {

@@ -7,4 +7,3 @@ export { findInTree } from "@lib/utils/findInTree";
 export * as logger from "@lib/utils/logger";
 export { safeFetch } from "@lib/utils/safeFetch";
 export * as types from "@lib/utils/types";
-export { without } from "@lib/utils/without";

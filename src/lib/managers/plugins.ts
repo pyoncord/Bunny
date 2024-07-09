@@ -1,12 +1,13 @@
+import { allSettled } from "@core/polyfills/allSettled";
 import { createVdPluginObject } from "@core/polyfills/vendettaObject";
 import { awaitStorage, createMMKVBackend, createStorage, purgeStorage, wrapSync } from "@lib/api/storage";
 import { settings } from "@lib/settings";
 import { safeFetch } from "@lib/utils";
 import { BUNNY_PROXY_PREFIX, OLD_BUNNY_PROXY_PREFIX, VD_PROXY_PREFIX } from "@lib/utils/constants";
 import invariant from "@lib/utils/invariant";
-import { proxyLazy } from "@lib/utils/lazy";
 import { logger } from "@lib/utils/logger";
 import { Author } from "@lib/utils/types";
+import { isNotNil, uniqWith } from "es-toolkit";
 
 type EvaledPlugin = {
     onLoad?(): void;
@@ -15,6 +16,7 @@ type EvaledPlugin = {
 };
 
 interface PluginManifest {
+    id: string;
     name: string;
     description: string;
     authors: Author[];
@@ -28,8 +30,8 @@ interface PluginManifest {
 }
 
 export interface BunnyPlugin {
+    id: string;
     source: string;
-    pluginId: string;
     manifest: PluginManifest;
     enabled: boolean;
     update: boolean;
@@ -40,43 +42,27 @@ export interface BunnyPlugin {
 
     // TODO: Use fs to avoid unnecessary memory usage
     js: string;
-
-    /**
-     * @deprecated use `source` (for URL) or `pluginId` (plugin's unique ID)
-     * */
-    id: string;
 }
 
-const pluginsEnabled = () => !settings.safeMode?.enabled;
+const arePluginsEnabled = () => !settings.safeMode?.enabled;
 
 const _pluginInstances: Record<string, EvaledPlugin> = {};
 
-export const selectedSources = wrapSync(createStorage<Record<string, string | undefined>>(createMMKVBackend("SELECTED_PLUGIN_SOURCES")));
-export const sourceStore = proxyLazy(() => {
-    type StorageInterface = Record<string, BunnyPlugin | undefined>;
-    const storagePromise = createStorage<StorageInterface>(createMMKVBackend("VENDETTA_PLUGINS"));
-
-    storagePromise.then(st => {
-        for (const plugin of Object.values(st)) if (plugin) {
-            plugin.pluginId ??= `${plugin.manifest.name}-${plugin.manifest.authors?.[0]?.name}`.toLowerCase();
-            plugin.source ??= plugin.id;
-        }
-    });
-
-    return wrapSync(storagePromise);
-});
+export const sourceStore = wrapSync(createStorage<{ [id in string]?: BunnyPlugin }>(createMMKVBackend("PLUGIN_SOURCES_STORE")));
+export const preferredSourceStore = wrapSync(createStorage<{ [id in string]?: string }>(createMMKVBackend("PREFERRED_PLUGIN_SOURCE")));
 
 export function getPluginById(id: string) {
-    if (!selectedSources[id]) {
+    if (!id) return undefined;
+
+    if (!preferredSourceStore[id]) {
         for (const plugin of Object.values(sourceStore)) {
-            if (plugin?.pluginId === id) {
-                selectedSources[id] = plugin.source;
-                break;
+            if (plugin?.id === id) {
+                return plugin;
             }
         }
     }
 
-    return selectedSources[id] ? sourceStore[selectedSources[id]!] : undefined;
+    return sourceStore[preferredSourceStore[id]!];
 }
 
 export async function fetchAndStorePlugin(source: string) {
@@ -98,21 +84,22 @@ export async function fetchAndStorePlugin(source: string) {
         throw new Error(`Failed to fetch manifest for ${source}`);
     }
 
+    for (const f of ["id", "main", "hash", "bunny"] as const)
+        invariant(pluginManifest[f], `Plugin manifest does not contain mandatory field: '${f}'`);
+
     let pluginJs: string | undefined;
 
     if (existingPlugin?.manifest.hash !== pluginManifest.hash) {
         try {
-            // by polymanifest spec, plugins should always specify their main file, but just in case
-            pluginJs = await (await fetch(source + (pluginManifest.main || "index.js"))).text();
+            pluginJs = await (await fetch(source + pluginManifest.main)).text();
         } catch { } // Empty catch, checked below
     }
 
     invariant(pluginJs || existingPlugin, `Failed to fetch JS from ${source}`);
 
     return sourceStore[source] = {
-        id: source,
+        id: pluginManifest.id,
         source: source,
-        pluginId: pluginManifest.name,
         manifest: pluginManifest,
         enabled: existingPlugin?.enabled ?? false,
         update: existingPlugin?.update ?? true,
@@ -126,7 +113,7 @@ export async function installPlugin(source: string, enabled = true) {
     invariant(!(source in sourceStore), "Source was already installed");
 
     const plugin = await fetchAndStorePlugin(source);
-    if (enabled) await startPlugin(plugin.pluginId);
+    if (enabled) await startPlugin(plugin.id);
 }
 
 /**
@@ -146,7 +133,7 @@ export async function startPlugin(id: string) {
     invariant(plugin, "Attempted to start non-existent plugin");
 
     try {
-        if (pluginsEnabled()) {
+        if (arePluginsEnabled()) {
             const pluginRet: EvaledPlugin = await evalPlugin(plugin);
             _pluginInstances[id] = pluginRet;
             pluginRet.onLoad?.();
@@ -174,7 +161,7 @@ export function stopPlugin(id: string, disable = true) {
     const pluginInstance = _pluginInstances[id];
     invariant(plugin, "Attempted to stop non-existent plugin");
 
-    if (pluginsEnabled()) {
+    if (arePluginsEnabled()) {
         try {
             pluginInstance?.onUnload?.();
         } catch (e) {
@@ -199,30 +186,38 @@ export async function removePlugin(id: string) {
  * @internal
  */
 export async function initPlugins() {
-    await awaitStorage(sourceStore, selectedSources, settings);
+    await awaitStorage(sourceStore, preferredSourceStore, settings);
 
-    // TODO: Optimize this
-    if (pluginsEnabled()) {
-        const allIds = [...new Set(Object.values(sourceStore).map(s => s!.pluginId))];
+    if (arePluginsEnabled()) {
+        const plugins = uniqWith(
+            Object.values(sourceStore)
+                .map(s => getPluginById(s!.id))
+                .filter(isNotNil),
+            (a, b) => a?.id === b?.id
+        );
 
-        // Loop over enabled plugins, update and start them
-        const enabledPlugins = allIds.filter(id => getPluginById(id)?.enabled);
-        await Promise.all(enabledPlugins.map(async pl => {
-            if (getPluginById(pl)!.update) {
+        const updatePromise: Promise<unknown>[] = [];
+        const updateAndStart = async (plugin: BunnyPlugin) => {
+            if (plugin.update) {
                 try {
-                    await fetchAndStorePlugin(pl);
+                    await fetchAndStorePlugin(plugin.id);
                 } catch (e) {
                     logger.error(e);
                 }
             }
 
-            await startPlugin(pl);
-        }));
+            await startPlugin(plugin.id);
+        };
 
-        // Loop over disabled plugins that are allowed to update
-        allIds
-            .filter(id => !getPluginById(id)?.enabled && getPluginById(id)!.update)
-            .forEach(id => fetchAndStorePlugin(id));
+        for (const plugin of plugins) {
+            if (plugin.enabled) {
+                updatePromise.push(updateAndStart(plugin));
+            } else if (plugin.update) {
+                fetchAndStorePlugin(plugin.id);
+            }
+        }
+
+        await allSettled(updatePromise);
     }
 
     return () => Object.keys(_pluginInstances).forEach(p => stopPlugin(p, false));

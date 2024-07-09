@@ -24,7 +24,7 @@
         "noEmit": true,
         "allowJs": true,
         "checkJs": true,
-        "jsx": "react",
+        "jsx": "react-jsx",
         "target": "esnext"
     }
 }

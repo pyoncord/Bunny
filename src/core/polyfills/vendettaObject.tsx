@@ -19,6 +19,7 @@ import * as color from "@ui/color";
 import * as components from "@ui/components";
 import { createThemedStyleSheet } from "@ui/styles";
 import * as toasts from "@ui/toasts";
+import { omit } from "es-toolkit";
 import { createElement, useEffect } from "react";
 import { View } from "react-native";
 
@@ -132,7 +133,7 @@ export const initVendettaObject = (): any => {
             findInTree: (tree: any, filter: any, options: any) => utils.findInTree(tree, filter, options),
             safeFetch: (input: RequestInfo | URL, options?: RequestInit | undefined, timeout?: number | undefined) => utils.safeFetch(input, options, timeout),
             unfreeze: (obj: object) => Object.isFrozen(obj) ? ({ ...obj }) : obj,
-            without: (object: any, ...keys: any) => utils.without(object, ...keys)
+            without: (object: any, ...keys: any) => omit(object, keys)
         },
         debug: {
             connectToDebugger: (url: string) => debug.connectToDebugger(url),
@@ -173,10 +174,10 @@ export const initVendettaObject = (): any => {
             plugins: plugins.sourceStore,
             fetchPlugin: (source: string) => plugins.fetchAndStorePlugin(source),
             installPlugin: (source: string, enabled = true) => plugins.installPlugin(source, enabled),
-            startPlugin: (id: string) => plugins.startPlugin(plugins.sourceStore[id]!.pluginId),
-            stopPlugin: (id: string, disable = true) => plugins.stopPlugin(plugins.sourceStore[id]!.pluginId, disable),
-            removePlugin: (id: string) => plugins.removePlugin(plugins.sourceStore[id]!.pluginId),
-            getSettings: (id: string) => plugins.getSettingsComponent(plugins.sourceStore[id]!.pluginId)
+            startPlugin: (id: string) => plugins.startPlugin(plugins.sourceStore[id]!.id),
+            stopPlugin: (id: string, disable = true) => plugins.stopPlugin(plugins.sourceStore[id]!.id, disable),
+            removePlugin: (id: string) => plugins.removePlugin(plugins.sourceStore[id]!.id),
+            getSettings: (id: string) => plugins.getSettingsComponent(plugins.sourceStore[id]!.id)
         },
         themes: {
             themes: themes.themes,
