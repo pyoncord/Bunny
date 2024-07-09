@@ -9,7 +9,7 @@ import * as plugins from "@lib/managers/plugins";
 import * as themes from "@lib/managers/themes";
 import { loaderConfig, settings } from "@lib/settings";
 import * as utils from "@lib/utils";
-import { logModule } from "@lib/utils/logger";
+import { DiscordLogger } from "@lib/utils/logger";
 import * as metro from "@metro";
 import * as common from "@metro/common";
 import { Forms } from "@metro/common/components";
@@ -32,7 +32,7 @@ export async function createVdPluginObject(plugin: plugins.BunnyPlugin) {
             // Wrapping this with wrapSync is NOT an option.
             storage: await createStorage<Record<string, any>>(storage.createMMKVBackend(plugin.id)),
         },
-        logger: new logModule(`Bunny » ${plugin.manifest.name}`),
+        logger: new DiscordLogger(`Bunny » ${plugin.manifest.name}`),
     };
 }
 

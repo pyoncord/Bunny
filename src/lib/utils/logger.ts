@@ -11,5 +11,5 @@ export interface Logger {
     verbose: LoggerFunction;
 }
 
-export const logModule = findByNameProxy("Logger");
-export const logger: Logger = new logModule("Bunny");
+export const DiscordLogger = findByNameProxy("Logger");
+export const logger: Logger = new DiscordLogger("Bunny");

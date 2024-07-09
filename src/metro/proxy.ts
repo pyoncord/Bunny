@@ -5,9 +5,10 @@ import { findExports } from "./finders";
 import { metroModules, subscribeModule } from "./modules";
 import type { FilterFn } from "./types";
 
-const proxyContextMap = new WeakMap<any, FindProxyContext<any[]>>();
+const moduleContextSymbol = Symbol.for("bunny.metro.modules");
+const proxyContexts = new WeakMap<any, ModuleProxyContext<any[]>>();
 
-interface FindProxyContext<A extends unknown[]> {
+interface ModuleProxyContext<A extends unknown[]> {
     filter: FilterFn<A>;
     indexed: boolean;
     moduleId: number | undefined;
@@ -34,15 +35,15 @@ function subscribeModuleOfFind(proxy: any, callback: (exports: any) => void) {
     });
 }
 
-export function getFindContext<A extends unknown[]>(proxy: any): FindProxyContext<A> | void {
-    return proxyContextMap.get(proxy) as unknown as FindProxyContext<A>;
+export function getFindContext<A extends unknown[]>(proxy: any): ModuleProxyContext<A> | void {
+    return proxyContexts.get(proxy) as unknown as ModuleProxyContext<A>;
 }
 
 export function createFindProxy<A extends unknown[]>(filter: FilterFn<A>) {
     let cache: any = undefined;
 
     const moduleId = getIndexedSingleFind(filter);
-    const context: FindProxyContext<A> = {
+    const context: ModuleProxyContext<A> = {
         filter,
         indexed: !!moduleId,
         moduleId,
@@ -65,8 +66,12 @@ export function createFindProxy<A extends unknown[]>(filter: FilterFn<A>) {
         }
     };
 
-    const proxy = proxyLazy(() => context.unproxy());
-    proxyContextMap.set(proxy, context as FindProxyContext<any>);
+    const proxy = proxyLazy(() => context.unproxy(), {
+        isolatedEntries: {
+            [moduleContextSymbol]: context
+        }
+    });
+    proxyContexts.set(proxy, context as ModuleProxyContext<any>);
 
     return proxy;
 }
