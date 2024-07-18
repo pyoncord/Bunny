@@ -1,3 +1,4 @@
+import { _patcherDelaySymbol } from "@lib/api/patcher";
 import { proxyLazy } from "@lib/utils/lazy";
 
 import { getMetroCache } from "./caches";
@@ -5,28 +6,29 @@ import { findExports } from "./finders";
 import { metroModules, subscribeModule } from "./modules";
 import type { FilterFn } from "./types";
 
-const moduleContextSymbol = Symbol.for("bunny.metro.modules");
-const proxyContexts = new WeakMap<any, ModuleProxyContext<any[]>>();
+export const _lazyContextSymbol = Symbol.for("bunny.metro.lazyContext");
+export const _lazyContexts = new WeakMap<any, LazyModuleContext<any[]>>();
 
-interface ModuleProxyContext<A extends unknown[]> {
+export interface LazyModuleContext<A extends unknown[] = unknown[]> {
     filter: FilterFn<A>;
     indexed: boolean;
-    moduleId: number | undefined;
+    moduleId?: number;
     getExports(cb: (exports: any) => void): () => void;
     subscribe(cb: (exports: any) => void): () => void;
-    unproxy(): any;
+    forceLoad(): any;
     get cache(): any;
 }
 
-function getIndexedSingleFind<A extends unknown[]>(filter: FilterFn<A>) {
+function getIndexedFind<A extends unknown[]>(filter: FilterFn<A>) {
     const modulesMap = getMetroCache().findIndex[filter.uniq];
-    if (!modulesMap) return;
-    const id = Object.keys(modulesMap).filter(k => k[0] !== "_")[0];
-    return id ? Number(id) : void 0;
+    if (!modulesMap) return undefined;
+
+    for (const k in modulesMap)
+        if (k[0] !== "_") return Number(k);
 }
 
-function subscribeModuleOfFind(proxy: any, callback: (exports: any) => void) {
-    const info = getFindContext(proxy);
+function subscribeLazyModule(proxy: any, callback: (exports: any) => void) {
+    const info = getLazyContext(proxy);
     if (!info) throw new Error("Subscribing a module for non-proxy-find");
     if (!info.indexed) throw new Error("Attempting to subscribe to a non-indexed find");
 
@@ -35,43 +37,46 @@ function subscribeModuleOfFind(proxy: any, callback: (exports: any) => void) {
     });
 }
 
-export function getFindContext<A extends unknown[]>(proxy: any): ModuleProxyContext<A> | void {
-    return proxyContexts.get(proxy) as unknown as ModuleProxyContext<A>;
+export function getLazyContext<A extends unknown[]>(proxy: any): LazyModuleContext<A> | void {
+    return _lazyContexts.get(proxy) as unknown as LazyModuleContext<A>;
 }
 
-export function createFindProxy<A extends unknown[]>(filter: FilterFn<A>) {
+export function createLazyModule<A extends unknown[]>(filter: FilterFn<A>) {
     let cache: any = undefined;
 
-    const moduleId = getIndexedSingleFind(filter);
-    const context: ModuleProxyContext<A> = {
+    const moduleId = getIndexedFind(filter);
+    const context: LazyModuleContext<A> = {
         filter,
         indexed: !!moduleId,
         moduleId,
         getExports(cb: (exports: any) => void) {
             if (!moduleId || metroModules[moduleId]?.isInitialized) {
-                return cb(this.unproxy()), () => { };
+                cb(this.forceLoad());
+                return () => void 0;
             }
             return this.subscribe(cb);
         },
         subscribe(cb: (exports: any) => void) {
-            return subscribeModuleOfFind(proxy, cb);
+            return subscribeLazyModule(proxy, cb);
         },
         get cache() {
             return cache;
         },
-        unproxy() {
+        forceLoad() {
             cache ??= findExports(filter);
             if (!cache) throw new Error(`${filter.uniq} is ${typeof cache}! (id ${context.moduleId ?? "unknown"})`);
             return cache;
         }
     };
 
-    const proxy = proxyLazy(() => context.unproxy(), {
-        isolatedEntries: {
-            [moduleContextSymbol]: context
+    const proxy = proxyLazy(() => context.forceLoad(), {
+        exemptedEntries: {
+            [_lazyContextSymbol]: context,
+            [_patcherDelaySymbol]: (cb: (exports: any) => void) => context.getExports(cb)
         }
     });
-    proxyContexts.set(proxy, context as ModuleProxyContext<any>);
+
+    _lazyContexts.set(proxy, context as LazyModuleContext<any>);
 
     return proxy;
 }

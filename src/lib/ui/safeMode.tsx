@@ -6,6 +6,7 @@ import { settings } from "@lib/settings";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { ButtonColors } from "@lib/utils/types";
 import { Button, CompatButton, SafeAreaView } from "@metro/common/components";
+import { _lazyContextSymbol, LazyModuleContext } from "@metro/proxy";
 import { findByNameProxy, findByProps } from "@metro/utils";
 import { semanticColors } from "@ui/color";
 import { Codeblock, ErrorBoundary as _ErrorBoundary } from "@ui/components";
@@ -68,7 +69,16 @@ const tabs: Tab[] = [
     { id: "componentStack", title: () => Strings.COMPONENT, trimWhitespace: true },
 ];
 
-export default () => after.proxy("render", [ErrorBoundary, r => r.prototype], function (this: any, _, ret) {
+function getErrorBoundaryContext() {
+    const ctxt: LazyModuleContext = findByNameProxy("ErrorBoundary")[_lazyContextSymbol];
+    return new Promise(resolve => {
+        ctxt.getExports(exp => {
+            resolve(exp.prototype);
+        });
+    });
+}
+
+export default () => after.await("render", getErrorBoundaryContext(), function (this: any, _, ret) {
     if (!this.state.error) return;
 
     // Not using setState here as we don't want to cause a re-render, we want this to be set in the initial render

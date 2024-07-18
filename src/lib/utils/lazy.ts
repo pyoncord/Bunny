@@ -1,16 +1,14 @@
 /* eslint-disable func-call-spacing */
 
-interface IsolatedEntries {
-    [keys: symbol | string]: any;
-}
+type ExemptedEntries = Record<symbol | string, unknown>;
 
-interface LazyOptions {
+interface LazyOptions<E extends ExemptedEntries> {
     hint?: "function" | "object";
-    isolatedEntries?: IsolatedEntries
+    exemptedEntries?: E
 }
 
 interface ContextHolder {
-    options: LazyOptions;
+    options: LazyOptions<any>;
     factory: any
 }
 
@@ -34,7 +32,7 @@ const lazyHandler: ProxyHandler<any> = {
         const contextHolder = proxyContextHolder.get(target);
 
         if (contextHolder?.options) {
-            const { isolatedEntries } = contextHolder.options;
+            const { exemptedEntries: isolatedEntries } = contextHolder.options;
             if (isolatedEntries && p in isolatedEntries) return true;
         }
 
@@ -46,7 +44,7 @@ const lazyHandler: ProxyHandler<any> = {
         const contextHolder = proxyContextHolder.get(target);
 
         if (contextHolder?.options) {
-            const { isolatedEntries } = contextHolder.options;
+            const { exemptedEntries: isolatedEntries } = contextHolder.options;
             if (isolatedEntries?.[p]) return isolatedEntries[p];
         }
 
@@ -83,13 +81,13 @@ const lazyHandler: ProxyHandler<any> = {
  * @returns A proxy that will call the factory function only when needed
  * @example const ChannelStore = proxyLazy(() => findByProps("getChannelId"));
  */
-export function proxyLazy<T>(factory: () => T, opts: LazyOptions = {}): T {
+export function proxyLazy<T, I extends ExemptedEntries>(factory: () => T, opts: LazyOptions<I> = {}): T {
     let cache: T;
 
-    const dummy = opts.hint !== "object" ? function () { } as any : {};
+    const dummy = opts.hint !== "object" ? function () { } : {};
     const proxyFactory = () => cache ??= factory();
 
-    const proxy = new Proxy(dummy, lazyHandler) as T;
+    const proxy = new Proxy(dummy, lazyHandler) as T & I;
     factories.set(proxy, proxyFactory);
     proxyContextHolder.set(dummy, {
         factory,
@@ -108,7 +106,10 @@ export function proxyLazy<T>(factory: () => T, opts: LazyOptions = {}): T {
  * const { uuid4 } = lazyDestructure(() => findByProps("uuid4"))
  * uuid4; // <- is a lazy proxy!
  */
-export function lazyDestructure<T extends Record<PropertyKey, unknown>>(factory: () => T, opts: LazyOptions = {}): T {
+export function lazyDestructure<
+    T extends Record<PropertyKey, unknown>,
+    I extends ExemptedEntries
+>(factory: () => T, opts: LazyOptions<I> = {}): T {
     const proxiedObject = proxyLazy(factory);
 
     return new Proxy({}, {

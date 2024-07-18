@@ -1,57 +1,66 @@
-import { getFindContext } from "@metro/proxy";
 const {
     after: _after,
     before: _before,
     instead: _instead
-} = require("spitroast") as
-    // Temporary
-    typeof import("../../../node_modules/spitroast");
+} = require("spitroast");
 
-type ParametersAfterTwoArgs<F> = F extends (x: any, y: any, ...args: infer P) => unknown ? P : never;
-type ProxyPatchParameters<T, P> = [func: string, parent: [P, (t: P) => any], ...args: ParametersAfterTwoArgs<T>];
+export const _patcherDelaySymbol = Symbol.for("bunny.api.patcher.delay");
 
-function shim<T extends (func: string, parent: any, ...args: ParametersAfterTwoArgs<T>) => any>(fn: T) {
-    function shimmed(this: any, ...args: Parameters<T>) {
-        const proxyInfo = getFindContext(args[1]);
-        if (proxyInfo && !proxyInfo.cache && proxyInfo.indexed) {
+type Unpatcher = () => boolean;
+type DelayCallback = (callback: (target: any) => void) => unknown;
+type Thenable = { then: typeof Promise.prototype.then };
+
+interface PatchFn<Callback> {
+    (func: string, parent: any, callback: Callback): Unpatcher;
+    await(func: string, parent: Promise<unknown>, callback: Callback): Unpatcher;
+}
+
+type BeforeFn = PatchFn<(args: any[]) => unknown | unknown[]>;
+type InsteadFn = PatchFn<(args: any[], origFunc: Function) => unknown>;
+type AfterFn = PatchFn<(args: any[], ret: any) => unknown>;
+
+function create(fn: Function) {
+    function patchFn(this: any, ...args: any[]) {
+        if (_patcherDelaySymbol in args[1]) {
+            const delayCallback: DelayCallback = args[1][_patcherDelaySymbol];
+
             let cancel = false;
             let unpatch = () => cancel = true;
-            proxyInfo.subscribe(exp => {
+
+            delayCallback(target => {
                 if (cancel) return;
-                args[1] = exp;
+                args[1] = target;
                 unpatch = fn.apply(this, args);
             });
 
             return () => unpatch();
         }
+
         return fn.apply(this, args);
     }
 
-    shimmed.proxy = function proxyPatch<P>(this: any, ...args: ProxyPatchParameters<T, P>) {
-        const [target, resolve] = args[1];
-        const proxyInfo = getFindContext(target);
-        if (!proxyInfo) {
-            args[1] = resolve(target);
-            return shimmed(...args as unknown as Parameters<T>);
-        }
+    function promisePatchFn(this: any, ...args: [any, Thenable, ...any]) {
+        const thenable = args[1];
+        if (!thenable || !("then" in thenable)) throw new Error("target is not a then-able object");
 
         let cancel = false;
         let unpatch = () => cancel = true;
-        proxyInfo.getExports(exp => {
+
+        thenable.then(target => {
             if (cancel) return;
-            args[1] = resolve(exp);
-            unpatch = shimmed(...args as unknown as Parameters<T>);
+            args[1] = target;
+            unpatch = patchFn.apply(this, args);
         });
 
-        return unpatch;
-    };
+        return () => unpatch();
+    }
 
-    return shimmed;
+    return Object.assign(patchFn, { await: promisePatchFn });
 }
 
-export const after = shim(_after);
-export const before = shim(_before);
-export const instead = shim(_instead);
+export const after = create(_after) as AfterFn;
+export const before = create(_before) as BeforeFn;
+export const instead = create(_instead) as InsteadFn;
 
 /** @internal */
 export default { after, before, instead };

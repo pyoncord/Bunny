@@ -12,7 +12,7 @@ import { lazyDestructure, proxyLazy } from "@lib/utils/lazy";
 import { Author } from "@lib/utils/types";
 import { chroma } from "@metro/common";
 import { byMutableProp } from "@metro/filters";
-import { createFindProxy } from "@metro/proxy";
+import { createLazyModule } from "@metro/proxy";
 import { findByNameProxy, findByProps, findByPropsProxy, findByStoreNameProxy } from "@metro/utils";
 import { ImageBackground, Platform, processColor } from "react-native";
 
@@ -55,7 +55,7 @@ const ThemeStore = findByStoreNameProxy("ThemeStore");
 const formDividerModule = findByPropsProxy("DIVIDER_COLORS");
 const MessagesWrapperConnected = findByNameProxy("MessagesWrapperConnected", false);
 const { MessagesWrapper } = lazyDestructure(() => findByProps("MessagesWrapper"));
-const isThemeModule = createFindProxy(byMutableProp("isThemeDark"));
+const isThemeModule = createLazyModule(byMutableProp("isThemeDark"));
 
 export const themes = wrapSync(createStorage<Record<string, Theme>>(createMMKVBackend("VENDETTA_THEMES")));
 
