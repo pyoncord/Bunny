@@ -12,7 +12,7 @@ import { lazyDestructure, proxyLazy } from "@lib/utils/lazy";
 import { Author } from "@lib/utils/types";
 import { chroma } from "@metro/common";
 import { byMutableProp } from "@metro/filters";
-import { createLazyModule } from "@metro/proxy";
+import { createLazyModule } from "@metro/lazy";
 import { findByNameProxy, findByProps, findByPropsProxy, findByStoreNameProxy } from "@metro/utils";
 import { ImageBackground, Platform, processColor } from "react-native";
 

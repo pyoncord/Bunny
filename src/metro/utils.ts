@@ -1,7 +1,7 @@
 
 import { byDisplayName, byFilePath, byName, byProps, byStoreName, byTypeName } from "./filters";
 import { findAllExports, findExports } from "./finders";
-import { createLazyModule } from "./proxy";
+import { createLazyModule } from "./lazy";
 import { FilterCheckDef, FilterDefinition, ModuleExports } from "./types";
 
 export function createFilterDefinition<A extends unknown[]>(

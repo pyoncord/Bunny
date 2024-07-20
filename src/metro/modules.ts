@@ -1,5 +1,7 @@
-import { ExportsFlags, getMetroCache, indexBlacklistFlag, indexExportsFlags, ModulesMapInternal } from "@metro/caches";
+import { getMetroCache, indexBlacklistFlag, indexExportsFlags } from "@metro/caches";
 import { Metro } from "@metro/types";
+
+import { ModuleFlags, ModulesMapInternal } from "./enums";
 
 const { before, instead } = require("spitroast");
 
@@ -21,7 +23,7 @@ for (const key in metroModules) {
     const metroModule = metroModules[id];
 
     const cache = getMetroCache().exportsIndex[id];
-    if (cache & ExportsFlags.BLACKLISTED) {
+    if (cache & ModuleFlags.BLACKLISTED) {
         blacklistModule(id);
         continue;
     }
@@ -175,7 +177,7 @@ export function requireModule(id: Metro.ModuleID) {
         return metroRequire(id);
     }
 
-    // Disable Internal Metro error reporting logic
+    // Disable Internal RN error reporting logic
     const originalHandler = ErrorUtils.getGlobalHandler();
     ErrorUtils.setGlobalHandler(noopHandler);
 

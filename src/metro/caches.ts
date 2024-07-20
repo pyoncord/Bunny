@@ -1,21 +1,13 @@
 import { ClientInfoManager, MMKVManager } from "@lib/api/native/modules";
 import { debounce } from "es-toolkit";
 
-const CACHE_VERSION = 34;
+import { ModuleFlags, ModulesMapInternal } from "./enums";
+
+const CACHE_VERSION = 52;
 const BUNNY_METRO_CACHE_KEY = "__bunny_metro_cache_key__";
 
-export enum ExportsFlags {
-    EXISTS = 1 << 0,
-    BLACKLISTED = 1 << 1
-}
-
-export enum ModulesMapInternal {
-    FULL_LOOKUP,
-    NOT_FOUND
-}
-
 type ModulesMap = {
-    [flag in number | `_${ModulesMapInternal}`]?: 0 | ExportsFlags | undefined;
+    [flag in number | `_${ModulesMapInternal}`]?: ModuleFlags;
 };
 
 let _metroCache = null as unknown as ReturnType<typeof buildInitCache>;
@@ -33,13 +25,13 @@ function buildInitCache() {
         assetsIndex: {} as Record<string, ModulesMap | undefined>
     } as const;
 
-    // Make sure all assets are cached. Delay by a second
+    // Force load all modules so useful modules are pre-cached. Delay by a second
     // because force loading it all will results in an unexpected crash.
     setTimeout(() => {
         for (const id in window.modules) {
             require("@metro/modules").requireModule(id);
         }
-    }, 1000);
+    }, 100);
 
     _metroCache = cache;
     return cache;
@@ -52,6 +44,10 @@ export async function initMetroCache() {
 
     try {
         _metroCache = JSON.parse(rawCache);
+        if (_metroCache._v !== CACHE_VERSION) {
+            _metroCache = null!;
+            throw "cache invalidated; cache version outdated";
+        }
         if (_metroCache._buildNumber !== ClientInfoManager.Build) {
             _metroCache = null!;
             throw "cache invalidated; version mismatch";
@@ -70,21 +66,21 @@ const saveCache = debounce(() => {
 }, 1000);
 
 function extractExportsFlags(moduleExports: any) {
-    if (!moduleExports) return 0;
+    if (!moduleExports) return undefined;
 
-    const bit = ExportsFlags.EXISTS;
+    const bit = ModuleFlags.EXISTS;
     return bit;
 }
 
 export function indexExportsFlags(moduleId: number, moduleExports: any) {
     const flags = extractExportsFlags(moduleExports);
-    if (flags !== ExportsFlags.EXISTS) {
+    if (flags && flags !== ModuleFlags.EXISTS) {
         _metroCache.exportsIndex[moduleId] = flags;
     }
 }
 
 export function indexBlacklistFlag(id: number) {
-    _metroCache.exportsIndex[id] |= ExportsFlags.BLACKLISTED;
+    _metroCache.exportsIndex[id] |= ModuleFlags.BLACKLISTED;
 }
 
 export function getCacherForUniq(uniq: string, allFind: boolean) {

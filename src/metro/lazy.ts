@@ -4,20 +4,10 @@ import { proxyLazy } from "@lib/utils/lazy";
 import { getMetroCache } from "./caches";
 import { findExports } from "./finders";
 import { metroModules, subscribeModule } from "./modules";
-import type { FilterFn } from "./types";
+import type { FilterFn, LazyModuleContext } from "./types";
 
 export const _lazyContextSymbol = Symbol.for("bunny.metro.lazyContext");
-export const _lazyContexts = new WeakMap<any, LazyModuleContext<any[]>>();
-
-export interface LazyModuleContext<A extends unknown[] = unknown[]> {
-    filter: FilterFn<A>;
-    indexed: boolean;
-    moduleId?: number;
-    getExports(cb: (exports: any) => void): () => void;
-    subscribe(cb: (exports: any) => void): () => void;
-    forceLoad(): any;
-    get cache(): any;
-}
+export const _lazyContexts = new WeakMap<any, LazyModuleContext>();
 
 function getIndexedFind<A extends unknown[]>(filter: FilterFn<A>) {
     const modulesMap = getMetroCache().findIndex[filter.uniq];

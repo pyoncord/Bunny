@@ -9,8 +9,8 @@ function filterExports<A extends unknown[]>(
 ): [any, boolean] | [void, false] {
     if (
         moduleExports.default &&
-    moduleExports.__esModule &&
-    filter(moduleExports.default, moduleId, true)
+        moduleExports.__esModule &&
+        filter(moduleExports.default, moduleId, true)
     ) {
         return [filter.raw ? moduleExports : moduleExports.default, !filter.raw];
     }

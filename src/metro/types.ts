@@ -148,6 +148,16 @@ export interface FilterDefinition<A extends unknown[]> {
     uniqMaker(args: A): string;
 }
 
+export interface LazyModuleContext<A extends unknown[] = unknown[]> {
+    filter: FilterFn<A>;
+    indexed: boolean;
+    moduleId?: number;
+    getExports(cb: (exports: any) => void): () => void;
+    subscribe(cb: (exports: any) => void): () => void;
+    forceLoad(): any;
+    get cache(): any;
+}
+
 export interface Dispatcher {
     _actionHandlers: unknown;
     _interceptors?: ((payload: any) => void | boolean)[];

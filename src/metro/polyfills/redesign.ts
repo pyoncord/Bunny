@@ -1,5 +1,4 @@
 import { getPolyfillModuleCacher } from "@metro/caches";
-import { byProps } from "@metro/filters";
 import { LiteralUnion } from "type-fest";
 
 const redesignProps = new Set([
@@ -100,39 +99,38 @@ const redesignProps = new Set([
 
 type Keys = LiteralUnion<typeof redesignProps extends Set<infer U> ? U : string, string>;
 
+const _module = {} as Record<Keys, any>;
+const _source = {} as Record<Keys, number>;
+
 const cacher = getPolyfillModuleCacher("redesign_module");
 
-const _module = {} as Record<Keys, any>;
-export default _module;
+for (const [id, moduleExports] of cacher.getModules()) {
+    for (const prop of redesignProps) {
+        let actualExports: any;
 
-for (const prop of redesignProps) {
-    const filter = byProps(prop);
-    const candidates: any[] = [];
+        if (moduleExports[prop]) {
+            actualExports = moduleExports;
+        } else if (moduleExports.default?.[prop]) {
+            actualExports = moduleExports.default;
+        } else {
+            continue;
+        }
 
-    for (const [id, moduleExports] of cacher.getModules()) {
-        if (filter(moduleExports, id, false)) {
-            cacher.cacheId(id);
-            candidates.push(moduleExports);
-        } else if (
-            moduleExports.__esModule
-            && moduleExports.default
-            && filter(moduleExports.default, id, false)
-        ) {
-            cacher.cacheId(id);
-            candidates.push(moduleExports.default);
+        const exportsKeysLength = Reflect.ownKeys(actualExports).length;
+        if (_source[prop] && exportsKeysLength >= _source[prop]) {
+            continue;
+        }
+
+        _module[prop] = actualExports[prop];
+        _source[prop] = Reflect.ownKeys(actualExports).length;
+        cacher.cacheId(id);
+
+        if (exportsKeysLength === 1) {
+            redesignProps.delete(prop);
         }
     }
-
-    if (candidates.length === 0) continue;
-
-    const bestCandidate = candidates.reduce(
-        (c1, c2) =>
-            (Object.keys(c2).length < Object.keys(c1).length)
-                ? c2
-                : c1
-    );
-
-    _module[prop] = bestCandidate[prop];
 }
 
 cacher.finish();
+
+export default _module;

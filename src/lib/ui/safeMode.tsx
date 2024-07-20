@@ -6,7 +6,7 @@ import { settings } from "@lib/settings";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { ButtonColors } from "@lib/utils/types";
 import { Button, CompatButton, SafeAreaView } from "@metro/common/components";
-import { _lazyContextSymbol, LazyModuleContext } from "@metro/proxy";
+import { _lazyContextSymbol, LazyModuleContext } from "@metro/lazy";
 import { findByNameProxy, findByProps } from "@metro/utils";
 import { semanticColors } from "@ui/color";
 import { Codeblock, ErrorBoundary as _ErrorBoundary } from "@ui/components";
