@@ -1,6 +1,7 @@
 import { proxyLazy } from "@lib/utils/lazy";
-import { Dispatcher } from "@metro/types";
 import { findByFilePath, findByProps, findByPropsLazy } from "@metro/utils";
+
+import { Dispatcher } from "./types";
 
 // Discord
 export const constants = findByPropsLazy("Fonts", "Permissions");
@@ -26,19 +27,3 @@ export const FluxDispatcher = findByProps("_interceptors") as Dispatcher;
 // React
 export const React = window.React = findByPropsLazy("createElement") as typeof import("react");
 export const ReactNative = window.ReactNative = findByPropsLazy("AppRegistry") as typeof import("react-native");
-
-// Moment
-export const moment = findByPropsLazy("isMoment") as typeof import("moment");
-
-// chroma.js
-export const chroma = findByPropsLazy("brewer") as typeof import("chroma-js");
-
-// Lodash
-export const lodash = findByPropsLazy("forEachRight") as typeof import("lodash");
-
-// Skia
-export const Skia = findByPropsLazy("useFont") as typeof import("@shopify/react-native-skia");
-
-// The node:util polyfill for RN
-// TODO: Find types for this
-export const util = findByPropsLazy("inspect", "isNullOrUndefined");

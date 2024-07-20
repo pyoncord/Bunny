@@ -7,7 +7,8 @@
  */
 
 import { logger } from "@lib/utils/logger";
-import { FluxDispatcher, moment } from "@metro/common";
+import { FluxDispatcher } from "@metro/common";
+import moment from "moment";
 
 function onDispatch({ locale }: { locale: string; }) {
     // Timestamps

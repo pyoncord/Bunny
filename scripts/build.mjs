@@ -11,6 +11,12 @@ import yargs from "yargs-parser";
 
 import { printBuildSuccess } from "./util.mjs";
 
+/** @type string[] */
+const metroDeps = await (async () => {
+    const ast = await swc.parseFile(path.resolve("./shims/depsModule.ts"));
+    return ast.body.at(-1).expression.right.properties.map(p => p.key.value);
+})();
+
 const args = yargs(process.argv.slice(2));
 const {
     "release-branch": releaseBranch,
@@ -28,7 +34,7 @@ const config = {
     minify: false,
     external: [],
     supported: {
-        // Hermes does not actually supports const and let, even though it syntactically
+        // Hermes does not actually support const and let, even though it syntactically
         // accepts it, but it's treated just like 'var' and causes issues
         "const-and-let": false
     },
@@ -43,13 +49,16 @@ const config = {
     },
     legalComments: "none",
     alias: {
+        "!bunny-deps-shim!": "./shims/depsModule.ts",
         "spitroast": "./node_modules/spitroast",
         "react/jsx-runtime": "./shims/jsxRuntime"
     },
     plugins: [
         globalPlugin({
-            "react": "React",
-            "react-native": "ReactNative"
+            ...metroDeps.reduce((obj, key) => {
+                obj[key] = `require("!bunny-deps-shim!")[${JSON.stringify(key)}]`;
+                return obj;
+            }, {})
         }),
         {
             name: "swc",

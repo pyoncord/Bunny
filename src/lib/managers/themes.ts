@@ -10,10 +10,10 @@ import { awaitStorage, createFileBackend, createMMKVBackend, createStorage, wrap
 import { findInReactTree, safeFetch } from "@lib/utils";
 import { lazyDestructure, proxyLazy } from "@lib/utils/lazy";
 import { Author } from "@lib/utils/types";
-import { chroma } from "@metro/common";
 import { byMutableProp } from "@metro/filters";
 import { createLazyModule } from "@metro/lazy";
 import { findByNameLazy, findByProps, findByPropsLazy, findByStoreNameLazy } from "@metro/utils";
+import chroma from "chroma-js";
 import { ImageBackground, Platform, processColor } from "react-native";
 
 export interface ThemeData {

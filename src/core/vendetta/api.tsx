@@ -114,10 +114,10 @@ export const initVendettaObject = (): any => {
                 FluxDispatcher: common.FluxDispatcher,
                 React: common.React,
                 ReactNative: common.ReactNative,
-                moment: common.moment,
-                chroma: common.chroma,
-                lodash: common.lodash,
-                util: common.util
+                moment: require("moment"),
+                chroma: require("chroma-js"),
+                lodash: require("lodash"),
+                util: require("util")
             }
         },
         constants: {
