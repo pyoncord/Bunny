@@ -5,10 +5,10 @@ import patcher from "@lib/api/patcher";
 import * as storage from "@lib/api/storage";
 import { createStorage } from "@lib/api/storage";
 import * as debug from "@lib/debug";
-import * as plugins from "@lib/managers/plugins";
 import * as themes from "@lib/managers/themes";
 import { loaderConfig, settings } from "@lib/settings";
 import * as utils from "@lib/utils";
+import { cyrb64Hash } from "@lib/utils/cyrb64";
 import { DiscordLogger } from "@lib/utils/logger";
 import * as metro from "@metro";
 import * as common from "@metro/common";
@@ -23,7 +23,9 @@ import { omit } from "es-toolkit";
 import { createElement, useEffect } from "react";
 import { View } from "react-native";
 
-export async function createVdPluginObject(plugin: plugins.BunnyPlugin) {
+import { VdPluginManager, VendettaPlugin } from "./plugins";
+
+export async function createVdPluginObject(plugin: VendettaPlugin) {
     return {
         ...window.vendetta,
         plugin: {
@@ -171,13 +173,13 @@ export const initVendettaObject = (): any => {
             rawColors: color.rawColors
         },
         plugins: {
-            plugins: plugins.sourceStore,
-            fetchPlugin: (source: string) => plugins.fetchAndStorePlugin(source),
-            installPlugin: (source: string, enabled = true) => plugins.installPlugin(source, enabled),
-            startPlugin: (id: string) => plugins.startPlugin(plugins.sourceStore[id]!.id),
-            stopPlugin: (id: string, disable = true) => plugins.stopPlugin(plugins.sourceStore[id]!.id, disable),
-            removePlugin: (id: string) => plugins.removePlugin(plugins.sourceStore[id]!.id),
-            getSettings: (id: string) => plugins.getSettingsComponent(plugins.sourceStore[id]!.id)
+            plugins: VdPluginManager.plugins,
+            fetchPlugin: (source: string) => VdPluginManager.fetchPlugin(source),
+            installPlugin: (source: string, enabled = true) => VdPluginManager.installPlugin(source, enabled),
+            startPlugin: (id: string) => VdPluginManager.startPlugin(id),
+            stopPlugin: (id: string, disable = true) => VdPluginManager.stopPlugin(id, disable),
+            removePlugin: (id: string) => VdPluginManager.removePlugin(id),
+            getSettings: (id: string) => VdPluginManager.getSettings(id)
         },
         themes: {
             themes: themes.themes,
@@ -228,33 +230,4 @@ export const initVendettaObject = (): any => {
     };
 
     return () => api.unload();
-};
-
-// cyrb53 (c) 2018 bryc (github.com/bryc). License: Public domain. Attribution appreciated.
-// A fast and simple 64-bit (or 53-bit) string hash function with decent collision resistance.
-// Largely inspired by MurmurHash2/3, but with a focus on speed/simplicity.
-// See https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript/52171480#52171480
-// https://github.com/bryc/code/blob/master/jshash/experimental/cyrb53.js
-const cyrb64 = (str: string, seed = 0) => {
-    let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
-    for (let i = 0, ch; i < str.length; i++) {
-        ch = str.charCodeAt(i);
-        h1 = Math.imul(h1 ^ ch, 2654435761);
-        h2 = Math.imul(h2 ^ ch, 1597334677);
-    }
-    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
-    h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
-    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
-    h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
-    // For a single 53-bit numeric return value we could return
-    // 4294967296 * (2097151 & h2) + (h1 >>> 0);
-    // but we instead return the full 64-bit value:
-    return [h2 >>> 0, h1 >>> 0];
-};
-
-// An improved, *insecure* 64-bit hash that's short, fast, and has no dependencies.
-// Output is always 14 characters.
-const cyrb64Hash = (str: string, seed = 0) => {
-    const [h2, h1] = cyrb64(str, seed);
-    return h2.toString(36).padStart(7, "0") + h1.toString(36).padStart(7, "0");
 };

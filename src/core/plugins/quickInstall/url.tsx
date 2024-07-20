@@ -1,8 +1,8 @@
 import { formatString, Strings } from "@core/i18n";
+import { VdPluginManager } from "@core/vendetta/plugins";
 import { findAssetId } from "@lib/api/assets";
 import { isThemeSupported } from "@lib/api/native/loader";
 import { after, instead } from "@lib/api/patcher";
-import { installPlugin } from "@lib/managers/plugins";
 import { installTheme } from "@lib/managers/themes";
 import { THEMES_CHANNEL_ID, VD_PROXY_PREFIX } from "@lib/utils/constants";
 import { lazyDestructure } from "@lib/utils/lazy";
@@ -28,7 +28,7 @@ function typeFromUrl(url: string) {
 }
 
 function installWithToast(type: "plugin" | "theme", url: string) {
-    (type === "plugin" ? installPlugin : installTheme)(url)
+    (type === "plugin" ? VdPluginManager.installPlugin.bind(VdPluginManager) : installTheme)(url)
         .then(() => {
             showToast(Strings.SUCCESSFULLY_INSTALLED, findAssetId("Check"));
         })

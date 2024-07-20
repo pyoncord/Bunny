@@ -1,5 +1,5 @@
 import { allSettled } from "@core/polyfills/allSettled";
-import { createVdPluginObject } from "@core/polyfills/vendettaObject";
+import { createVdPluginObject } from "@core/vendetta/api";
 import { awaitStorage, createMMKVBackend, createStorage, purgeStorage, wrapSync } from "@lib/api/storage";
 import { settings } from "@lib/settings";
 import { safeFetch } from "@lib/utils";

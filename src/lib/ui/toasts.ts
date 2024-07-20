@@ -3,7 +3,6 @@ import { findAssetId } from "@lib/api/assets";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { toasts } from "@metro/common";
 import { findByProps } from "@metro/utils";
-import { Platform } from "react-native";
 
 const { uuid4 } = lazyDestructure(() => findByProps("uuid4"));
 
@@ -17,8 +16,5 @@ export const showToast = (content: string, asset?: number) => toasts.open({
 });
 
 showToast.showCopyToClipboard = (message = Strings.COPIED_TO_CLIPBOARD) => {
-    // On Android, only show toast for 12 and lower
-    if (Platform.OS !== "android" || Platform.Version <= 32) {
-        showToast(message, findAssetId("toast_copy_link"));
-    }
+    showToast(message, findAssetId("toast_copy_link"));
 };

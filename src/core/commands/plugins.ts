@@ -1,6 +1,6 @@
 import { Strings } from "@core/i18n";
+import { VdPluginManager, VendettaPlugin } from "@core/vendetta/plugins";
 import { ApplicationCommand, ApplicationCommandOptionType } from "@lib/api/commands/types";
-import { BunnyPlugin, sourceStore as pluginStorage } from "@lib/managers/plugins";
 import { messageUtil } from "@metro/common";
 
 export default () => <ApplicationCommand>{
@@ -15,7 +15,7 @@ export default () => <ApplicationCommand>{
         }
     ],
     execute([ephemeral], ctx) {
-        const plugins = Object.values(pluginStorage).filter(Boolean) as unknown as BunnyPlugin[];
+        const plugins = Object.values(VdPluginManager.plugins).filter(Boolean) as unknown as VendettaPlugin[];
         plugins.sort((a, b) => a.manifest.name.localeCompare(b.manifest.name));
 
         const enabled = plugins.filter(p => p.enabled).map(p => p.manifest.name);

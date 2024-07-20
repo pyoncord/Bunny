@@ -1,11 +1,11 @@
 import { CardWrapper } from "@core/ui/components/AddonCard";
+import { VdPluginManager, VendettaPlugin } from "@core/vendetta/plugins";
 import { findAssetId } from "@lib/api/assets";
 import { useProxy } from "@lib/api/storage";
-import { BunnyPlugin, getSettingsComponent, startPlugin, stopPlugin } from "@lib/managers/plugins";
 import { showSheet } from "@lib/ui/sheets";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { findByProps } from "@metro";
-import { NavigationNative, tokens } from "@metro/common";
+import { NavigationNative } from "@metro/common";
 import { Card, IconButton, Stack, TableSwitch, Text } from "@metro/common/components";
 import { createContext, memo, useContext } from "react";
 import { Image, View } from "react-native";
@@ -13,7 +13,7 @@ import { Image, View } from "react-native";
 import { usePluginCardStyles } from "./usePluginCardStyles";
 
 const { useToken } = lazyDestructure(() => findByProps("useToken"));
-const PluginContext = createContext<BunnyPlugin>(null!);
+const PluginContext = createContext<VendettaPlugin>(null!);
 const usePlugin = () => useContext(PluginContext);
 
 function Authors() {
@@ -65,25 +65,25 @@ function Title() {
 
 // TODO: Wrap in a Card-ish component with red bg
 // TODO: Allow glacing at the error's stack
-function Status() {
-    const plugin = usePlugin();
-    const styles = usePluginCardStyles();
-    const INTERACTIVE_NORMAL = useToken(tokens.colors.INTERACTIVE_NORMAL);
+// function Status() {
+//     const plugin = usePlugin();
+//     const styles = usePluginCardStyles();
+//     const INTERACTIVE_NORMAL = useToken(tokens.colors.INTERACTIVE_NORMAL);
 
-    if (!plugin.error) return null;
+//     if (!plugin.error) return null;
 
-    return <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-        <View style={styles.smallIcon}>
-            <Image
-                tintColor={INTERACTIVE_NORMAL}
-                source={findAssetId("WarningIcon")}
-            />
-        </View>
-        <Text variant="text-sm/semibold">
-            There was an error while attempting to start this plugin.
-        </Text>
-    </View>;
-}
+//     return <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+//         <View style={styles.smallIcon}>
+//             <Image
+//                 tintColor={INTERACTIVE_NORMAL}
+//                 source={findAssetId("WarningIcon")}
+//             />
+//         </View>
+//         <Text variant="text-sm/semibold">
+//             There was an error while attempting to start this plugin.
+//         </Text>
+//     </View>;
+// }
 
 const Actions = memo(() => {
     const plugin = usePlugin();
@@ -94,10 +94,10 @@ const Actions = memo(() => {
             size="sm"
             variant="secondary"
             icon={findAssetId("WrenchIcon")}
-            disabled={!getSettingsComponent(plugin.id)}
+            disabled={!VdPluginManager.getSettings(plugin.id)}
             onPress={() => navigation.push("VendettaCustomPage", {
                 title: plugin.manifest.name,
-                render: getSettingsComponent(plugin.id),
+                render: VdPluginManager.getSettings(plugin.id),
             })}
         />
         <IconButton
@@ -113,14 +113,14 @@ const Actions = memo(() => {
     </View>;
 });
 
-export default function PluginCard({ item: plugin }: CardWrapper<BunnyPlugin>) {
+export default function PluginCard({ item: plugin }: CardWrapper<VendettaPlugin>) {
     useProxy(plugin);
 
     return (
         <PluginContext.Provider value={plugin}>
             <Card>
                 <Stack spacing={16}>
-                    <Status />
+                    {/* <Status /> */}
                     <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
                         <View style={{ flexShrink: 1 }}>
                             <Title />
@@ -132,8 +132,8 @@ export default function PluginCard({ item: plugin }: CardWrapper<BunnyPlugin>) {
                                 <TableSwitch
                                     value={plugin.enabled}
                                     onValueChange={(v: boolean) => {
-                                        if (v) startPlugin(plugin.id);
-                                        else stopPlugin(plugin.id);
+                                        if (v) VdPluginManager.startPlugin(plugin.id);
+                                        else VdPluginManager.stopPlugin(plugin.id);
                                     }}
                                 />
                             </Stack>

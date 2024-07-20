@@ -1,7 +1,7 @@
 import { formatString, Strings } from "@core/i18n";
+import { VdPluginManager, VendettaPlugin } from "@core/vendetta/plugins";
 import { findAssetId } from "@lib/api/assets";
 import { purgeStorage, useProxy } from "@lib/api/storage";
-import { BunnyPlugin, fetchAndStorePlugin, getSettingsComponent, removePlugin, startPlugin, stopPlugin } from "@lib/managers/plugins";
 import { showConfirmationAlert } from "@lib/ui/alerts";
 import { hideSheet } from "@lib/ui/sheets";
 import { showToast } from "@lib/ui/toasts";
@@ -11,14 +11,14 @@ import { ActionSheet, ActionSheetRow, Button, TableRow, Text } from "@metro/comm
 import { ScrollView, View } from "react-native";
 
 interface InfoProps {
-    plugin: BunnyPlugin;
+    plugin: VendettaPlugin;
     navigation: any;
 }
 
 export default function PluginInfoActionSheet({ plugin, navigation }: InfoProps) {
     useProxy(plugin);
 
-    const Settings = getSettingsComponent(plugin.id);
+    const Settings = VdPluginManager.getSettings(plugin.id);
 
     return <ActionSheet>
         <ScrollView>
@@ -47,16 +47,16 @@ export default function PluginInfoActionSheet({ plugin, navigation }: InfoProps)
                     label={Strings.REFETCH}
                     icon={<TableRow.Icon source={findAssetId("RetryIcon")} />}
                     onPress={async () => {
-                        if (plugin.enabled) stopPlugin(plugin.id, false);
+                        if (plugin.enabled) VdPluginManager.stopPlugin(plugin.id, false);
 
                         try {
-                            await fetchAndStorePlugin(plugin.id);
+                            await VdPluginManager.fetchPlugin(plugin.id);
                             showToast(Strings.PLUGIN_REFETCH_SUCCESSFUL, findAssetId("toast_image_saved"));
                         } catch {
                             showToast(Strings.PLUGIN_REFETCH_FAILED, findAssetId("Small"));
                         }
 
-                        if (plugin.enabled) await startPlugin(plugin.id);
+                        if (plugin.enabled) await VdPluginManager.startPlugin(plugin.id);
                         hideSheet("PluginInfoActionSheet");
                     }}
                 />
@@ -89,10 +89,10 @@ export default function PluginInfoActionSheet({ plugin, navigation }: InfoProps)
                         cancelText: Strings.CANCEL,
                         confirmColor: ButtonColors.RED,
                         onConfirm: async () => {
-                            if (plugin.enabled) stopPlugin(plugin.id, false);
+                            if (plugin.enabled) VdPluginManager.stopPlugin(plugin.id, false);
 
                             try {
-                                await fetchAndStorePlugin(plugin.id);
+                                await VdPluginManager.fetchPlugin(plugin.id);
                                 showToast(Strings.PLUGIN_REFETCH_SUCCESSFUL, findAssetId("toast_image_saved"));
                             } catch {
                                 showToast(Strings.PLUGIN_REFETCH_FAILED, findAssetId("Small"));
@@ -111,7 +111,7 @@ export default function PluginInfoActionSheet({ plugin, navigation }: InfoProps)
                                 findAssetId(message[1])
                             );
 
-                            if (plugin.enabled) await startPlugin(plugin.id);
+                            if (plugin.enabled) await VdPluginManager.startPlugin(plugin.id);
                             hideSheet("PluginInfoActionSheet");
                         }
                     })}
@@ -127,7 +127,7 @@ export default function PluginInfoActionSheet({ plugin, navigation }: InfoProps)
                         confirmColor: ButtonColors.RED,
                         onConfirm: () => {
                             try {
-                                removePlugin(plugin.id);
+                                VdPluginManager.removePlugin(plugin.id);
                             } catch (e) {
                                 showToast(String(e), findAssetId("Small"));
                             }
