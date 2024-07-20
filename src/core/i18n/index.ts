@@ -1,10 +1,10 @@
 import { FluxDispatcher } from "@metro/common";
-import { findByNameProxy } from "@metro/utils";
+import { findByNameLazy } from "@metro/utils";
 import { PrimitiveType } from "intl-messageformat";
 
 import langDefault from "./default.json";
 
-const IntlMessageFormat = findByNameProxy("MessageFormat") as typeof import("intl-messageformat").default;
+const IntlMessageFormat = findByNameLazy("MessageFormat") as typeof import("intl-messageformat").default;
 
 type I18nKey = keyof typeof langDefault;
 

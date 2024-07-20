@@ -1,7 +1,7 @@
 import { getProxyFactory } from "@lib/utils/lazy";
-import { findByPropsProxy } from "@metro/utils";
+import { findByPropsLazy } from "@metro/utils";
 
-const jsxRuntime = findByPropsProxy("jsx", "jsxs", "Fragment");
+const jsxRuntime = findByPropsLazy("jsx", "jsxs", "Fragment");
 
 function unproxyFirstArg<T>(args: T[]) {
     const factory = getProxyFactory(args[0]);

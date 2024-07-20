@@ -13,7 +13,7 @@ import { Author } from "@lib/utils/types";
 import { chroma } from "@metro/common";
 import { byMutableProp } from "@metro/filters";
 import { createLazyModule } from "@metro/lazy";
-import { findByNameProxy, findByProps, findByPropsProxy, findByStoreNameProxy } from "@metro/utils";
+import { findByNameLazy, findByProps, findByPropsLazy, findByStoreNameLazy } from "@metro/utils";
 import { ImageBackground, Platform, processColor } from "react-native";
 
 export interface ThemeData {
@@ -42,7 +42,7 @@ export interface Theme {
 
 //! As of 173.10, early-finding this does not work.
 // Somehow, this is late enough, though?
-export const color = findByPropsProxy("SemanticColor");
+export const color = findByPropsLazy("SemanticColor");
 
 const mmkvStorage = proxyLazy(() => {
     const newModule = findByProps("impl");
@@ -50,10 +50,10 @@ const mmkvStorage = proxyLazy(() => {
     return findByProps("storage");
 });
 
-const appearanceManager = findByPropsProxy("updateTheme");
-const ThemeStore = findByStoreNameProxy("ThemeStore");
-const formDividerModule = findByPropsProxy("DIVIDER_COLORS");
-const MessagesWrapperConnected = findByNameProxy("MessagesWrapperConnected", false);
+const appearanceManager = findByPropsLazy("updateTheme");
+const ThemeStore = findByStoreNameLazy("ThemeStore");
+const formDividerModule = findByPropsLazy("DIVIDER_COLORS");
+const MessagesWrapperConnected = findByNameLazy("MessagesWrapperConnected", false);
 const { MessagesWrapper } = lazyDestructure(() => findByProps("MessagesWrapper"));
 const isThemeModule = createLazyModule(byMutableProp("isThemeDark"));
 

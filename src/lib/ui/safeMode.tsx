@@ -7,13 +7,13 @@ import { lazyDestructure } from "@lib/utils/lazy";
 import { ButtonColors } from "@lib/utils/types";
 import { Button, CompatButton, SafeAreaView } from "@metro/common/components";
 import { _lazyContextSymbol, LazyModuleContext } from "@metro/lazy";
-import { findByNameProxy, findByProps } from "@metro/utils";
+import { findByNameLazy, findByProps } from "@metro/utils";
 import { semanticColors } from "@ui/color";
 import { Codeblock, ErrorBoundary as _ErrorBoundary } from "@ui/components";
 import { createThemedStyleSheet, TextStyleSheet } from "@ui/styles";
 import { Text, View } from "react-native";
 
-const ErrorBoundary = findByNameProxy("ErrorBoundary");
+const ErrorBoundary = findByNameLazy("ErrorBoundary");
 
 // Let's just pray they have this.
 const { BadgableTabBar } = lazyDestructure(() => findByProps("BadgableTabBar"));
@@ -70,7 +70,7 @@ const tabs: Tab[] = [
 ];
 
 function getErrorBoundaryContext() {
-    const ctxt: LazyModuleContext = findByNameProxy("ErrorBoundary")[_lazyContextSymbol];
+    const ctxt: LazyModuleContext = findByNameLazy("ErrorBoundary")[_lazyContextSymbol];
     return new Promise(resolve => {
         ctxt.getExports(exp => {
             resolve(exp.prototype);

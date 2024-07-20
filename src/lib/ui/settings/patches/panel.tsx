@@ -2,7 +2,7 @@ import { after } from "@lib/api/patcher";
 import { findInReactTree } from "@lib/utils";
 import { i18n, NavigationNative } from "@metro/common";
 import { LegacyFormIcon, LegacyFormRow, LegacyFormSection } from "@metro/common/components";
-import { findByNameProxy } from "@metro/utils";
+import { findByNameLazy } from "@metro/utils";
 import { registeredSections } from "@ui/settings";
 
 import { CustomPageRenderer, wrapOnPress } from "./shared";
@@ -28,7 +28,7 @@ function SettingsSection() {
 }
 
 export function patchPanelUI(unpatches: (() => void | boolean)[]) {
-    unpatches.push(after("default", findByNameProxy("getScreens", false), (_a, screens) => ({
+    unpatches.push(after("default", findByNameLazy("getScreens", false), (_a, screens) => ({
         ...screens,
         VendettaCustomPage: {
             title: "Bnuuy",
@@ -36,7 +36,7 @@ export function patchPanelUI(unpatches: (() => void | boolean)[]) {
         }
     })));
 
-    const unpatch = after("default", findByNameProxy("UserSettingsOverviewWrapper", false), (_a, ret) => {
+    const unpatch = after("default", findByNameLazy("UserSettingsOverviewWrapper", false), (_a, ret) => {
         const UserSettingsOverview = findInReactTree(ret.props.children, n => n.type?.name === "UserSettingsOverview");
 
         unpatches.push(after("renderSupportAndAcknowledgements", UserSettingsOverview.type.prototype, (_args, { props: { children } }) => {

@@ -1,9 +1,9 @@
 import { NavigationNative } from "@metro/common";
-import { findByPropsProxy } from "@metro/utils";
+import { findByPropsLazy } from "@metro/utils";
 import { ErrorBoundary } from "@ui/components";
 import { RowConfig } from "@ui/settings";
 
-const tabsNavigationRef = findByPropsProxy("getRootNavigationRef");
+const tabsNavigationRef = findByPropsLazy("getRootNavigationRef");
 
 export const CustomPageRenderer = React.memo(() => {
     const navigation = NavigationNative.useNavigation();

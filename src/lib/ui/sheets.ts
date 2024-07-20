@@ -1,6 +1,6 @@
-import { findByPropsProxy } from "@metro/utils";
+import { findByPropsLazy } from "@metro/utils";
 
-const actionSheet = findByPropsProxy("openLazy", "hideActionSheet");
+const actionSheet = findByPropsLazy("openLazy", "hideActionSheet");
 
 export function showSheet<T extends React.ComponentType<any>>(
     key: string,

@@ -9,12 +9,12 @@ import { lazyDestructure } from "@lib/utils/lazy";
 import { channels, url } from "@metro/common";
 import { byMutableProp } from "@metro/filters";
 import { findExports } from "@metro/finders";
-import { findByProps, findByPropsProxy } from "@metro/utils";
+import { findByProps, findByPropsLazy } from "@metro/utils";
 import { showConfirmationAlert } from "@ui/alerts";
 import { showToast } from "@ui/toasts";
 
 const showSimpleActionSheet = findExports(byMutableProp("showSimpleActionSheet"));
-const handleClick = findByPropsProxy("handleClick");
+const handleClick = findByPropsLazy("handleClick");
 const { openURL } = lazyDestructure(() => url);
 const { getChannelId } = lazyDestructure(() => channels);
 const { getChannel } = lazyDestructure(() => findByProps("getChannel"));

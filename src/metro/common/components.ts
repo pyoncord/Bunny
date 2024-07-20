@@ -1,7 +1,7 @@
 /* eslint-disable prefer-destructuring */
 import { lazyDestructure, proxyLazy } from "@lib/utils/lazy";
 import { findExports } from "@metro/finders";
-import { createFilterDefinition, findByDisplayNameProxy, findByNameProxy, findByProps, findByPropsProxy } from "@metro/utils";
+import { createFilterDefinition, findByDisplayNameLazy, findByNameLazy, findByProps, findByPropsLazy } from "@metro/utils";
 
 import * as t from "./types/components";
 
@@ -14,9 +14,9 @@ const findSingular = (prop: string) => proxyLazy(() => findExports(bySingularPro
 const findProp = (prop: string) => proxyLazy(() => findByProps(prop)[prop]);
 
 // Discord
-export const LegacyAlert = findByDisplayNameProxy("FluxContainer(Alert)");
-export const CompatButton = findByPropsProxy("Looks", "Colors", "Sizes");
-export const HelpMessage = findByNameProxy("HelpMessage");
+export const LegacyAlert = findByDisplayNameLazy("FluxContainer(Alert)");
+export const CompatButton = findByPropsLazy("Looks", "Colors", "Sizes");
+export const HelpMessage = findByNameLazy("HelpMessage");
 
 // React Native's included SafeAreaView only adds padding on iOS.
 export const SafeAreaView = proxyLazy(() => findByProps("useSafeAreaInsets").SafeAreaView);
@@ -64,10 +64,10 @@ export const FloatingActionButton = findProp("FloatingActionButton") as t.Floati
 export const ActionSheet = findProp("ActionSheet") as t.ActionSheet;
 export const BottomSheetTitleHeader = findProp("BottomSheetTitleHeader");
 
-const textsModule = findByPropsProxy("Text", "LegacyText");
+const textsModule = findByPropsLazy("Text", "LegacyText");
 export const Text = proxyLazy(() => textsModule.Text) as t.Text;
 
-export const Forms = findByPropsProxy("Form", "FormSection");
+export const Forms = findByPropsLazy("Form", "FormSection");
 
 export const {
     Form: LegacyForm,

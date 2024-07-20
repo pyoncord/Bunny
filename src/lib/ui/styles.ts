@@ -1,12 +1,12 @@
 import { lazyDestructure, proxyLazy } from "@lib/utils/lazy";
-import { findByProps, findByPropsProxy } from "@metro/utils";
+import { findByProps, findByPropsLazy } from "@metro/utils";
 import { isSemanticColor, resolveSemanticColor } from "@ui/color";
 import { DiscordTextStyles } from "@ui/types";
 import { ImageStyle, StyleSheet, TextStyle, ViewStyle } from "react-native";
 
 type NamedStyles<T> = { [P in keyof T]: ViewStyle | TextStyle | ImageStyle };
 
-const CompatfulRedesign = findByPropsProxy("createStyles");
+const CompatfulRedesign = findByPropsLazy("createStyles");
 
 export const { TextStyleSheet } = lazyDestructure(() => findByProps("TextStyleSheet")) as unknown as {
     TextStyleSheet: { [key in DiscordTextStyles]: TextStyle; };

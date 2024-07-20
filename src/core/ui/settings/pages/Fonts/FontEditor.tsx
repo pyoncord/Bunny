@@ -6,12 +6,12 @@ import { getCurrentTheme } from "@lib/managers/themes";
 import { safeFetch } from "@lib/utils";
 import { NavigationNative } from "@metro/common";
 import { ActionSheet, BottomSheetTitleHeader, Button, IconButton, Stack, TableRow, TableRowGroup, Text, TextInput } from "@metro/common/components";
-import { findByPropsProxy } from "@metro/utils";
+import { findByPropsLazy } from "@metro/utils";
 import { ErrorBoundary } from "@ui/components";
 import { useMemo, useRef, useState } from "react";
 import { ScrollView, View } from "react-native";
 
-const actionSheet = findByPropsProxy("hideActionSheet");
+const actionSheet = findByPropsLazy("hideActionSheet");
 
 function guessFontName(urls: string[]) {
     const fileNames = urls.map(url => {

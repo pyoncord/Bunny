@@ -1,13 +1,13 @@
 import { after } from "@lib/api/patcher";
 import { findInReactTree } from "@lib/utils";
 import { i18n } from "@metro/common";
-import { findByNameProxy, findByPropsProxy } from "@metro/utils";
+import { findByNameLazy, findByPropsLazy } from "@metro/utils";
 import { registeredSections } from "@ui/settings";
 
 import { CustomPageRenderer, wrapOnPress } from "./shared";
 
-const settingConstants = findByPropsProxy("SETTING_RENDERER_CONFIG");
-const SettingsOverviewScreen = findByNameProxy("SettingsOverviewScreen", false);
+const settingConstants = findByPropsLazy("SETTING_RENDERER_CONFIG");
+const SettingsOverviewScreen = findByNameLazy("SettingsOverviewScreen", false);
 
 function useIsFirstRender() {
     let firstRender = false;
