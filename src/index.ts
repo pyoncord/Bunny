@@ -12,6 +12,7 @@ import { FileManager } from "@lib/api/native/modules";
 import { patchLogHook } from "@lib/debug";
 import { updateFonts } from "@lib/managers/fonts";
 import { initThemes, patchChatBackground } from "@lib/managers/themes";
+import { checkAndRegisterUpdates, initPlugins } from "@lib/plugins";
 import { logger } from "@lib/utils/logger";
 import initSafeMode from "@ui/safeMode";
 import { patchSettings } from "@ui/settings";
@@ -48,6 +49,7 @@ export default async () => {
         initFixes(),
         initSafeMode(),
         initCorePlugins(),
+        checkAndRegisterUpdates()
     ]).then(
         // Push them all to unloader
         u => u.forEach(f => f && lib.unload.push(f))
@@ -60,6 +62,8 @@ export default async () => {
     VdPluginManager.initPlugins()
         .then(u => lib.unload.push(u))
         .catch(() => alert("Failed to initialize Vendetta plugins"));
+
+    initPlugins();
 
     // Update the fonts
     updateFonts();

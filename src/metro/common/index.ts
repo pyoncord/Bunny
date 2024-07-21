@@ -18,6 +18,7 @@ export const messageUtil = findByPropsLazy("sendBotMessage");
 export const navigationStack = findByPropsLazy("createStackNavigator");
 export const NavigationNative = findByPropsLazy("NavigationContainer");
 export const tokens = findByPropsLazy("colors", "unsafe_rawColors");
+export const semver = findByPropsLazy("parse", "clean");
 
 // Flux
 export const Flux = findByPropsLazy("connectStores");
