@@ -1,6 +1,7 @@
 // @ts-nocheck
 /* eslint-disable no-restricted-syntax */
 import swc from "@swc/core";
+import { execSync } from "child_process";
 import crypto from "crypto";
 import { build } from "esbuild";
 import globalPlugin from "esbuild-plugin-globals";
@@ -113,7 +114,7 @@ const config = {
 
 export async function buildBundle() {
     context = {
-        hash: crypto.randomBytes(8).toString("hex").slice(0, 7)
+        hash: releaseBranch ? execSync("git rev-parse --short HEAD").toString().trim() : crypto.randomBytes(8).toString("hex").slice(0, 7)
     };
 
     const initialStartTime = performance.now();
