@@ -1,10 +1,12 @@
 // New iteration of storage API, mostly yoinked from unreleased pyoncord (and sunrise?)
 import { fileExists, readFile, writeFile } from "@lib/api/native/fs";
 import { Emitter } from "@lib/utils/emitter";
+import invariant from "@lib/utils/invariant";
 
 interface StorageBackend<T = unknown> {
     get: () => Promise<T>;
-    set: (data: T) => void | Promise<void>;
+    set: (data: T) => Promise<void>;
+    exists: () => Promise<boolean>;
 }
 
 const emitterSymbol = Symbol.for("bunny.storage.emitter");
@@ -13,12 +15,11 @@ const storagePromiseSymbol = Symbol.for("bunny.storage.promise");
 
 const _loadedPath = {} as Record<string, any>;
 
-function createFileBackend<T>(filePath: string, dflt = {} as T): StorageBackend<T> {
+function createFileBackend<T>(filePath: string): StorageBackend<T> {
     return {
         get: async () => {
             try {
-                const raw = await readFile(filePath, JSON.stringify(dflt));
-                return JSON.parse(raw);
+                return JSON.parse(await readFile(filePath));
             } catch (e) {
                 throw new Error(`Failed to parse storage '${filePath}: ${e}'`);
             }
@@ -26,6 +27,9 @@ function createFileBackend<T>(filePath: string, dflt = {} as T): StorageBackend<
         set: async data => {
             if (!data || typeof data !== "object") throw new Error("data needs to be an object");
             await writeFile(filePath, JSON.stringify(data));
+        },
+        exists: async () => {
+            return await fileExists(filePath);
         }
     };
 }
@@ -106,7 +110,6 @@ export function useProxy<T>(storage: T & { [key in typeof storageInitErrorSymbol
     const [, forceUpdate] = React.useReducer(n => ~n, 0);
 
     React.useEffect(() => {
-        // TODO
         const listener = () => forceUpdate();
 
         emitter.on("SET", listener);
@@ -135,9 +138,18 @@ export function createStorageAndCallback<T>(path: string, dflt = {} as T, cb: (p
         cb(proxy);
     };
 
-    const backend = createFileBackend<T>(path, dflt);
+    const backend = createFileBackend<T>(path);
     if (_loadedPath[path]) callback(_loadedPath[path]);
-    else backend.get().then(d => callback(d));
+    else {
+        backend.exists().then(async exists => {
+            if (!exists) {
+                await backend.set(dflt);
+                callback(dflt);
+            } else {
+                callback(await backend.get());
+            }
+        });
+    }
 }
 
 export async function createStorageAsync<T>(path: string, dflt = {} as T): Promise<T> {
@@ -178,8 +190,11 @@ export async function preloadStorageIfExists(path: string) {
     if (_loadedPath[path]) return;
     if (!await fileExists(path)) return;
 
-    const data = await createFileBackend<any>(path).get();
-    _loadedPath[path] = data;
+    try {
+        const data = await createFileBackend<any>(path).get();
+        invariant(data !== undefined);
+        _loadedPath[path] = data;
+    } catch {}
 }
 
 export function awaitStorage(...proxies: any[]) {

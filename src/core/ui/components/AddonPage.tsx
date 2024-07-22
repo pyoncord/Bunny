@@ -78,7 +78,7 @@ export default function AddonPage<T extends object>({ card: CardComponent, ...pr
                 icon={findAssetId("PlusLargeIcon")}
                 onPress={props.onFABPress ?? (() => {
                     // from ./InstallButton.tsx
-                    clipboard.getString().then(content =>
+                    clipboard.getString().then((content: string) =>
                         showInputAlert({
                             initialValue: content.match(HTTP_REGEX_MULTI)?.[0] ?? "",
                             placeholder: Strings.URL_PLACEHOLDER,
