@@ -5,7 +5,6 @@ import { execSync } from "child_process";
 import crypto from "crypto";
 import { build } from "esbuild";
 import globalPlugin from "esbuild-plugin-globals";
-import { readFile, writeFile } from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
 import yargs from "yargs-parser";
@@ -32,7 +31,6 @@ const config = {
     outfile: "dist/bunny.js",
     format: "iife",
     splitting: false,
-    minify: false,
     external: [],
     supported: {
         // Hermes does not actually support const and let, even though it syntactically
@@ -112,13 +110,13 @@ const config = {
     ]
 };
 
-export async function buildBundle() {
+export async function buildBundle(overrideConfig = {}) {
     context = {
         hash: releaseBranch ? execSync("git rev-parse --short HEAD").toString().trim() : crypto.randomBytes(8).toString("hex").slice(0, 7)
     };
 
     const initialStartTime = performance.now();
-    await build(config);
+    await build({ ...config, ...overrideConfig });
 
     return {
         config,
@@ -141,18 +139,16 @@ if (isThisFileBeingRunViaCLI) {
     );
 
     if (buildMinify) {
-        const bundleBuffer = await readFile(config.outfile);
+        const { timeTook } = await buildBundle({
+            minify: true,
+            outfile: config.outfile.replace(/\.js$/, ".min.js")
+        });
 
-        let { code } = await swc.minify(
-            bundleBuffer.toString(),
-            {
-                compress: true,
-                mangle: true,
-            }
+        printBuildSuccess(
+            context.hash,
+            releaseBranch,
+            timeTook,
+            true
         );
-        code += config.footer.js;
-
-        const minFilePath = config.outfile.replace(/\.js$/, ".min.js");
-        await writeFile(minFilePath, code);
     }
 }
