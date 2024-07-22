@@ -67,7 +67,6 @@ export default function AddonPage<T extends object>({ card: CardComponent, ...pr
                 data={data}
                 estimatedItemSize={136}
                 ListHeaderComponent={headerElement}
-                onLoad={console.log}
                 contentContainerStyle={{ paddingBottom: 90, paddingHorizontal: 5 }}
                 renderItem={({ item }: any) => (
                     <View style={{ paddingVertical: 6, paddingHorizontal: 8 }}>

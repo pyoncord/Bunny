@@ -31,22 +31,30 @@ function createFileBackend<T>(filePath: string, dflt = {} as T): StorageBackend<
 }
 
 function _createProxy(target: any, path: string[], emitter: Emitter): any {
+    // cache the children proxies so proxy.child === proxy.child (yields the same value)
+    const objChildrens = new WeakMap<object, object>();
+
     return new Proxy(target, {
         get(target, prop: string) {
             if ((prop as unknown) === emitterSymbol) return emitter;
 
             const newPath = [...path, prop];
-            const value: any = target[prop];
+            let value: any = target[prop];
+
+            if (value && typeof value === "object") {
+                const origValue = value;
+                value = objChildrens.get(origValue);
+                if (!value) {
+                    value = _createProxy(value, newPath, emitter);
+                    objChildrens.set(origValue, value!);
+                }
+            }
 
             if (value != null) {
                 emitter.emit("GET", {
                     path: newPath,
                     value,
                 });
-                if (typeof value === "object") {
-                    return _createProxy(value, newPath, emitter);
-                }
-                return value;
             }
 
             return value;
