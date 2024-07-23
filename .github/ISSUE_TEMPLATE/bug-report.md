@@ -30,6 +30,6 @@ If applicable, add screenshots to help explain your problem.
  - Bunny Version [e.g e19e89c-main]
 
 **Checklists**
-[ ] I understand that this is a bug report and not a place to request new features or plugins
-[ ] I understand that this is no place to report bugs produced by a plugin
-[ ] I can reproduce this bug in Bunny's safe mode AND unable to reproduce it in vanilla/unmodded Discord
+- [ ] I understand that this is a bug report and not a place to request new features or plugins
+- [ ] I understand that this is no place to report bugs produced by a plugin
+- [ ] I can reproduce this bug in Bunny's safe mode AND unable to reproduce it in vanilla/unmodded Discord
