@@ -8,6 +8,8 @@
             // Just to discourage from consuming the module directly
             "spitroast": ["./shims/emptyModule"],
 
+            "bunny-build-info": ["./src/modules.d.ts"],
+
             "@core/*": ["./src/core/*"],
             "@lib": ["./src/lib"],
             "@lib/*": ["./src/lib/*"],
@@ -21,10 +23,14 @@
         "module": "esnext",
         "moduleResolution": "bundler",
         "resolveJsonModule": true,
-        "noEmit": true,
         "allowJs": true,
         "checkJs": true,
         "jsx": "react-jsx",
-        "target": "esnext"
+        "target": "esnext",
+
+        "skipLibCheck": true,
+        "declaration": true,
+        "emitDeclarationOnly": true,
+        "stripInternal": true
     }
 }

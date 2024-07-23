@@ -6,3 +6,5 @@ declare module "*.png" {
     const str: string;
     export default str;
 }
+
+export * from "bunny-build-info";

@@ -4,6 +4,7 @@ const {
     instead: _instead
 } = require("spitroast");
 
+/** @internal */
 export const _patcherDelaySymbol = Symbol.for("bunny.api.patcher.delay");
 
 type Unpatcher = () => boolean;
@@ -11,8 +12,8 @@ type DelayCallback = (callback: (target: any) => void) => unknown;
 type Thenable = { then: typeof Promise.prototype.then };
 
 interface PatchFn<Callback> {
-    (func: string, parent: any, callback: Callback): Unpatcher;
-    await(func: string, parent: Promise<unknown>, callback: Callback): Unpatcher;
+    (func: string, parent: any, callback: Callback, once?: boolean): Unpatcher;
+    await(func: string, parent: Promise<unknown>, callback: Callback, once?: boolean): Unpatcher;
 }
 
 type BeforeFn = PatchFn<(args: any[]) => unknown | unknown[]>;

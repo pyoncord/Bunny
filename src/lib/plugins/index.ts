@@ -19,7 +19,7 @@ export const corePluginInstances = new Map<string, t.PluginInstanceInternal>();
 
 export const registeredPlugins = new Map<string, t.BunnyPluginManifest>();
 export const pluginInstances = new Map<string, t.PluginInstanceInternal>();
-export const apiObjects = new Map<string, any>();
+export const apiObjects = new Map<string, ReturnType<typeof createBunnyPluginAPI>>();
 
 export const pluginRepositories = createStorage<t.PluginRepoStorage>("plugins/repositories.json");
 export const pluginSettings = createStorage<t.PluginSettingsStorage>("plugins/settings.json");
