@@ -6,7 +6,9 @@ import { findExports } from "./finders";
 import { metroModules, subscribeModule } from "./modules";
 import type { FilterFn, LazyModuleContext } from "./types";
 
-const _lazyContextSymbol = Symbol.for("bunny.metro.lazyContext");
+/** @internal */
+export const _lazyContextSymbol = Symbol.for("bunny.metro.lazyContext");
+
 const _lazyContexts = new WeakMap<any, LazyModuleContext>();
 
 function getIndexedFind<A extends unknown[]>(filter: FilterFn<A>) {

@@ -8,8 +8,6 @@
             // Just to discourage from consuming the module directly
             "spitroast": ["./shims/emptyModule"],
 
-            "bunny-build-info": ["./src/modules.d.ts"],
-
             "@core/*": ["./src/core/*"],
             "@lib": ["./src/lib"],
             "@lib/*": ["./src/lib/*"],
