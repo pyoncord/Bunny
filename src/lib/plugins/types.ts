@@ -4,10 +4,9 @@ import { Author } from "@lib/utils/types";
 
 export interface PluginRepo {
     [id: string]: {
-        name: string;
         version: string;
 
-        // For plugin developing convenience, plugins with this on will always gets fetched
+        // For plugin developing convenience, plugins with this on will always get fetched
         alwaysFetch?: boolean;
     };
 }
@@ -17,7 +16,9 @@ export interface PluginRepoStorage {
 }
 
 export interface PluginSettingsStorage {
-    [pluginId: string]: any;
+    [pluginId: string]: {
+        enabled: boolean;
+    };
 }
 
 export interface BunnyPluginManifest {

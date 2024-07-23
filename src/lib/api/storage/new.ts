@@ -49,7 +49,7 @@ function _createProxy(target: any, path: string[], emitter: Emitter): any {
                 const origValue = value;
                 value = objChildrens.get(origValue);
                 if (!value) {
-                    value = _createProxy(value, newPath, emitter);
+                    value = _createProxy(origValue, newPath, emitter);
                     objChildrens.set(origValue, value!);
                 }
             }
