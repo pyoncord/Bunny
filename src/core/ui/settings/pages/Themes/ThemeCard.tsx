@@ -2,8 +2,8 @@ import { formatString, Strings } from "@core/i18n";
 import AddonCard, { CardWrapper } from "@core/ui/components/AddonCard";
 import { findAssetId } from "@lib/api/assets";
 import { useProxy } from "@lib/api/storage";
-import { applyTheme, fetchTheme, removeTheme, selectTheme, Theme, themes } from "@lib/managers/themes";
-import { settings } from "@lib/settings";
+import { settings } from "@lib/api/settings";
+import { applyTheme, fetchTheme, removeTheme, selectTheme, Theme, themes } from "@lib/themes";
 import { ButtonColors } from "@lib/utils/types";
 import { clipboard } from "@metro/common";
 import { showConfirmationAlert } from "@ui/alerts";
@@ -18,7 +18,7 @@ function selectAndApply(value: boolean, theme: Theme) {
     }
 }
 
-export default function ThemeCard({ item: theme, index }: CardWrapper<Theme>) {
+export default function ThemeCard({ item: theme }: CardWrapper<Theme>) {
     useProxy(theme);
 
     const [removed, setRemoved] = React.useState(false);
@@ -30,7 +30,6 @@ export default function ThemeCard({ item: theme, index }: CardWrapper<Theme>) {
 
     return (
         <AddonCard
-            index={index}
             headerLabel={theme.data.name}
             headerSublabel={authors ? `by ${authors.map(i => i.name).join(", ")}` : ""}
             descriptionLabel={theme.data.description ?? "No description."}

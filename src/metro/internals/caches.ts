@@ -29,7 +29,7 @@ function buildInitCache() {
     // because force loading it all will results in an unexpected crash.
     setTimeout(() => {
         for (const id in window.modules) {
-            require("@metro/modules").requireModule(id);
+            require("./modules").requireModule(id);
         }
     }, 100);
 
@@ -37,7 +37,8 @@ function buildInitCache() {
     return cache;
 }
 
-// Store in file system
+// TODO: Store in file system... is a better idea?
+/** @internal */
 export async function initMetroCache() {
     const rawCache = await MMKVManager.getItem(BUNNY_METRO_CACHE_KEY);
     if (rawCache == null) return void buildInitCache();
@@ -72,6 +73,7 @@ function extractExportsFlags(moduleExports: any) {
     return bit;
 }
 
+/** @internal */
 export function indexExportsFlags(moduleId: number, moduleExports: any) {
     const flags = extractExportsFlags(moduleExports);
     if (flags && flags !== ModuleFlags.EXISTS) {
@@ -79,10 +81,12 @@ export function indexExportsFlags(moduleId: number, moduleExports: any) {
     }
 }
 
+/** @internal */
 export function indexBlacklistFlag(id: number) {
     _metroCache.exportsIndex[id] |= ModuleFlags.BLACKLISTED;
 }
 
+/** @internal */
 export function getCacherForUniq(uniq: string, allFind: boolean) {
     const indexObject = _metroCache.findIndex[uniq] ??= {};
 
@@ -102,12 +106,13 @@ export function getCacherForUniq(uniq: string, allFind: boolean) {
     };
 }
 
+/** @internal */
 export function getPolyfillModuleCacher(name: string) {
     const indexObject = _metroCache.polyfillIndex[name] ??= {};
 
     return {
         getModules() {
-            return require("@metro/modules").getCachedPolyfillModules(name);
+            return require("@metro/internals/modules").getCachedPolyfillModules(name);
         },
         cacheId(moduleId: number) {
             indexObject[moduleId] = 1;
@@ -120,6 +125,7 @@ export function getPolyfillModuleCacher(name: string) {
     };
 }
 
+/** @internal */
 export function indexAssetName(name: string, moduleId: number) {
     if (!isNaN(moduleId)) {
         (_metroCache.assetsIndex[name] ??= {})[moduleId] = 1;

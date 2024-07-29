@@ -3,7 +3,7 @@ import AddonPage from "@core/ui/components/AddonPage";
 import PluginCard from "@core/ui/settings/pages/Plugins/PluginCard";
 import { VdPluginManager, VendettaPlugin } from "@core/vendetta/plugins";
 import { useProxy } from "@lib/api/storage";
-import { settings } from "@lib/settings";
+import { settings } from "@lib/api/settings";
 import { Author } from "@lib/utils/types";
 
 export default function Plugins() {

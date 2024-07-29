@@ -1,5 +1,5 @@
 import { FluxDispatcher } from "@metro/common";
-import { findByNameLazy } from "@metro/utils";
+import { findByNameLazy } from "@metro/wrappers";
 import { PrimitiveType } from "intl-messageformat";
 
 import langDefault from "./default.json";

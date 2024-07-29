@@ -2,7 +2,7 @@ import { Strings } from "@core/i18n";
 import { findAssetId } from "@lib/api/assets";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { toasts } from "@metro/common";
-import { findByProps } from "@metro/utils";
+import { findByProps } from "@metro/wrappers";
 
 const { uuid4 } = lazyDestructure(() => findByProps("uuid4"));
 

@@ -1,4 +1,4 @@
-import { getPolyfillModuleCacher } from "@metro/caches";
+import { getPolyfillModuleCacher } from "@metro/internals/caches";
 import { LiteralUnion } from "type-fest";
 
 const redesignProps = new Set([

@@ -1,7 +1,6 @@
-import { proxyLazy } from "@lib/utils/lazy";
-import { findByFilePath, findByProps, findByPropsLazy } from "@metro/utils";
+import { findByFilePathLazy, findByProps, findByPropsLazy } from "@metro/wrappers";
 
-import { Dispatcher } from "./types";
+import type { Dispatcher } from "./types/flux";
 
 // Discord
 export const constants = findByPropsLazy("Fonts", "Permissions");
@@ -13,7 +12,7 @@ export const assets = findByPropsLazy("registerAsset");
 export const invites = findByPropsLazy("acceptInviteAndTransitionToInviteChannel");
 export const commands = findByPropsLazy("getBuiltInCommands");
 export const navigation = findByPropsLazy("pushLazy");
-export const toasts = proxyLazy(() => findByFilePath("modules/toast/native/ToastActionCreators.tsx").default);
+export const toasts = findByFilePathLazy("modules/toast/native/ToastActionCreators.tsx", true);
 export const messageUtil = findByPropsLazy("sendBotMessage");
 export const navigationStack = findByPropsLazy("createStackNavigator");
 export const NavigationNative = findByPropsLazy("NavigationContainer");

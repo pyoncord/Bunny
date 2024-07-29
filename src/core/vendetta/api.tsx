@@ -4,9 +4,9 @@ import { getVendettaLoaderIdentity, isPyonLoader } from "@lib/api/native/loader"
 import patcher from "@lib/api/patcher";
 import * as storage from "@lib/api/storage";
 import { createStorage } from "@lib/api/storage";
-import * as debug from "@lib/debug";
-import * as themes from "@lib/managers/themes";
-import { loaderConfig, settings } from "@lib/settings";
+import * as debug from "@lib/api/debug";
+import { loaderConfig, settings } from "@lib/api/settings";
+import * as themes from "@lib/themes";
 import * as utils from "@lib/utils";
 import { cyrb64Hash } from "@lib/utils/cyrb64";
 import { DiscordLogger } from "@lib/utils/logger";
@@ -39,6 +39,15 @@ export async function createVdPluginObject(plugin: VendettaPlugin) {
 }
 
 export const initVendettaObject = (): any => {
+    // pitfall: this assumes the returning module(s) are the same within the same location
+    // find(m => m.render?.name === "ActionSheet") - would work fine
+    // ["trackThis", "trackThat"].forEach(p => find(m => m[p])) - would not
+    const createStackBasedFilter = (fn: any) => {
+        return (filter: (m: any) => boolean) => {
+            return fn(metro.factories.createSimpleFilter(filter, cyrb64Hash(new Error().stack!)));
+        };
+    };
+
     const api = window.vendetta = {
         patcher: {
             before: patcher.before,
@@ -47,12 +56,8 @@ export const initVendettaObject = (): any => {
         },
         metro: {
             modules: window.modules,
-            find: (filter: (m: any) => boolean) => {
-                return metro.findExports(metro.createSimpleFilter(filter, cyrb64Hash(new Error().stack!)));
-            },
-            findAll: (filter: (m: any) => boolean) => {
-                return metro.findAllExports(metro.createSimpleFilter(filter, cyrb64Hash(new Error().stack!)));
-            },
+            find: createStackBasedFilter(metro.findExports),
+            findAll: createStackBasedFilter(metro.findAllExports),
             findByProps: (...props: any[]) => {
                 // TODO: remove this hack to fix Decor
                 if (props.length === 1 && props[0] === "KeyboardAwareScrollView") {

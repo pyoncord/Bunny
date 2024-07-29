@@ -1,45 +1,6 @@
-
-import { byDisplayName, byFilePath, byName, byProps, byStoreName, byTypeName } from "./filters";
-import { findAllExports, findExports } from "./finders";
+import { byDisplayName, byFilePath,byName, byProps, byStoreName, byTypeName } from "./filters";
+import { findAllExports,findExports } from "./finders";
 import { createLazyModule } from "./lazy";
-import { FilterCheckDef, FilterDefinition, ModuleExports } from "./types";
-
-export function createFilterDefinition<A extends unknown[]>(
-    fn: FilterCheckDef<A>,
-    uniqMaker: (args: A) => string
-): FilterDefinition<A> {
-    function createHolder<T extends Function>(func: T, args: A, raw: boolean) {
-        return Object.assign(func, {
-            filter: fn,
-            raw,
-            uniq: [
-                raw && "raw::",
-                uniqMaker(args)
-            ].filter(Boolean).join("")
-        });
-    }
-
-    const curry = (raw: boolean) => (...args: A) => {
-        return createHolder((m: ModuleExports, id: number, defaultCheck: boolean) => {
-            return fn(args, m, id, defaultCheck);
-        }, args, raw);
-    };
-
-    return Object.assign(curry(false), {
-        byRaw: curry(true),
-        uniqMaker
-    });
-}
-
-export function createSimpleFilter(
-    filter: (m: ModuleExports) => boolean,
-    uniq: string
-) {
-    return createFilterDefinition(
-        (_, m) => filter(m),
-        () => `dynamic::${uniq}`
-    )();
-}
 
 export const findByProps = (...props: string[]) => findExports(byProps(...props));
 export const findByPropsLazy = (...props: string[]) => createLazyModule(byProps(...props));
@@ -60,6 +21,5 @@ export const findByTypeNameAll = (name: string, expDefault = true) => findAllExp
 export const findByStoreName = (name: string) => findExports(byStoreName(name));
 export const findByStoreNameLazy = (name: string) => createLazyModule(byStoreName(name));
 
-export const findByFilePath = (path: string) => findExports(byFilePath(path));
-export const findByFilePathLazy = (path: string) => createLazyModule(byFilePath(path));
-
+export const findByFilePath = (path: string, expDefault = false) => findExports(byFilePath(path, expDefault));
+export const findByFilePathLazy = (path: string, expDefault = false) => createLazyModule(byFilePath(path, expDefault));

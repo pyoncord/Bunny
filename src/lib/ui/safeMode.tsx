@@ -1,14 +1,14 @@
 import { Strings } from "@core/i18n";
 import { DeviceManager } from "@lib/api/native/modules";
 import { after } from "@lib/api/patcher";
-import { toggleSafeMode } from "@lib/debug";
-import { settings } from "@lib/settings";
+import { toggleSafeMode } from "@lib/api/debug";
+import { settings } from "@lib/api/settings";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { ButtonColors } from "@lib/utils/types";
 import { Button, CompatButton, SafeAreaView } from "@metro/common/components";
 import { _lazyContextSymbol } from "@metro/lazy";
 import { LazyModuleContext } from "@metro/types";
-import { findByNameLazy, findByProps } from "@metro/utils";
+import { findByNameLazy, findByProps } from "@metro/wrappers";
 import { semanticColors } from "@ui/color";
 import { Codeblock, ErrorBoundary as _ErrorBoundary } from "@ui/components";
 import { createThemedStyleSheet, TextStyleSheet } from "@ui/styles";

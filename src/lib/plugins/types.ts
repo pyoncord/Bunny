@@ -22,6 +22,7 @@ export interface PluginSettingsStorage {
 }
 
 export interface BunnyPluginManifest {
+    readonly id: string;
     readonly name: string;
     readonly description: string;
     readonly version: string;

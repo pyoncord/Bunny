@@ -1,5 +1,5 @@
 import { NavigationNative } from "@metro/common";
-import { findByPropsLazy } from "@metro/utils";
+import { findByPropsLazy } from "@metro/wrappers";
 import { ErrorBoundary } from "@ui/components";
 import { RowConfig } from "@ui/settings";
 

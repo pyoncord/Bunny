@@ -1,10 +1,20 @@
+import { PluginInstanceInternal } from "@lib/plugins/types";
 
-export function initCorePlugins() {
-    const unloads = [
-        require("./quickInstall")
-    ].map(p => {
-        return p.default();
-    });
+interface CorePlugin {
+    default: PluginInstanceInternal;
+    preenabled: boolean;
+}
 
-    return () => unloads.forEach(m => typeof m === "function" && m());
+// Called from @lib/plugins
+export const getCorePlugins = (): Record<string, CorePlugin> => ({
+    "vd-quick-install": require("./vd-quick-install")
+});
+
+/**
+ * @internal
+ */
+export function defineCorePlugin(instance: PluginInstanceInternal): PluginInstanceInternal {
+    // @ts-expect-error
+    instance[Symbol.for("bunny.core.plugin")] = true;
+    return instance;
 }

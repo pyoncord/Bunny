@@ -1,6 +1,6 @@
 import { ButtonColors } from "@lib/utils/types";
 import { LegacyAlert, LegacyFormInput } from "@metro/common/components";
-import { findByPropsLazy } from "@metro/utils";
+import { findByPropsLazy } from "@metro/wrappers";
 
 const Alerts = findByPropsLazy("openLazy", "close");
 

@@ -1,8 +1,8 @@
 import { Strings } from "@core/i18n";
 import Version from "@core/ui/settings/pages/General/Version";
 import { useProxy } from "@lib/api/storage";
-import { getDebugInfo } from "@lib/debug";
-import { settings } from "@lib/settings";
+import { getDebugInfo } from "@lib/api/debug";
+import { settings } from "@lib/api/settings";
 import { Stack, TableRowGroup } from "@metro/common/components";
 import { Platform, ScrollView } from "react-native";
 

@@ -1,4 +1,4 @@
-import { createStyles } from "@lib/ui/styles";
+import { createStyles } from "@ui/styles";
 import { tokens } from "@metro/common";
 
 export const usePluginCardStyles = createStyles({

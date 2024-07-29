@@ -1,7 +1,7 @@
 import { findAssetId } from "@lib/api/assets";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { Card, FormRadio, FormSwitch, IconButton, LegacyFormRow, Stack, Text } from "@metro/common/components";
-import { findByProps } from "@metro/utils";
+import { findByProps } from "@metro/wrappers";
 import { semanticColors } from "@ui/color";
 import { createStyles, TextStyleSheet } from "@ui/styles";
 import { TouchableOpacity, View } from "react-native";

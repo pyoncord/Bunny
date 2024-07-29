@@ -2,7 +2,7 @@ import { CardWrapper } from "@core/ui/components/AddonCard";
 import { VdPluginManager, VendettaPlugin } from "@core/vendetta/plugins";
 import { findAssetId } from "@lib/api/assets";
 import { useProxy } from "@lib/api/storage";
-import { showSheet } from "@lib/ui/sheets";
+import { showSheet } from "@ui/sheets";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { findByProps } from "@metro";
 import { NavigationNative } from "@metro/common";

@@ -1,4 +1,4 @@
-import { findByPropsLazy } from "@metro";
+import { findByPropsLazy } from "@metro/wrappers";
 
 module.exports = {
     "react": findByPropsLazy("createElement"),

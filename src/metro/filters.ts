@@ -1,5 +1,5 @@
-import { metroModules } from "./modules";
-import { createFilterDefinition } from "./utils";
+import { createFilterDefinition } from "./factories";
+import { metroModules } from "./internals/modules";
 
 export const byProps = createFilterDefinition<string[]>(
     (props, m) => props.length === 0 ? m[props[0]] : props.every(p => m[p]),
@@ -26,9 +26,12 @@ export const byStoreName = createFilterDefinition<[string]>(
     name => `bunny.metro.byStoreName(${name})`
 );
 
-export const byFilePath = createFilterDefinition<[string]>(
-    ([path], _, id, defaultCheck) => !defaultCheck && metroModules[id]?.__filePath === path,
-    path => `bunny.metro.byFilePath(${path})`
+export const byFilePath = createFilterDefinition<[string, boolean]>(
+    // module return depends on defaultCheck. if true, it'll return module.default, otherwise the whole module
+    // unlike filters like byName, defaultCheck doesn't affect the return since we don't rely on exports, but only its ID
+    // one could say that this is technically a hack, since defaultCheck is meant for filtering exports
+    ([path, exportDefault], _, id, defaultCheck) => (exportDefault === defaultCheck) && metroModules[id]?.__filePath === path,
+    ([path, exportDefault]) => `bunny.metro.byFilePath(${path},${exportDefault})`
 );
 
 export const byMutableProp = createFilterDefinition<[string]>(

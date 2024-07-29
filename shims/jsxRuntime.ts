@@ -1,5 +1,5 @@
 import { getProxyFactory } from "@lib/utils/lazy";
-import { findByPropsLazy } from "@metro/utils";
+import { findByPropsLazy } from "@metro/wrappers";
 
 const jsxRuntime = findByPropsLazy("jsx", "jsxs", "Fragment");
 

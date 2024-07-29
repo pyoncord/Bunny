@@ -1,7 +1,8 @@
 /* eslint-disable prefer-destructuring */
 import { lazyDestructure, proxyLazy } from "@lib/utils/lazy";
+import { createFilterDefinition } from "@metro/factories";
 import { findExports } from "@metro/finders";
-import { createFilterDefinition, findByDisplayNameLazy, findByNameLazy, findByProps, findByPropsLazy } from "@metro/utils";
+import { findByDisplayNameLazy, findByNameLazy, findByProps, findByPropsLazy } from "@metro/wrappers";
 
 import * as t from "./types/components";
 

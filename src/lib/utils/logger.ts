@@ -1,4 +1,4 @@
-import { findByNameLazy } from "@metro/utils";
+import { findByNameLazy } from "@metro/wrappers";
 
 export type LoggerFunction = (...messages: any[]) => void;
 export interface Logger {

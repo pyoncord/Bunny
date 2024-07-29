@@ -1,6 +1,5 @@
 import initFixes from "@core/fixes";
 import { initFetchI18nStrings } from "@core/i18n";
-import { initCorePlugins } from "@core/plugins";
 import initSettings from "@core/ui/settings";
 import { initVendettaObject } from "@core/vendetta/api";
 import { VdPluginManager } from "@core/vendetta/plugins";
@@ -9,10 +8,10 @@ import { injectFluxInterceptor } from "@lib/api/flux";
 import { removeFile, writeFile } from "@lib/api/native/fs";
 import { isPyonLoader, isThemeSupported } from "@lib/api/native/loader";
 import { FileManager } from "@lib/api/native/modules";
-import { patchLogHook } from "@lib/debug";
-import { updateFonts } from "@lib/managers/fonts";
-import { initThemes, patchChatBackground } from "@lib/managers/themes";
+import { patchLogHook } from "@lib/api/debug";
+import { updateFonts } from "@lib/fonts";
 import { checkAndRegisterUpdates, initPlugins } from "@lib/plugins";
+import { initThemes, patchChatBackground } from "@lib/themes";
 import { logger } from "@lib/utils/logger";
 import initSafeMode from "@ui/safeMode";
 import { patchSettings } from "@ui/settings";
@@ -48,7 +47,6 @@ export default async () => {
         initSettings(),
         initFixes(),
         initSafeMode(),
-        initCorePlugins(),
         checkAndRegisterUpdates()
     ]).then(
         // Push them all to unloader

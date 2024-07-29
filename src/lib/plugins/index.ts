@@ -1,4 +1,4 @@
-import { allSettled } from "@core/polyfills/allSettled";
+import { getCorePlugins } from "@core/plugins";
 import { readFile, removeFile, writeFile } from "@lib/api/native/fs";
 import { awaitStorage, createStorage, preloadStorageIfExists, updateStorageAsync } from "@lib/api/storage/new";
 import { safeFetch } from "@lib/utils";
@@ -344,7 +344,7 @@ export function stopPlugin(id: string) {
 export async function checkAndRegisterUpdates() {
     await awaitStorage(pluginRepositories, pluginSettings);
 
-    const corePlugins = {} as Record<string, any>; // TODO: getCorePlugins();
+    const corePlugins = getCorePlugins();
     for (const id in corePlugins) {
         const {
             default: instance,
@@ -361,7 +361,7 @@ export async function checkAndRegisterUpdates() {
         corePluginInstances.set(id, instance);
     }
 
-    await allSettled(Object.keys(pluginRepositories).map(async repo => {
+    await Promise.allSettled(Object.keys(pluginRepositories).map(async repo => {
         await updateRepository(repo);
     }));
 }
@@ -373,7 +373,7 @@ export async function initPlugins() {
     await awaitStorage(pluginRepositories, pluginSettings);
 
     // Now, start all enabled plugins...
-    await allSettled([...registeredPlugins.keys()].map(async id => {
+    await Promise.allSettled([...registeredPlugins.keys()].map(async id => {
         if (isPluginEnabled(id)) {
             await startPlugin(id);
         }

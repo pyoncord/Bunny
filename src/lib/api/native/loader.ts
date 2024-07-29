@@ -1,4 +1,4 @@
-import { Theme } from "@lib/managers/themes";
+import { Theme } from "@lib/themes";
 
 // @ts-ignore
 const pyonLoaderIdentity = globalThis.__PYON_LOADER__;
@@ -58,7 +58,7 @@ function polyfillVendettaLoaderIdentity() {
                 const id = getStoredTheme()?.id;
                 if (!id) return null;
 
-                const { themes } = require("@lib/managers/themes");
+                const { themes } = require("@lib/themes");
                 return themes[id] ?? getStoredTheme() ?? null;
             },
             configurable: true

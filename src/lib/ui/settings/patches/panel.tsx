@@ -2,7 +2,7 @@ import { after } from "@lib/api/patcher";
 import { findInReactTree } from "@lib/utils";
 import { i18n, NavigationNative } from "@metro/common";
 import { LegacyFormIcon, LegacyFormRow, LegacyFormSection } from "@metro/common/components";
-import { findByNameLazy } from "@metro/utils";
+import { findByNameLazy } from "@metro/wrappers";
 import { registeredSections } from "@ui/settings";
 
 import { CustomPageRenderer, wrapOnPress } from "./shared";

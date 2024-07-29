@@ -1,5 +1,5 @@
 import { lazyDestructure, proxyLazy } from "@lib/utils/lazy";
-import { findByProps, findByPropsLazy } from "@metro/utils";
+import { findByProps, findByPropsLazy } from "@metro/wrappers";
 import { isSemanticColor, resolveSemanticColor } from "@ui/color";
 import { DiscordTextStyles } from "@ui/types";
 import { ImageStyle, StyleSheet, TextStyle, ViewStyle } from "react-native";

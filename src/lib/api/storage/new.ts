@@ -1,6 +1,6 @@
 // New iteration of storage API, mostly yoinked from unreleased pyoncord (and sunrise?)
 import { fileExists, readFile, writeFile } from "@lib/api/native/fs";
-import { Emitter } from "@lib/utils/emitter";
+import { Emitter } from "@lib/utils/Emitter";
 import invariant from "@lib/utils/invariant";
 
 interface StorageBackend<T = unknown> {

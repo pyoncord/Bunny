@@ -1,6 +1,5 @@
-import { allSettled } from "@core/polyfills/allSettled";
 import { awaitStorage, createMMKVBackend, createStorage, purgeStorage, wrapSync } from "@lib/api/storage";
-import { settings } from "@lib/settings";
+import { settings } from "@lib/api/settings";
 import { safeFetch } from "@lib/utils";
 import { BUNNY_PROXY_PREFIX, VD_PROXY_PREFIX } from "@lib/utils/constants";
 import { DiscordLogger, logger } from "@lib/utils/logger";
@@ -168,7 +167,7 @@ export const VdPluginManager = {
 
         if (!settings.safeMode?.enabled) {
         // Loop over any plugin that is enabled, update it if allowed, then start it.
-            await allSettled(allIds.filter(pl => plugins[pl].enabled).map(async pl => (plugins[pl].update && await this.fetchPlugin(pl).catch((e: Error) => logger.error(e.message)), await this.startPlugin(pl))));
+            await Promise.allSettled(allIds.filter(pl => plugins[pl].enabled).map(async pl => (plugins[pl].update && await this.fetchPlugin(pl).catch((e: Error) => logger.error(e.message)), await this.startPlugin(pl))));
             // Wait for the above to finish, then update all disabled plugins that are allowed to.
             allIds.filter(pl => !plugins[pl].enabled && plugins[pl].update).forEach(pl => this.fetchPlugin(pl));
         }

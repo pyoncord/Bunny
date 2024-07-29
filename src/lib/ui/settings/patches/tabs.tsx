@@ -1,7 +1,7 @@
 import { after } from "@lib/api/patcher";
 import { findInReactTree } from "@lib/utils";
 import { i18n } from "@metro/common";
-import { findByNameLazy, findByPropsLazy } from "@metro/utils";
+import { findByNameLazy, findByPropsLazy } from "@metro/wrappers";
 import { registeredSections } from "@ui/settings";
 
 import { CustomPageRenderer, wrapOnPress } from "./shared";

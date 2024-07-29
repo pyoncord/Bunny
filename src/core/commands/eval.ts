@@ -1,8 +1,8 @@
 import { Strings } from "@core/i18n";
 import { ApplicationCommand, ApplicationCommandOptionType } from "@lib/api/commands/types";
-import { settings } from "@lib/settings";
+import { settings } from "@lib/api/settings";
 import { messageUtil } from "@metro/common";
-import { findByPropsLazy } from "@metro/utils";
+import { findByPropsLazy } from "@metro/wrappers";
 
 const util = findByPropsLazy("inspect");
 const AsyncFunction = (async () => void 0).constructor;

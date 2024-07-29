@@ -1,7 +1,7 @@
 import { instead } from "@lib/api/patcher";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { OptionalKeys } from "@lib/utils/types";
-import { findByProps } from "@metro/utils";
+import { findByProps } from "@metro/wrappers";
 import { AccessibilityInfo, Platform, View } from "react-native";
 
 const { ContextMenu: _ContextMenu } = lazyDestructure(() => findByProps("ContextMenu"));

@@ -2,7 +2,6 @@
  * Theming system in Bunny is currently a prototype, expect an unreadable theme implementation below
  */
 
-import { allSettled } from "@core/polyfills/allSettled";
 import { getStoredTheme, getThemeFilePath } from "@lib/api/native/loader";
 import { ThemeManager } from "@lib/api/native/modules";
 import { after, before, instead } from "@lib/api/patcher";
@@ -12,7 +11,7 @@ import { lazyDestructure, proxyLazy } from "@lib/utils/lazy";
 import { Author } from "@lib/utils/types";
 import { byMutableProp } from "@metro/filters";
 import { createLazyModule } from "@metro/lazy";
-import { findByNameLazy, findByProps, findByPropsLazy, findByStoreNameLazy } from "@metro/utils";
+import { findByNameLazy, findByProps, findByPropsLazy, findByStoreNameLazy } from "@metro/wrappers";
 import chroma from "chroma-js";
 import { ImageBackground, Platform, processColor } from "react-native";
 
@@ -232,7 +231,7 @@ export function getThemeFromLoader(): Theme | null {
 export async function updateThemes() {
     await awaitStorage(themes);
     const currentTheme = getThemeFromLoader();
-    await allSettled(Object.keys(themes).map(id => fetchTheme(id, currentTheme?.id === id)));
+    await Promise.allSettled(Object.keys(themes).map(id => fetchTheme(id, currentTheme?.id === id)));
 }
 
 export function getCurrentTheme() {

@@ -1,6 +1,6 @@
 import { after } from "@lib/api/patcher";
-import { getMetroCache, indexAssetName } from "@metro/caches";
-import { getImportingModuleId, requireModule } from "@metro/modules";
+import { getMetroCache, indexAssetName } from "@metro/internals/caches";
+import { getImportingModuleId, requireModule } from "@metro/internals/modules";
 
 // TODO: Deprecate this map, make another that maps to an array of assets (Asset[]) instead
 /**
@@ -78,7 +78,7 @@ export function findAsset(id: number): Asset | undefined;
 export function findAsset(name: string): Asset | undefined;
 export function findAsset(filter: (a: Asset) => boolean): Asset | undefined;
 
-export function findAsset(param: number | string | ((a: any) => void)) {
+export function findAsset(param: number | string | ((a: Asset) => boolean)) {
     if (typeof param === "number") return assetsModule.getAssetByID(param);
     if (typeof param === "string") return assetsMap[param];
     return Object.values(assetsMap).find(param);

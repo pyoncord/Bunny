@@ -1,9 +1,9 @@
 import { _patcherDelaySymbol } from "@lib/api/patcher";
 import { proxyLazy } from "@lib/utils/lazy";
 
-import { getMetroCache } from "./caches";
 import { findExports } from "./finders";
-import { metroModules, subscribeModule } from "./modules";
+import { getMetroCache } from "./internals/caches";
+import { metroModules, subscribeModule } from "./internals/modules";
 import type { FilterFn, LazyModuleContext } from "./types";
 
 /** @internal */

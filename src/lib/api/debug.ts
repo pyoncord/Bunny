@@ -2,8 +2,8 @@ import { findAssetId } from "@lib/api/assets";
 import { getLoaderName, getLoaderVersion, isThemeSupported } from "@lib/api/native/loader";
 import { BundleUpdaterManager, ClientInfoManager, DeviceManager } from "@lib/api/native/modules";
 import { after } from "@lib/api/patcher";
-import { getThemeFromLoader, selectTheme, themes } from "@lib/managers/themes";
-import { settings } from "@lib/settings";
+import { settings } from "@lib/api/settings";
+import { getThemeFromLoader, selectTheme, themes } from "@lib/themes";
 import { logger } from "@lib/utils/logger";
 import { showToast } from "@ui/toasts";
 import { version } from "bunny-build-info";
@@ -98,9 +98,11 @@ export function getDebugInfo() {
     const rnVer = PlatformConstants.reactNativeVersion;
 
     return {
-        /** @deprecated */
+        /**
+         * @deprecated use `bunny` field
+         * */
         vendetta: {
-            version: versionHash,
+            version: versionHash.split("-")[0],
             loader: getLoaderName(),
         },
         bunny: {

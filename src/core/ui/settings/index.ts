@@ -3,7 +3,7 @@ import { Strings } from "@core/i18n";
 import { findAssetId } from "@lib/api/assets";
 import { isFontSupported, isThemeSupported } from "@lib/api/native/loader";
 import { useProxy } from "@lib/api/storage";
-import { settings } from "@lib/settings";
+import { settings } from "@lib/api/settings";
 import { registerSection } from "@ui/settings";
 import { version } from "bunny-build-info";
 

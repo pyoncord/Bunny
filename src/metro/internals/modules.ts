@@ -1,4 +1,4 @@
-import { getMetroCache, indexBlacklistFlag, indexExportsFlags } from "@metro/caches";
+import { getMetroCache, indexBlacklistFlag, indexExportsFlags } from "@metro/internals/caches";
 import { Metro } from "@metro/types";
 
 import { ModuleFlags, ModulesMapInternal } from "./enums";
@@ -105,7 +105,7 @@ function onModuleRequire(moduleExports: any, id: Metro.ModuleID) {
             get(target, property, receiver) {
                 if (property === "isDeveloper") {
                     // Hopefully won't explode accessing it here :3
-                    const { settings } = require("@lib/settings");
+                    const { settings } = require("@lib/api/settings");
                     return settings.enableDiscordDeveloperSettings ?? false;
                 }
 

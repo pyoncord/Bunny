@@ -1,5 +1,5 @@
 import { ButtonColors } from "@lib/utils/types";
-import { findByPropsLazy } from "@metro/utils";
+import { findByPropsLazy } from "@metro/wrappers";
 import InputAlert, { InputAlertProps } from "@ui/components/InputAlert";
 
 const Alerts = findByPropsLazy("openLazy", "close");
