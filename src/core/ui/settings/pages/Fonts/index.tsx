@@ -1,9 +1,9 @@
 import { Strings } from "@core/i18n";
 import AddonPage from "@core/ui/components/AddonPage";
 import FontEditor from "@core/ui/settings/pages/Fonts/FontEditor";
+import { settings } from "@lib/api/settings";
 import { useProxy } from "@lib/api/storage";
 import { FontDefinition, fonts, installFont } from "@lib/fonts";
-import { settings } from "@lib/api/settings";
 import { NavigationNative } from "@metro/common";
 
 import FontCard from "./FontCard";

@@ -2,8 +2,8 @@ import PyoncordIcon from "@assets/icons/pyoncord.png";
 import { Strings } from "@core/i18n";
 import { findAssetId } from "@lib/api/assets";
 import { isFontSupported, isThemeSupported } from "@lib/api/native/loader";
-import { useProxy } from "@lib/api/storage";
 import { settings } from "@lib/api/settings";
+import { useProxy } from "@lib/api/storage";
 import { registerSection } from "@ui/settings";
 import { version } from "bunny-build-info";
 

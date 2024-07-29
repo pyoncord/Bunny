@@ -1,7 +1,7 @@
 import { Strings } from "@core/i18n";
+import { toggleSafeMode } from "@lib/api/debug";
 import { DeviceManager } from "@lib/api/native/modules";
 import { after } from "@lib/api/patcher";
-import { toggleSafeMode } from "@lib/api/debug";
 import { settings } from "@lib/api/settings";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { ButtonColors } from "@lib/utils/types";

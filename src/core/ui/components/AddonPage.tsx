@@ -1,8 +1,8 @@
 import { Strings } from "@core/i18n";
 import { CardWrapper } from "@core/ui/components/AddonCard";
 import { findAssetId } from "@lib/api/assets";
-import { useProxy } from "@lib/api/storage";
 import { settings } from "@lib/api/settings";
+import { useProxy } from "@lib/api/storage";
 import { HTTP_REGEX_MULTI } from "@lib/utils/constants";
 import { findByProps } from "@metro";
 import { clipboard } from "@metro/common";

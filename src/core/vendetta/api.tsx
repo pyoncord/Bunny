@@ -1,11 +1,11 @@
 import * as assets from "@lib/api/assets";
 import * as commands from "@lib/api/commands";
+import * as debug from "@lib/api/debug";
 import { getVendettaLoaderIdentity, isPyonLoader } from "@lib/api/native/loader";
 import patcher from "@lib/api/patcher";
+import { loaderConfig, settings } from "@lib/api/settings";
 import * as storage from "@lib/api/storage";
 import { createStorage } from "@lib/api/storage";
-import * as debug from "@lib/api/debug";
-import { loaderConfig, settings } from "@lib/api/settings";
 import * as themes from "@lib/themes";
 import * as utils from "@lib/utils";
 import { cyrb64Hash } from "@lib/utils/cyrb64";

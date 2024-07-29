@@ -2,8 +2,8 @@ import { Strings } from "@core/i18n";
 import AddonPage from "@core/ui/components/AddonPage";
 import PluginCard from "@core/ui/settings/pages/Plugins/PluginCard";
 import { VdPluginManager, VendettaPlugin } from "@core/vendetta/plugins";
-import { useProxy } from "@lib/api/storage";
 import { settings } from "@lib/api/settings";
+import { useProxy } from "@lib/api/storage";
 import { Author } from "@lib/utils/types";
 
 export default function Plugins() {

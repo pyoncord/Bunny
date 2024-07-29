@@ -1,11 +1,11 @@
 import { Strings } from "@core/i18n";
-import { CheckState, useFileExists } from "@core/ui/settings/hooks/useFS";
+import { CheckState, useFileExists } from "@core/ui/hooks/useFS";
 import AssetBrowser from "@core/ui/settings/pages/Developer/AssetBrowser";
 import { findAssetId } from "@lib/api/assets";
-import { getReactDevToolsProp, getReactDevToolsVersion, isLoaderConfigSupported, isReactDevToolsPreloaded, isVendettaLoader } from "@lib/api/native/loader";
-import { useProxy } from "@lib/api/storage";
 import { connectToDebugger } from "@lib/api/debug";
+import { getReactDevToolsProp, getReactDevToolsVersion, isLoaderConfigSupported, isReactDevToolsPreloaded, isVendettaLoader } from "@lib/api/native/loader";
 import { loaderConfig, settings } from "@lib/api/settings";
+import { useProxy } from "@lib/api/storage";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { NavigationNative } from "@metro/common";
 import { Button, LegacyFormText, Stack, TableRow, TableRowGroup, TableSwitchRow, TextInput } from "@metro/common/components";

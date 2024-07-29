@@ -1,8 +1,8 @@
 import { formatString, Strings } from "@core/i18n";
 import AddonCard, { CardWrapper } from "@core/ui/components/AddonCard";
 import { findAssetId } from "@lib/api/assets";
-import { useProxy } from "@lib/api/storage";
 import { settings } from "@lib/api/settings";
+import { useProxy } from "@lib/api/storage";
 import { applyTheme, fetchTheme, removeTheme, selectTheme, Theme, themes } from "@lib/themes";
 import { ButtonColors } from "@lib/utils/types";
 import { clipboard } from "@metro/common";

@@ -1,8 +1,8 @@
 import { formatString, Strings } from "@core/i18n";
 import AddonPage from "@core/ui/components/AddonPage";
 import ThemeCard from "@core/ui/settings/pages/Themes/ThemeCard";
-import { useProxy } from "@lib/api/storage";
 import { settings } from "@lib/api/settings";
+import { useProxy } from "@lib/api/storage";
 import { installTheme, Theme, themes } from "@lib/themes";
 import { Author } from "@lib/utils/types";
 import { Button } from "@metro/common/components";

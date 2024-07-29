@@ -2,11 +2,11 @@ import { CardWrapper } from "@core/ui/components/AddonCard";
 import { VdPluginManager, VendettaPlugin } from "@core/vendetta/plugins";
 import { findAssetId } from "@lib/api/assets";
 import { useProxy } from "@lib/api/storage";
-import { showSheet } from "@ui/sheets";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { findByProps } from "@metro";
 import { NavigationNative } from "@metro/common";
 import { Card, IconButton, Stack, TableSwitch, Text } from "@metro/common/components";
+import { showSheet } from "@ui/sheets";
 import { createContext, memo, useContext } from "react";
 import { Image, View } from "react-native";
 
