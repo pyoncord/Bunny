@@ -10,14 +10,9 @@ import { hideSheet } from "@ui/sheets";
 import { showToast } from "@ui/toasts";
 import { ScrollView, View } from "react-native";
 
-import { PluginManifest } from "..";
+import { PluginInfoActionSheetProps } from "./common";
 
-interface InfoProps {
-    plugin: PluginManifest;
-    navigation: any;
-}
-
-export default function PluginInfoActionSheet({ plugin, navigation }: InfoProps) {
+export default function PluginInfoActionSheet({ plugin, navigation }: PluginInfoActionSheetProps) {
     plugin.usePluginState();
 
     const vdPlugin = VdPluginManager.plugins[plugin.id];

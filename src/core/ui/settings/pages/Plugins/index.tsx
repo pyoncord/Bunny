@@ -4,7 +4,8 @@ import PluginCard from "@core/ui/settings/pages/Plugins/PluginCard";
 import { VdPluginManager, VendettaPlugin } from "@core/vendetta/plugins";
 import { settings } from "@lib/api/settings";
 import { useProxy } from "@lib/api/storage";
-import { registeredPlugins } from "@lib/plugins";
+import { useProxy as useProxyNew } from "@lib/api/storage/new";
+import { getId, getPluginSettingsComponent, isPluginEnabled, pluginSettings, registeredPlugins, startPlugin, stopPlugin } from "@lib/plugins";
 import { BunnyPluginManifest } from "@lib/plugins/types";
 import { Author } from "@lib/utils/types";
 import { SegmentedControl, SegmentedControlPages, useSegmentedControlState } from "@metro/common/components";
@@ -52,25 +53,28 @@ function resolveFromVdPlugin(vdPlugin: VendettaPlugin): PluginManifest {
 }
 
 function resolveFromBunnyPlugin(manifest: BunnyPluginManifest): PluginManifest {
+
     return {
         id: manifest.id,
         name: manifest.name,
         description: manifest.description,
         authors: manifest.authors,
         isEnabled() {
-            return false;
+            return isPluginEnabled(getId(manifest));
         },
         usePluginState() {
-
+            useProxyNew(pluginSettings);
         },
         toggle(start: boolean) {
-
+            start
+                ? startPlugin(getId(manifest))
+                : stopPlugin(getId(manifest));
         },
         resolveSheetComponent() {
             return import("./sheets/PluginInfoActionSheet");
         },
         getPluginSettingsComponent() {
-            return null;
+            return getPluginSettingsComponent(getId(manifest));
         },
     };
 }

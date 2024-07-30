@@ -94,7 +94,7 @@ export function createProxy(target: any = {}): { proxy: any; emitter: Emitter; }
     };
 }
 
-export function useProxy<T>(storage: T & { [key in typeof storageInitErrorSymbol | typeof emitterSymbol]: any; }) {
+export function useProxy<T>(storage: T & { [key: string | symbol]: any; }) {
     if (storage[storageInitErrorSymbol]) throw new Error(
         "An error occured while initializing the storage",
         { cause: storage[storageInitErrorSymbol] }

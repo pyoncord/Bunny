@@ -37,7 +37,7 @@ export interface BunnyPluginManifestInternal extends BunnyPluginManifest {
 export interface PluginInstance {
     start?(): void;
     stop?(): void;
-    SettingsComponent?(): React.Component<any>;
+    SettingsComponent?(): JSX.Element;
 }
 
 export interface PluginInstanceInternal extends PluginInstance {

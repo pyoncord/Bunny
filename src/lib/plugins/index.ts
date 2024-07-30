@@ -56,7 +56,7 @@ export function getId<T extends t.BunnyPluginManifest>(manifest: T): string {
     return id;
 }
 
-export function getPluginSettingsComponent(id: string): (() => React.Component<any>) | null {
+export function getPluginSettingsComponent(id: string): React.ComponentType<any> | null {
     const instance = pluginInstances.get(id);
     if (!instance) return null;
 
