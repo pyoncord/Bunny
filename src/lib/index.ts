@@ -11,6 +11,21 @@ export * as ui from "./ui";
 export * as utils from "./utils";
 export * as metro from "@metro";
 
+import * as fonts from "./fonts";
+import * as plugins from "./plugins";
+import * as themes from "./themes";
+import { proxyLazy } from "./utils/lazy";
+
+export const managers = proxyLazy(() => {
+    console.warn("bunny.managers.* is deprecated, and moved the top level (bunny.*). bunny.manager will be eventually removed soon");
+
+    return {
+        get fonts() { return fonts; },
+        get plugins() { return plugins; },
+        get themes() { return themes; }
+    };
+}, { hint: "object" });
+
 const _disposer = [] as Array<() => unknown>;
 
 export function unload() {
