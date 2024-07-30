@@ -8,7 +8,7 @@ import { Author } from "@lib/utils/types";
 type EvaledPlugin = {
     onLoad?(): void;
     onUnload(): void;
-    settings: JSX.Element;
+    settings: React.ComponentType<unknown>;
 };
 
 // See https://github.com/vendetta-mod/polymanifest

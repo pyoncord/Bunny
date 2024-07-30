@@ -1,7 +1,6 @@
 // New iteration of storage API, mostly yoinked from unreleased pyoncord (and sunrise?)
 import { fileExists, readFile, writeFile } from "@lib/api/native/fs";
 import { Emitter } from "@lib/utils/Emitter";
-import invariant from "@lib/utils/invariant";
 
 interface StorageBackend<T = unknown> {
     get: () => Promise<T>;
@@ -21,7 +20,7 @@ function createFileBackend<T>(filePath: string): StorageBackend<T> {
             try {
                 return JSON.parse(await readFile(filePath));
             } catch (e) {
-                throw new Error(`Failed to parse storage '${filePath}: ${e}'`);
+                throw new Error(`Failed to parse storage from '${filePath}'`, { cause: e });
             }
         },
         set: async data => {
@@ -158,15 +157,16 @@ export async function createStorageAsync<T>(path: string, dflt = {} as T): Promi
 
 export const createStorage = <T>(path: string, dflt = {} as T): T & { [key: symbol]: any; } => {
     const promise = new Promise(r => resolvePromise = r);
-    let awaited: any, error: any, resolvePromise: (val?: unknown) => void;
+    let awaited: any, resolved: boolean, error: any, resolvePromise: (val?: unknown) => void;
 
     createStorageAndCallback(path, dflt, proxy => {
         awaited = proxy;
+        resolved = true;
         resolvePromise();
     });
 
     const check = () => {
-        if (awaited) return true;
+        if (resolved) return true;
         throw new Error("Attempted to access storage without initializing");
     };
 
@@ -190,11 +190,8 @@ export async function preloadStorageIfExists(path: string) {
     if (_loadedPath[path]) return;
     if (!await fileExists(path)) return;
 
-    try {
-        const data = await createFileBackend<any>(path).get();
-        invariant(data !== undefined);
-        _loadedPath[path] = data;
-    } catch {}
+    const data = await createFileBackend<any>(path).get();
+    _loadedPath[path] = data;
 }
 
 export function awaitStorage(...proxies: any[]) {

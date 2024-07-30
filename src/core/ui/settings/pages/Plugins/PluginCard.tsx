@@ -1,27 +1,25 @@
 import { CardWrapper } from "@core/ui/components/AddonCard";
-import { VdPluginManager, VendettaPlugin } from "@core/vendetta/plugins";
 import { findAssetId } from "@lib/api/assets";
-import { useProxy } from "@lib/api/storage";
-import { lazyDestructure } from "@lib/utils/lazy";
-import { findByProps } from "@metro";
 import { NavigationNative } from "@metro/common";
 import { Card, IconButton, Stack, TableSwitch, Text } from "@metro/common/components";
 import { showSheet } from "@ui/sheets";
 import { createContext, memo, useContext } from "react";
 import { Image, View } from "react-native";
 
+import { PluginManifest } from ".";
 import { usePluginCardStyles } from "./usePluginCardStyles";
 
-const { useToken } = lazyDestructure(() => findByProps("useToken"));
-const PluginContext = createContext<VendettaPlugin>(null!);
+const PluginContext = createContext<PluginManifest>(null!);
 const usePlugin = () => useContext(PluginContext);
 
 function Authors() {
     const plugin = usePlugin();
+    if (!plugin.authors) return null;
+
     const children = ["by "];
 
-    for (const author of plugin.manifest.authors) {
-        children.push(author.name);
+    for (const author of plugin.authors) {
+        children.push(typeof author === "string" ? author : author.name);
         children.push(", ");
     }
 
@@ -36,15 +34,14 @@ function Title() {
     const styles = usePluginCardStyles();
     const plugin = usePlugin();
 
-    const iconName = plugin.manifest.vendetta?.icon;
-    const icon = iconName && findAssetId(iconName);
+    const icon = plugin.icon && findAssetId(plugin.icon);
 
     const textElement = (
         <Text
             numberOfLines={1}
             variant="heading-lg/semibold"
         >
-            {plugin.manifest.name}
+            {plugin.name}
         </Text>
     );
 
@@ -94,10 +91,10 @@ const Actions = memo(() => {
             size="sm"
             variant="secondary"
             icon={findAssetId("WrenchIcon")}
-            disabled={!VdPluginManager.getSettings(plugin.id)}
+            disabled={!plugin.getPluginSettingsComponent()}
             onPress={() => navigation.push("VendettaCustomPage", {
-                title: plugin.manifest.name,
-                render: VdPluginManager.getSettings(plugin.id),
+                title: plugin.name,
+                render: plugin.getPluginSettingsComponent(),
             })}
         />
         <IconButton
@@ -106,15 +103,15 @@ const Actions = memo(() => {
             icon={findAssetId("CircleInformationIcon-primary")}
             onPress={() => void showSheet(
                 "PluginInfoActionSheet",
-                import("./sheets/PluginInfoActionSheet"),
+                plugin.resolveSheetComponent(),
                 { plugin, navigation }
             )}
         />
     </View>;
 });
 
-export default function PluginCard({ item: plugin }: CardWrapper<VendettaPlugin>) {
-    useProxy(plugin);
+export default function PluginCard({ item: plugin }: CardWrapper<PluginManifest>) {
+    plugin.usePluginState();
 
     return (
         <PluginContext.Provider value={plugin}>
@@ -130,17 +127,16 @@ export default function PluginCard({ item: plugin }: CardWrapper<VendettaPlugin>
                             <Stack spacing={12} direction="horizontal">
                                 <Actions />
                                 <TableSwitch
-                                    value={plugin.enabled}
+                                    value={plugin.isEnabled()}
                                     onValueChange={(v: boolean) => {
-                                        if (v) VdPluginManager.startPlugin(plugin.id);
-                                        else VdPluginManager.stopPlugin(plugin.id);
+                                        plugin.toggle(v);
                                     }}
                                 />
                             </Stack>
                         </View>
                     </View>
                     <Text variant="text-md/medium">
-                        {plugin.manifest.description}
+                        {plugin.description}
                     </Text>
                 </Stack>
             </Card>
