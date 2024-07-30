@@ -1,8 +1,9 @@
 import { Nullish } from "@lib/utils/types";
 import { DiscordTextStyles } from "@ui/types";
-import { ReactNode } from "react";
+import { MutableRefObject, ReactNode, RefObject } from "react";
 import type * as RN from "react-native";
 import { ImageSourcePropType, PressableProps } from "react-native";
+import { SharedValue } from "react-native-reanimated";
 import { LiteralUnion } from "type-fest";
 
 // Abandon all hope, ye who enter here
@@ -32,29 +33,36 @@ export type Button = React.ForwardRefExoticComponent<ButtonProps>;
 interface SegmentedControlItem {
     id: string;
     label: string;
-    page: JSX.Element | null;
+    page?: JSX.Element | null;
+}
+
+export interface SegmentedControlState {
+    activeIndex: SharedValue<number>;
+    pagerRef: RefObject<unknown>;
+    scrollTarget: SharedValue<number>;
+    scrollOverflow: SharedValue<number>;
+    scrollOffset: SharedValue<number>;
+    items: SegmentedControlItem[];
+    itemDimensions: SharedValue<unknown[]>;
+    pageWidth: number;
+    pressedIndex: SharedValue<number>;
+    onPageChangeRef: MutableRefObject<unknown>; // { current: undefined }
+    setActiveIndex: (index: number) => void;
+    setItemDimensions: (index: number, dimensions: unknown[]) => void;
+    useReducedMotion: boolean;
 }
 
 interface SegmentedControlProps {
-    state: any;
-    // state: {
-    //     activeIndex: SharedValue<number>;
-    //     pagerRef: RefObject<View>;
-    //     scrollTarget: SharedValue<number>;
-    //     scrollOverflow: SharedValue<number>;
-    //     scrollOffset: SharedValue<number>;
-    //     items: SegmentedControlItem[];
-    //     itemDimensions: SharedValue<unknown[]>;
-    //     pageWidth: number;
-    //     pressedIndex: SharedValue<number>;
-    //     onPageChangeRef: MutableRefObject<unknown>; // { current: undefined }
-    //     setActiveIndex: (index: number) => void;
-    //     setItemDimensions: (index: number, dimensions: unknown[]) => void;
-    //     useReducedMotion: boolean;
-    // };
+    state: SegmentedControlState;
 }
 
 export type SegmentedControl = React.FC<SegmentedControlProps>;
+
+interface SegmentedControlPagesProps {
+    state: SegmentedControlState;
+}
+
+export type SegmentedControlPages = React.FC<SegmentedControlPagesProps>;
 
 interface CompatSegmentedControlProps {
     values: string[];

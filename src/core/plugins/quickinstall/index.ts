@@ -6,11 +6,11 @@ let patches = [] as (() => unknown)[];
 
 export default defineCorePlugin({
     manifest: {
-        id: "bunny.quick.install",
+        id: "bunny.quickinstall",
         name: "QuickInstall",
         version: "1.0.0",
         description: "Quickly install Vendetta plugins and themes",
-        authors: [{ name: "pylixonly" }]
+        authors: ["pyoncord"]
     },
     start() {
         patches = [patchForumPost(), patchUrl()];

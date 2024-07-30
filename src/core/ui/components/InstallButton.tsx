@@ -24,7 +24,7 @@ export default function InstallButton({ alertTitle, installFunction: fetchFuncti
 
     return (
         <TouchableOpacity onPress={() =>
-            clipboard.getString().then(content =>
+            clipboard.getString().then((content: string) =>
                 showInputAlert({
                     title: alertTitle,
                     initialValue: content.match(HTTP_REGEX_MULTI)?.[0] ?? "",

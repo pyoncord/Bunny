@@ -58,6 +58,7 @@ export function createProxy(target: any = {}): { proxy: any; emitter: Emitter; }
 
 export function useProxy<T>(storage: T): T {
     const emitter = (storage as any)[emitterSymbol] as Emitter;
+    if (!emitter) throw new Error("storage[emitterSymbol] is undefined");
 
     const [, forceUpdate] = React.useReducer(n => ~n, 0);
 

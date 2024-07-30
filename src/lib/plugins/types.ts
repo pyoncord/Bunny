@@ -26,7 +26,7 @@ export interface BunnyPluginManifest {
     readonly name: string;
     readonly description: string;
     readonly version: string;
-    readonly authors: Author[];
+    readonly authors: (Author | string)[];
 }
 
 export interface BunnyPluginManifestInternal extends BunnyPluginManifest {

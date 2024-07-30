@@ -1,4 +1,5 @@
 import { Strings } from "@core/i18n";
+import { Nullish } from "@lib/utils/types";
 import { React } from "@metro/common";
 import { Button, LegacyFormText } from "@metro/common/components";
 import { Codeblock } from "@ui/components";
@@ -13,7 +14,7 @@ type ErrorBoundaryState = {
 };
 
 export interface ErrorBoundaryProps {
-    children: JSX.Element | JSX.Element[];
+    children: JSX.Element | Nullish | (JSX.Element | Nullish)[];
 }
 
 const styles = createThemedStyleSheet({

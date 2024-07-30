@@ -7,7 +7,7 @@ interface CorePlugin {
 
 // Called from @lib/plugins
 export const getCorePlugins = (): Record<string, CorePlugin> => ({
-    "vd-quick-install": require("./vd-quick-install")
+    "bunny.quickinstall": require("./vd-quick-install")
 });
 
 /**

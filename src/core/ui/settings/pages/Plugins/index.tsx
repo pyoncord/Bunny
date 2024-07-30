@@ -4,7 +4,11 @@ import PluginCard from "@core/ui/settings/pages/Plugins/PluginCard";
 import { VdPluginManager, VendettaPlugin } from "@core/vendetta/plugins";
 import { settings } from "@lib/api/settings";
 import { useProxy } from "@lib/api/storage";
+import { registeredPlugins } from "@lib/plugins";
+import { BunnyPluginManifest } from "@lib/plugins/types";
 import { Author } from "@lib/utils/types";
+import { SegmentedControl, SegmentedControlPages, useSegmentedControlState } from "@metro/common/components";
+import { useWindowDimensions, View } from "react-native";
 
 export interface PluginManifest {
     id: string;
@@ -47,22 +51,80 @@ function resolveFromVdPlugin(vdPlugin: VendettaPlugin): PluginManifest {
     };
 }
 
+function resolveFromBunnyPlugin(manifest: BunnyPluginManifest): PluginManifest {
+    return {
+        id: manifest.id,
+        name: manifest.name,
+        description: manifest.description,
+        authors: manifest.authors,
+        isEnabled() {
+            return false;
+        },
+        usePluginState() {
+
+        },
+        toggle(start: boolean) {
+
+        },
+        resolveSheetComponent() {
+            return import("./sheets/PluginInfoActionSheet");
+        },
+        getPluginSettingsComponent() {
+            return null;
+        },
+    };
+}
+
+function Page({ items, resolveItem, fetchFunction }: Record<string, any>) {
+    return <AddonPage<PluginManifest>
+        card={PluginCard}
+        title={Strings.PLUGINS}
+        searchKeywords={[
+            "name",
+            "description",
+            p => p.authors?.map((a: Author | string) => typeof a === "string" ? a : a.name).join()
+        ]}
+        items={items}
+        resolveItem={resolveItem}
+        fetchFunction={fetchFunction}
+        safeModeMessage={Strings.SAFE_MODE_NOTICE_PLUGINS}
+    />;
+}
+
 export default function Plugins() {
     useProxy(settings);
 
-    return (
-        <AddonPage<PluginManifest>
-            title={Strings.PLUGINS}
-            searchKeywords={[
-                "name",
-                "description",
-                p => p.authors?.map((a: Author | string) => typeof a === "string" ? a : a.name).join()
-            ]}
-            items={VdPluginManager.plugins}
-            resolveItem={resolveFromVdPlugin}
-            fetchFunction={async () => { /** TODO */ }}
-            safeModeMessage={Strings.SAFE_MODE_NOTICE_PLUGINS}
-            card={PluginCard}
-        />
-    );
+    const { width: pageWidth } = useWindowDimensions();
+
+    const state = useSegmentedControlState({
+        pageWidth,
+        items: [
+            {
+                label: "Vendetta",
+                id: "vendetta-plugins",
+                page: (
+                    <Page
+                        items={VdPluginManager.plugins}
+                        resolveItem={resolveFromVdPlugin}
+                        fetchFunction={(url: string) => VdPluginManager.installPlugin(url)}
+                    />
+                )
+            },
+            {
+                label: "Bunny",
+                id: "bunny-plugins",
+                page: (
+                    <Page
+                        items={Object.fromEntries(registeredPlugins.entries())}
+                        resolveItem={resolveFromBunnyPlugin}
+                    />
+                )
+            },
+        ]
+    });
+
+    return <View style={{ margin: 8, gap: 8, alignItems: "center", justifyContent: "center", height: "100%" }}>
+        <SegmentedControl state={state} />
+        <SegmentedControlPages state={state} />
+    </View>;
 }

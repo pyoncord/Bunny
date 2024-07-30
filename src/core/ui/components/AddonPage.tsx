@@ -17,7 +17,7 @@ type SearchKeywords = Array<string | ((obj: any & {}) => string)>;
 
 interface AddonPageProps<T extends object> {
     title: string;
-    fetchFunction: (url: string) => Promise<void>;
+    fetchFunction?: (url: string) => Promise<void>;
     items: Record<string, any>;
     resolveItem?: (value: any) => T | undefined;
     safeModeMessage: string;
@@ -32,7 +32,6 @@ const { FlashList } = findByProps("FlashList");
 
 export default function AddonPage<T extends object>({ card: CardComponent, ...props }: AddonPageProps<T>) {
     useProxy(settings);
-    useProxy(props.items);
 
     const [search, setSearch] = React.useState("");
 
@@ -74,7 +73,7 @@ export default function AddonPage<T extends object>({ card: CardComponent, ...pr
                     </View>
                 )}
             />
-            <FloatingActionButton
+            {(props.fetchFunction ?? props.onFABPress) && <FloatingActionButton
                 icon={findAssetId("PlusLargeIcon")}
                 onPress={props.onFABPress ?? (() => {
                     // from ./InstallButton.tsx
@@ -82,13 +81,13 @@ export default function AddonPage<T extends object>({ card: CardComponent, ...pr
                         showInputAlert({
                             initialValue: content.match(HTTP_REGEX_MULTI)?.[0] ?? "",
                             placeholder: Strings.URL_PLACEHOLDER,
-                            onConfirm: (input: string) => props.fetchFunction(input),
+                            onConfirm: (input: string) => props.fetchFunction!(input),
                             confirmText: Strings.INSTALL,
                             cancelText: Strings.CANCEL,
                         })
                     );
                 })}
-            />
+            />}
         </ErrorBoundary>
     );
 }
