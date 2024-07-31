@@ -46,6 +46,14 @@ export function patchTabsUI(unpatches: (() => void | boolean)[]) {
                     getComponent: () => CustomPageRenderer
                 }
             },
+            BUNNY_CUSTOM_PAGE: {
+                type: "route",
+                title: () => "Bunny",
+                screen: {
+                    route: "BUNNY_CUSTOM_PAGE",
+                    getComponent: () => CustomPageRenderer
+                }
+            },
             ...getRows()
         }),
         set: v => rendererConfigValue = v,

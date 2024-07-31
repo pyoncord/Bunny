@@ -35,7 +35,7 @@ export default function General() {
                         label={Strings.ABOUT}
                         icon={<TableRow.Icon source={findAssetId("CircleInformationIcon-primary")} />}
                         trailing={TableRow.Arrow}
-                        onPress={() => navigation.push("VendettaCustomPage", {
+                        onPress={() => navigation.push("BUNNY_CUSTOM_PAGE", {
                             title: Strings.ABOUT,
                             render: () => <About />,
                         })}

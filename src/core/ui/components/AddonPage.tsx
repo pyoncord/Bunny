@@ -10,7 +10,7 @@ import { FloatingActionButton, HelpMessage } from "@metro/common/components";
 import { showInputAlert } from "@ui/alerts";
 import { ErrorBoundary, Search } from "@ui/components";
 import fuzzysort from "fuzzysort";
-import { useMemo } from "react";
+import { ComponentType, ReactNode, useMemo } from "react";
 import { View } from "react-native";
 
 type SearchKeywords = Array<string | ((obj: any & {}) => string)>;
@@ -18,13 +18,14 @@ type SearchKeywords = Array<string | ((obj: any & {}) => string)>;
 interface AddonPageProps<T extends object> {
     title: string;
     fetchFunction?: (url: string) => Promise<void>;
-    items: Record<string, any>;
+    items: any[];
     resolveItem?: (value: any) => T | undefined;
     safeModeMessage: string;
-    safeModeExtras?: JSX.Element | JSX.Element[];
-    card: React.ComponentType<CardWrapper<T>>;
+    safeModeExtras?: ReactNode;
+    card: ComponentType<CardWrapper<T>>;
     searchKeywords: SearchKeywords;
-    onFABPress?: () => void;
+    onFabPress?: () => void;
+    ListFooterComponent?: ReactNode | ComponentType;
 }
 
 // TODO: Move to somewhere else
@@ -36,7 +37,7 @@ export default function AddonPage<T extends object>({ card: CardComponent, ...pr
     const [search, setSearch] = React.useState("");
 
     const items = useMemo(() => {
-        let values = Object.values(props.items);
+        let values = props.items;
         if (props.resolveItem) values = values.map(props.resolveItem);
         return values.filter(i => i && typeof i === "object");
     }, [props.items]);
@@ -54,8 +55,7 @@ export default function AddonPage<T extends object>({ card: CardComponent, ...pr
             </View>}
             <Search
                 style={{ padding: 8 }}
-                onChangeText={(v: string) => setSearch(v.toLowerCase())}
-                placeholder={Strings.SEARCH}
+                onChangeText={v => setSearch(v)}
             />
         </View>
     ), []);
@@ -67,15 +67,16 @@ export default function AddonPage<T extends object>({ card: CardComponent, ...pr
                 estimatedItemSize={136}
                 ListHeaderComponent={headerElement}
                 contentContainerStyle={{ paddingBottom: 90, paddingHorizontal: 5 }}
+                ListFooterComponent={props.ListFooterComponent}
                 renderItem={({ item }: any) => (
                     <View style={{ paddingVertical: 6, paddingHorizontal: 8 }}>
                         <CardComponent item={item} />
                     </View>
                 )}
             />
-            {(props.fetchFunction ?? props.onFABPress) && <FloatingActionButton
+            {(props.fetchFunction ?? props.onFabPress) && <FloatingActionButton
                 icon={findAssetId("PlusLargeIcon")}
-                onPress={props.onFABPress ?? (() => {
+                onPress={props.onFabPress ?? (() => {
                     // from ./InstallButton.tsx
                     clipboard.getString().then((content: string) =>
                         showInputAlert({

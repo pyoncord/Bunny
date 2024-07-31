@@ -20,7 +20,7 @@ export default function Themes() {
                 p => p.manifest.authors?.map((a: Author) => a.name).join()
             ]}
             fetchFunction={installTheme}
-            items={themes}
+            items={Object.values(themes)}
             safeModeMessage={formatString("SAFE_MODE_NOTICE_THEMES", { enabled: Boolean(settings.safeMode?.currentThemeId) })}
             safeModeExtras={settings.safeMode?.currentThemeId ? <Button
                 text={Strings.DISABLE_THEME}

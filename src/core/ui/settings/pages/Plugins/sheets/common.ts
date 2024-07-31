@@ -1,6 +1,6 @@
-import { PluginManifest } from "..";
+import { UnifiedPluginModel } from "..";
 
 export interface PluginInfoActionSheetProps {
-    plugin: PluginManifest;
+    plugin: UnifiedPluginModel;
     navigation: any;
 }

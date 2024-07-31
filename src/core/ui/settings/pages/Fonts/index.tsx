@@ -19,11 +19,11 @@ export default function Fonts() {
             title={Strings.FONTS}
             searchKeywords={["name", "description"]}
             fetchFunction={installFont}
-            items={fonts as Record<string, FontDefinition>}
+            items={Object.values(fonts)}
             safeModeMessage={Strings.SAFE_MODE_NOTICE_FONTS}
             card={FontCard}
-            onFABPress={() => {
-                navigation.push("VendettaCustomPage", {
+            onFabPress={() => {
+                navigation.push("BUNNY_CUSTOM_PAGE", {
                     title: "Import Font",
                     render: () => <FontEditor />
                 });

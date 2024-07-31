@@ -33,7 +33,7 @@ export function wrapOnPress(
         }
 
         navigation ??= tabsNavigationRef.getRootNavigationRef();
-        navigation.navigate("VendettaCustomPage", {
+        navigation.navigate("BUNNY_CUSTOM_PAGE", {
             ...screenOptions,
             render: () => <Component {...props} />
         });

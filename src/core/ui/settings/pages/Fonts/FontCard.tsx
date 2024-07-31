@@ -83,7 +83,7 @@ export default function FontCard({ item: font }: CardWrapper<FontDefinition>) {
                         <Stack spacing={12} direction="horizontal">
                             <IconButton
                                 onPress={() => {
-                                    navigation.push("VendettaCustomPage", {
+                                    navigation.push("BUNNY_CUSTOM_PAGE", {
                                         title: "Edit Font",
                                         render: () => <FontEditor name={font.name} />
                                     });

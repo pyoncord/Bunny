@@ -60,7 +60,7 @@ export const TextInput = findSingular("TextInput") as t.TextInput;
 // SegmentedControl
 export const SegmentedControl = findProp("SegmentedControl") as t.SegmentedControl;
 export const SegmentedControlPages = findProp("SegmentedControlPages") as t.SegmentedControlPages;
-export const useSegmentedControlState = findSingular("useSegmentedControlState") as (...args: unknown[]) => t.SegmentedControlState;
+export const useSegmentedControlState = findSingular("useSegmentedControlState") as (arg: t.SegmentedControlStateArgs) => t.SegmentedControlState;
 export const CompatSegmentedControl = findProp("CompatSegmentedControl") as t.CompatSegmentedControl;
 
 export const FloatingActionButton = findProp("FloatingActionButton") as t.FloatingActionButton;

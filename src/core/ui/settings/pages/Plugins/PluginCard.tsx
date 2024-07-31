@@ -6,10 +6,10 @@ import { showSheet } from "@ui/sheets";
 import { createContext, memo, useContext } from "react";
 import { Image, View } from "react-native";
 
-import { PluginManifest } from ".";
+import { UnifiedPluginModel } from ".";
 import { usePluginCardStyles } from "./usePluginCardStyles";
 
-const PluginContext = createContext<PluginManifest>(null!);
+const PluginContext = createContext<UnifiedPluginModel>(null!);
 const usePlugin = () => useContext(PluginContext);
 
 function Authors() {
@@ -92,7 +92,7 @@ const Actions = memo(() => {
             variant="secondary"
             icon={findAssetId("WrenchIcon")}
             disabled={!plugin.getPluginSettingsComponent()}
-            onPress={() => navigation.push("VendettaCustomPage", {
+            onPress={() => navigation.push("BUNNY_CUSTOM_PAGE", {
                 title: plugin.name,
                 render: plugin.getPluginSettingsComponent(),
             })}
@@ -110,7 +110,7 @@ const Actions = memo(() => {
     </View>;
 });
 
-export default function PluginCard({ item: plugin }: CardWrapper<PluginManifest>) {
+export default function PluginCard({ item: plugin }: CardWrapper<UnifiedPluginModel>) {
     plugin.usePluginState();
 
     return (

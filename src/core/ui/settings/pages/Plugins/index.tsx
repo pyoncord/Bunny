@@ -1,17 +1,21 @@
 import { Strings } from "@core/i18n";
 import AddonPage from "@core/ui/components/AddonPage";
 import PluginCard from "@core/ui/settings/pages/Plugins/PluginCard";
-import { VdPluginManager, VendettaPlugin } from "@core/vendetta/plugins";
+import { VdPluginManager } from "@core/vendetta/plugins";
+import { findAssetId } from "@lib/api/assets";
 import { settings } from "@lib/api/settings";
 import { useProxy } from "@lib/api/storage";
-import { useProxy as useProxyNew } from "@lib/api/storage/new";
-import { getId, getPluginSettingsComponent, isPluginEnabled, pluginSettings, registeredPlugins, startPlugin, stopPlugin } from "@lib/plugins";
-import { BunnyPluginManifest } from "@lib/plugins/types";
+import { registeredPlugins } from "@lib/plugins";
 import { Author } from "@lib/utils/types";
-import { SegmentedControl, SegmentedControlPages, useSegmentedControlState } from "@metro/common/components";
+import { NavigationNative } from "@metro/common";
+import { Button, SegmentedControl, SegmentedControlPages, Text, useSegmentedControlState } from "@metro/common/components";
+import { ComponentProps } from "react";
 import { useWindowDimensions, View } from "react-native";
 
-export interface PluginManifest {
+import unifyBunnyPlugin from "./models/bunny";
+import unifyVdPlugin from "./models/vendetta";
+
+export interface UnifiedPluginModel {
     id: string;
     name: string;
     description?: string;
@@ -25,62 +29,15 @@ export interface PluginManifest {
     getPluginSettingsComponent(): React.ComponentType<any> | null;
 }
 
-function resolveFromVdPlugin(vdPlugin: VendettaPlugin): PluginManifest {
-    return {
-        id: vdPlugin.id,
-        name: vdPlugin.manifest.name,
-        description: vdPlugin.manifest.description,
-        authors: vdPlugin.manifest.authors,
-        icon: vdPlugin.manifest.vendetta?.icon,
-        isEnabled() {
-            return vdPlugin.enabled;
-        },
-        usePluginState() {
-            useProxy(VdPluginManager.plugins[vdPlugin.id]);
-        },
-        toggle(start: boolean) {
-            start
-                ? VdPluginManager.startPlugin(vdPlugin.id)
-                : VdPluginManager.stopPlugin(vdPlugin.id);
-        },
-        resolveSheetComponent() {
-            return import("./sheets/VdPluginInfoActionSheet");
-        },
-        getPluginSettingsComponent() {
-            return VdPluginManager.getSettings(vdPlugin.id);
-        },
-    };
+function navigateToPluginBrowser(navigation: any) {
+    navigation.push("BUNNY_CUSTOM_PAGE", {
+        title: "Plugin Browser",
+        render: React.lazy(() => import("../PluginBrowser")),
+    });
 }
 
-function resolveFromBunnyPlugin(manifest: BunnyPluginManifest): PluginManifest {
-
-    return {
-        id: manifest.id,
-        name: manifest.name,
-        description: manifest.description,
-        authors: manifest.authors,
-        isEnabled() {
-            return isPluginEnabled(getId(manifest));
-        },
-        usePluginState() {
-            useProxyNew(pluginSettings);
-        },
-        toggle(start: boolean) {
-            start
-                ? startPlugin(getId(manifest))
-                : stopPlugin(getId(manifest));
-        },
-        resolveSheetComponent() {
-            return import("./sheets/PluginInfoActionSheet");
-        },
-        getPluginSettingsComponent() {
-            return getPluginSettingsComponent(getId(manifest));
-        },
-    };
-}
-
-function Page({ items, resolveItem, fetchFunction }: Record<string, any>) {
-    return <AddonPage<PluginManifest>
+function Page(props: Partial<ComponentProps<typeof AddonPage<UnifiedPluginModel>>>) {
+    return <AddonPage<UnifiedPluginModel>
         card={PluginCard}
         title={Strings.PLUGINS}
         searchKeywords={[
@@ -88,16 +45,16 @@ function Page({ items, resolveItem, fetchFunction }: Record<string, any>) {
             "description",
             p => p.authors?.map((a: Author | string) => typeof a === "string" ? a : a.name).join()
         ]}
-        items={items}
-        resolveItem={resolveItem}
-        fetchFunction={fetchFunction}
         safeModeMessage={Strings.SAFE_MODE_NOTICE_PLUGINS}
+        items={props.items!}
+        {...props}
     />;
 }
 
 export default function Plugins() {
     useProxy(settings);
 
+    const navigation = NavigationNative.useNavigation();
     const { width: pageWidth } = useWindowDimensions();
 
     const state = useSegmentedControlState({
@@ -108,8 +65,8 @@ export default function Plugins() {
                 id: "vendetta-plugins",
                 page: (
                     <Page
-                        items={VdPluginManager.plugins}
-                        resolveItem={resolveFromVdPlugin}
+                        items={Object.values(VdPluginManager.plugins)}
+                        resolveItem={unifyVdPlugin}
                         fetchFunction={(url: string) => VdPluginManager.installPlugin(url)}
                     />
                 )
@@ -119,15 +76,34 @@ export default function Plugins() {
                 id: "bunny-plugins",
                 page: (
                     <Page
-                        items={Object.fromEntries(registeredPlugins.entries())}
-                        resolveItem={resolveFromBunnyPlugin}
+                        items={[...registeredPlugins.values()]}
+                        resolveItem={unifyBunnyPlugin}
+                        ListFooterComponent={() => (
+                            <View style={{ alignItems: "center", justifyContent: "center", paddingTop: 16, gap: 12 }}>
+                                <Text variant="heading-lg/bold">{"Looking for more?"}</Text>
+                                <Button
+                                    size="lg"
+                                    text="Browse plugins"
+                                    icon={findAssetId("discover")}
+                                    onPress={() => navigateToPluginBrowser(navigation)}
+                                />
+                            </View>
+                        )}
                     />
                 )
             },
         ]
     });
 
-    return <View style={{ margin: 8, gap: 8, alignItems: "center", justifyContent: "center", height: "100%" }}>
+    return <View
+        style={{
+            margin: 8,
+            gap: 8,
+            alignItems: "center",
+            justifyContent: "center",
+            height: "100%"
+        }}
+    >
         <SegmentedControl state={state} />
         <SegmentedControlPages state={state} />
     </View>;

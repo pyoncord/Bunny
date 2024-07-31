@@ -36,6 +36,12 @@ interface SegmentedControlItem {
     page?: JSX.Element | null;
 }
 
+export interface SegmentedControlStateArgs {
+    items: SegmentedControlItem[];
+    pageWidth: number;
+    defaultIndex?: number;
+}
+
 export interface SegmentedControlState {
     activeIndex: SharedValue<number>;
     pagerRef: RefObject<unknown>;
