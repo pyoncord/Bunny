@@ -270,7 +270,7 @@ export async function uninstallPlugin(id: string) {
  * Starts a registered, installed, enabled and unstarted plugin. Otherwise, would throw.
  * @param id The enabled plugin ID
  */
-export async function startPlugin(id: string) {
+export async function startPlugin(id: string, initial = false) {
     const manifest = registeredPlugins.get(id);
 
     // horror
@@ -298,7 +298,7 @@ export async function startPlugin(id: string) {
 
         // Stage two, load the plugin
         try {
-            const api = createBunnyPluginAPI(id);
+            const api = createBunnyPluginAPI(id, initial);
             pluginInstance = instantiator(api.object, p => {
                 return Object.assign(p, {
                     manifest
@@ -375,7 +375,7 @@ export async function initPlugins() {
     // Now, start all enabled plugins...
     await Promise.allSettled([...registeredPlugins.keys()].map(async id => {
         if (isPluginEnabled(id)) {
-            await startPlugin(id);
+            await startPlugin(id, true);
         }
     }));
 }
