@@ -23,7 +23,7 @@ import * as toasts from "@ui/toasts";
 import { createElement, useEffect } from "react";
 import { View } from "react-native";
 
-export async function createVdPluginObject(plugin: plugins.BunnyPlugin) {
+export async function createVdPluginObject(plugin: plugins.BunnyPlugin, initial = false) {
     return {
         ...window.vendetta,
         plugin: {
@@ -31,6 +31,7 @@ export async function createVdPluginObject(plugin: plugins.BunnyPlugin) {
             manifest: plugin.manifest,
             // Wrapping this with wrapSync is NOT an option.
             storage: await createStorage<Record<string, any>>(storage.createMMKVBackend(plugin.id)),
+            initial,
         },
         logger: new logModule(`Bunny » ${plugin.manifest.name}`),
     };

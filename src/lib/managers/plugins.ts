@@ -89,8 +89,8 @@ export async function installPlugin(id: string, enabled = true) {
 /**
  * @internal
  */
-export async function evalPlugin(plugin: BunnyPlugin) {
-    const vdObject = await createVdPluginObject(plugin);
+export async function evalPlugin(plugin: BunnyPlugin, initial = false) {
+    const vdObject = await createVdPluginObject(plugin, initial);
     const pluginString = `vendetta=>{return ${plugin.js}}\n//# sourceURL=${plugin.id}?hash=${plugin.manifest.hash}`;
 
     const raw = (0, eval)(pluginString)(vdObject);
@@ -98,14 +98,14 @@ export async function evalPlugin(plugin: BunnyPlugin) {
     return ret?.default ?? ret ?? {};
 }
 
-export async function startPlugin(id: string) {
+export async function startPlugin(id: string, initial = false) {
     if (!id.endsWith("/")) id += "/";
     const plugin = plugins[id];
     if (!plugin) throw new Error("Attempted to start non-existent plugin");
 
     try {
         if (!settings.safeMode?.enabled) {
-            const pluginRet: EvaledPlugin = await evalPlugin(plugin);
+            const pluginRet: EvaledPlugin = await evalPlugin(plugin, initial);
             loadedPlugins[id] = pluginRet;
             pluginRet.onLoad?.();
         }
@@ -164,7 +164,7 @@ export async function initPlugins() {
 
     if (!settings.safeMode?.enabled) {
         // Loop over any plugin that is enabled, update it if allowed, then start it.
-        await allSettled(allIds.filter(pl => plugins[pl].enabled).map(async pl => (plugins[pl].update && await fetchPlugin(pl).catch((e: Error) => logger.error(e.message)), await startPlugin(pl))));
+        await allSettled(allIds.filter(pl => plugins[pl].enabled).map(async pl => (plugins[pl].update && await fetchPlugin(pl).catch((e: Error) => logger.error(e.message)), await startPlugin(pl, true))));
         // Wait for the above to finish, then update all disabled plugins that are allowed to.
         allIds.filter(pl => !plugins[pl].enabled && plugins[pl].update).forEach(pl => fetchPlugin(pl));
     }
