@@ -47,6 +47,7 @@ export interface PluginInstanceInternal extends PluginInstance {
 export interface BunnyPluginProperty {
     readonly manifest: BunnyPluginManifestInternal;
     readonly logger: Logger;
+    readonly initial: boolean;
     createStorage<T>(): ReturnType<typeof createStorage<T>>;
 }
 
