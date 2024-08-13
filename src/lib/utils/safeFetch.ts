@@ -5,7 +5,7 @@ export async function safeFetch(input: RequestInfo | URL, options?: RequestInit,
         ...options
     });
 
-    if (!req.ok) throw new Error("Request returned non-ok");
+    if (!req.ok) throw new Error(`Request returned non-ok: ${req.status} ${req.statusText}`);
     return req;
 }
 

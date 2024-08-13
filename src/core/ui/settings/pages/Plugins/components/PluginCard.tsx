@@ -1,4 +1,5 @@
 import { CardWrapper } from "@core/ui/components/AddonCard";
+import { usePluginCardStyles } from "@core/ui/settings/pages/Plugins/usePluginCardStyles";
 import { findAssetId } from "@lib/api/assets";
 import { NavigationNative } from "@metro/common";
 import { Card, IconButton, Stack, TableSwitch, Text } from "@metro/common/components";
@@ -6,8 +7,7 @@ import { showSheet } from "@ui/sheets";
 import { createContext, memo, useContext } from "react";
 import { Image, View } from "react-native";
 
-import { UnifiedPluginModel } from ".";
-import { usePluginCardStyles } from "./usePluginCardStyles";
+import { UnifiedPluginModel } from "..";
 
 const PluginContext = createContext<UnifiedPluginModel>(null!);
 const usePlugin = () => useContext(PluginContext);

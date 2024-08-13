@@ -9,9 +9,6 @@ async function initializeBunny() {
         // Make 'freeze' and 'seal' do nothing
         Object.freeze = Object.seal = Object;
 
-        // Polyfill Promise.allSettled
-        require("@core/polyfills/promise-all-settled");
-
         await require("@metro/internals/caches").initMetroCache();
         await require(".").default();
     } catch (e) {

@@ -46,6 +46,7 @@ const config = {
     define: {
         __DEV__: JSON.stringify(releaseBranch !== "main")
     },
+    inject: ["./shims/asyncIteratorSymbol.js", "./shims/promiseAllSettled.js"],
     legalComments: "none",
     alias: {
         "!bunny-deps-shim!": "./shims/depsModule.ts",
@@ -84,15 +85,14 @@ const config = {
                         env: {
                             targets: "fully supports es6",
                             include: [
-                                // Pretend that arrow functions are unsupported, since hermes does not support async arrow functions for some reason
-                                "transform-arrow-functions",
                                 "transform-block-scoping",
-                                "transform-classes"
+                                "transform-classes",
+                                "transform-async-to-generator",
+                                "transform-async-generator-functions"
                             ],
                             exclude: [
                                 "transform-parameters",
                                 "transform-template-literals",
-                                "transform-async-to-generator",
                                 "transform-exponentiation-operator",
                                 "transform-named-capturing-groups-regex",
                                 "transform-nullish-coalescing-operator",

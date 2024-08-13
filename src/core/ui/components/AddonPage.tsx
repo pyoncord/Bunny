@@ -4,13 +4,12 @@ import { findAssetId } from "@lib/api/assets";
 import { settings } from "@lib/api/settings";
 import { useProxy } from "@lib/api/storage";
 import { HTTP_REGEX_MULTI } from "@lib/utils/constants";
-import { findByProps } from "@metro";
-import { clipboard } from "@metro/common";
-import { FloatingActionButton, HelpMessage } from "@metro/common/components";
+import { clipboard, NavigationNative } from "@metro/common";
+import { FlashList, FloatingActionButton, HelpMessage } from "@metro/common/components";
 import { showInputAlert } from "@ui/alerts";
 import { ErrorBoundary, Search } from "@ui/components";
 import fuzzysort from "fuzzysort";
-import { ComponentType, ReactNode, useMemo } from "react";
+import { ComponentType, ReactNode, useCallback, useMemo } from "react";
 import { View } from "react-native";
 
 type SearchKeywords = Array<string | ((obj: any & {}) => string)>;
@@ -25,14 +24,19 @@ interface AddonPageProps<T extends object> {
     card: ComponentType<CardWrapper<T>>;
     searchKeywords: SearchKeywords;
     onFabPress?: () => void;
-    ListFooterComponent?: ReactNode | ComponentType;
+    ListFooterComponent?: ComponentType<any>;
 }
-
-// TODO: Move to somewhere else
-const { FlashList } = findByProps("FlashList");
 
 export default function AddonPage<T extends object>({ card: CardComponent, ...props }: AddonPageProps<T>) {
     useProxy(settings);
+
+    const [, forceUpdate] = React.useReducer(s => ~s, 0);
+    NavigationNative.useFocusEffect(
+        useCallback(() => {
+            console.log("giler", items);
+            forceUpdate();
+        }, [])
+    );
 
     const [search, setSearch] = React.useState("");
 
@@ -62,16 +66,21 @@ export default function AddonPage<T extends object>({ card: CardComponent, ...pr
 
     return (
         <ErrorBoundary>
+            {/*
+                I've spent countless hours on these, but FlashList and FlatList refuse to rerender (unless if you reopen the page)
+                *even* if the data totally changed. Solutions online suggest putting extraData prop,
+                but that doesn't work either. I wonder what could have caused this
+            */}
             <FlashList
                 data={data}
+                extraData={search}
+                keyExtractor={(i: any) => i?.id}
                 estimatedItemSize={136}
                 ListHeaderComponent={headerElement}
                 contentContainerStyle={{ paddingBottom: 90, paddingHorizontal: 5 }}
                 ListFooterComponent={props.ListFooterComponent}
                 renderItem={({ item }: any) => (
-                    <View style={{ paddingVertical: 6, paddingHorizontal: 8 }}>
-                        <CardComponent item={item} />
-                    </View>
+                    <CardComponent item={item} />
                 )}
             />
             {(props.fetchFunction ?? props.onFabPress) && <FloatingActionButton

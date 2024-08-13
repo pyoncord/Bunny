@@ -100,3 +100,5 @@ export const {
     FormText: LegacyFormText,
     FormTitle: LegacyFormTitle
 } = lazyDestructure(() => Forms);
+
+export const FlashList = findProp("FlashList");

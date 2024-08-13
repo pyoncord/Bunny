@@ -1,5 +1,5 @@
 import { useProxy } from "@lib/api/storage/new";
-import { getId, getPluginSettingsComponent,isPluginEnabled, pluginSettings, startPlugin, stopPlugin } from "@lib/plugins";
+import { disablePlugin, enablePlugin, getId, getPluginSettingsComponent,isPluginEnabled, pluginSettings } from "@lib/plugins";
 import { BunnyPluginManifest } from "@lib/plugins/types";
 
 import { UnifiedPluginModel } from "..";
@@ -18,8 +18,8 @@ export default function unifyBunnyPlugin(manifest: BunnyPluginManifest): Unified
         },
         toggle(start: boolean) {
             start
-                ? startPlugin(getId(manifest))
-                : stopPlugin(getId(manifest));
+                ? enablePlugin(getId(manifest), true)
+                : disablePlugin(getId(manifest));
         },
         resolveSheetComponent() {
             return import("../sheets/PluginInfoActionSheet");
