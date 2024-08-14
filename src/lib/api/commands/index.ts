@@ -10,9 +10,10 @@ let commands: ApplicationCommand[] = [];
  */
 export function patchCommands() {
     const unpatch = after("getBuiltInCommands", commandsModule, ([type], res: ApplicationCommand[]) => {
-        if (type === ApplicationCommandType.CHAT) {
-            return res.concat(commands.filter(c => c.__bunny?.shouldHide?.() !== false));
-        }
+        return [...res, ...commands.filter(c =>
+            (type instanceof Array ? type.includes(c.type) : type === c.type)
+            && c.__bunny?.shouldHide?.() !== false)
+        ];
     });
 
     // Register core commands
@@ -30,13 +31,19 @@ export function patchCommands() {
 
 export function registerCommand(command: BunnyApplicationCommand): () => void {
     // Get built in commands
-    const builtInCommands = commandsModule.getBuiltInCommands(ApplicationCommandType.CHAT, true, false);
+    let builtInCommands: ApplicationCommand[];
+    try {
+        builtInCommands = commandsModule.getBuiltInCommands(ApplicationCommandType.CHAT, true, false);
+    } catch {
+        builtInCommands = commandsModule.getBuiltInCommands(Object.values(ApplicationCommandType), true, false);
+    }
+
     builtInCommands.sort((a: ApplicationCommand, b: ApplicationCommand) => parseInt(b.id!) - parseInt(a.id!));
 
     const lastCommand = builtInCommands[builtInCommands.length - 1];
 
     // Override the new command's id to the last command id - 1
-    command.id = (parseInt(lastCommand.id, 10) - 1).toString();
+    command.id = (parseInt(lastCommand.id!, 10) - 1).toString();
 
     // Fill optional args
     command.__bunny = {
