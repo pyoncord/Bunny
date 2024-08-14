@@ -4,12 +4,12 @@ import { findAssetId } from "@lib/api/assets";
 import { settings } from "@lib/api/settings";
 import { useProxy } from "@lib/api/storage";
 import { HTTP_REGEX_MULTI } from "@lib/utils/constants";
-import { clipboard, NavigationNative } from "@metro/common";
+import { clipboard } from "@metro/common";
 import { FlashList, FloatingActionButton, HelpMessage } from "@metro/common/components";
 import { showInputAlert } from "@ui/alerts";
 import { ErrorBoundary, Search } from "@ui/components";
 import fuzzysort from "fuzzysort";
-import { ComponentType, ReactNode, useCallback, useMemo } from "react";
+import { ComponentType, ReactNode, useMemo } from "react";
 import { View } from "react-native";
 
 type SearchKeywords = Array<string | ((obj: any & {}) => string)>;
@@ -30,14 +30,6 @@ interface AddonPageProps<T extends object> {
 export default function AddonPage<T extends object>({ card: CardComponent, ...props }: AddonPageProps<T>) {
     useProxy(settings);
 
-    const [, forceUpdate] = React.useReducer(s => ~s, 0);
-    NavigationNative.useFocusEffect(
-        useCallback(() => {
-            console.log("giler", items);
-            forceUpdate();
-        }, [])
-    );
-
     const [search, setSearch] = React.useState("");
 
     const items = useMemo(() => {
@@ -51,33 +43,26 @@ export default function AddonPage<T extends object>({ card: CardComponent, ...pr
         return fuzzysort.go(search, items, { keys: props.searchKeywords }).map(r => r.obj);
     }, [items, search]);
 
-    const headerElement = useMemo(() => (
-        <View>
+    const headerElement = (
+        <View style={{ paddingBottom: 8 }}>
             {settings.safeMode?.enabled && <View style={{ marginBottom: 10 }}>
                 <HelpMessage messageType={0}>{props.safeModeMessage}</HelpMessage>
                 {props.safeModeExtras}
             </View>}
-            <Search
-                style={{ padding: 8 }}
-                onChangeText={v => setSearch(v)}
-            />
+            <Search onChangeText={v => setSearch(v)} />
         </View>
-    ), []);
+    );
 
     return (
         <ErrorBoundary>
-            {/*
-                I've spent countless hours on these, but FlashList and FlatList refuse to rerender (unless if you reopen the page)
-                *even* if the data totally changed. Solutions online suggest putting extraData prop,
-                but that doesn't work either. I wonder what could have caused this
-            */}
             <FlashList
                 data={data}
                 extraData={search}
                 keyExtractor={(i: any) => i?.id}
                 estimatedItemSize={136}
                 ListHeaderComponent={headerElement}
-                contentContainerStyle={{ paddingBottom: 90, paddingHorizontal: 5 }}
+                contentContainerStyle={{ padding: 8, paddingHorizontal: 12 }}
+                ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
                 ListFooterComponent={props.ListFooterComponent}
                 renderItem={({ item }: any) => (
                     <CardComponent item={item} />

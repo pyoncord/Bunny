@@ -104,16 +104,12 @@ export default function Plugins() {
         ]
     });
 
-    return <View
-        style={{
-            margin: 8,
-            gap: 8,
-            alignItems: "center",
-            justifyContent: "center",
-            height: "100%"
-        }}
-    >
-        <SegmentedControl state={state} />
-        <SegmentedControlPages state={state} />
-    </View>;
+    return (
+        <View style={{ alignItems: "center", justifyContent: "center", height: "100%" }}>
+            <View style={{ padding: 8, paddingBottom: 0 }}>
+                <SegmentedControl state={state} />
+            </View>
+            <SegmentedControlPages state={state} />
+        </View>
+    );
 }

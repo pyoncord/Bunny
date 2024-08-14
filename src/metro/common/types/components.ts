@@ -60,6 +60,7 @@ export interface SegmentedControlState {
 
 interface SegmentedControlProps {
     state: SegmentedControlState;
+    variant?: string;
 }
 
 export type SegmentedControl = React.FC<SegmentedControlProps>;

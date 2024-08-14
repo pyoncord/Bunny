@@ -2,12 +2,12 @@ import { Strings } from "@core/i18n";
 import { findAssetId } from "@lib/api/assets";
 import { TextInput } from "@metro/common/components";
 import ErrorBoundary from "@ui/components/ErrorBoundary";
-import { Image, View } from "react-native";
+import { Image, View, ViewStyle } from "react-native";
 
 export interface SearchProps {
     onChangeText?: (v: string) => void;
     placeholder?: string;
-    style?: import("react-native").TextStyle;
+    style?: ViewStyle;
 }
 
 function SearchIcon() {

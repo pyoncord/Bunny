@@ -14,7 +14,7 @@ const storagePromiseSymbol = Symbol.for("bunny.storage.promise");
 
 const _loadedPath = {} as Record<string, any>;
 
-function createFileBackend<T>(filePath: string): StorageBackend<T> {
+function createFileBackend<T = any>(filePath: string): StorageBackend<T> {
     return {
         get: async () => {
             try {
@@ -187,13 +187,19 @@ export const createStorage = <T>(path: string, dflt = {} as T): T & { [key: symb
 };
 
 export async function preloadStorageIfExists(path: string) {
-    if (_loadedPath[path]) return;
-    if (!await fileExists(path)) return;
+    if (_loadedPath[path]) return _loadedPath[path];
 
-    const data = await createFileBackend<any>(path).get();
-    _loadedPath[path] = data;
+    const backend = createFileBackend(path);
+    if (await backend.exists()) {
+        return _loadedPath[path] = await backend.get();
+    }
+
+    console.log("no " + path);
 }
 
+export function getPreloadedStorage<T>(path: string): T {
+    return _loadedPath[path];
+}
 export function awaitStorage(...proxies: any[]) {
     return Promise.all(proxies.map(proxy => proxy[storagePromiseSymbol]));
 }

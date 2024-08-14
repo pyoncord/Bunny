@@ -1,6 +1,6 @@
 import { getCorePlugins } from "@core/plugins";
 import { readFile, removeFile, writeFile } from "@lib/api/native/fs";
-import { awaitStorage, createStorage, preloadStorageIfExists, updateStorageAsync } from "@lib/api/storage/new";
+import { awaitStorage, createStorage, getPreloadedStorage, preloadStorageIfExists, updateStorageAsync } from "@lib/api/storage/new";
 import { safeFetch } from "@lib/utils";
 import { semver } from "@metro/common";
 
@@ -155,19 +155,24 @@ export async function updateRepository(repoUrl: string) {
         }
     }
 
-    await Promise.all(Object.keys(repo).map(async plugin => {
-        if (!storedRepo || !storedRepo[plugin] || repo[plugin].alwaysFetch || newerThan(repo[plugin].version, storedRepo[plugin].version)) {
+    await Promise.all(Object.keys(repo).map(async pluginId => {
+        if (!storedRepo || !storedRepo[pluginId] || repo[pluginId].alwaysFetch || newerThan(repo[pluginId].version, storedRepo[pluginId].version)) {
             updated = true;
-            pluginRepositories[repoUrl][plugin] = repo[plugin];
-            await updateAndWritePlugin(repoUrl, plugin, Boolean(storedRepo && pluginSettings[plugin]));
+            pluginRepositories[repoUrl][pluginId] = repo[pluginId];
+            await updateAndWritePlugin(repoUrl, pluginId, Boolean(storedRepo && pluginSettings[pluginId]));
         } else {
-            await preloadStorageIfExists(`plugins/manifests/${plugin}.json`);
+            const manifest = await preloadStorageIfExists(`plugins/manifests/${pluginId}.json`);
+            if (manifest === undefined) { // File does not exist, so do refetch and stuff
+                await updateAndWritePlugin(repoUrl, pluginId, Boolean(storedRepo && pluginSettings[pluginId]));
+            }
         }
     }));
 
     // Register plugins in this repository
     for (const id in repo) {
-        const manifest = createStorage<t.BunnyPluginManifest>(`plugins/manifests/${id}.json`);
+        const manifest = getPreloadedStorage<t.BunnyPluginManifest>(`plugins/manifests/${id}.json`);
+        if (manifest === undefined) continue; // shouldn't happen, but just incase if it does
+
         const existing = registeredPlugins.get(id);
 
         // Skip if this version isn't any higher
