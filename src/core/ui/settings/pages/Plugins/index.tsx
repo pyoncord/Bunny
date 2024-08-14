@@ -9,7 +9,7 @@ import { useProxy as useNewProxy } from "@lib/api/storage/new";
 import { isPluginInstalled, pluginSettings, registeredPlugins } from "@lib/plugins";
 import { Author } from "@lib/utils/types";
 import { NavigationNative } from "@metro/common";
-import { Button, SegmentedControl, SegmentedControlPages, Text, useSegmentedControlState } from "@metro/common/components";
+import { Button, HelpMessage, SegmentedControl, SegmentedControlPages, Text, useSegmentedControlState } from "@metro/common/components";
 import { ComponentProps } from "react";
 import { useWindowDimensions, View } from "react-native";
 
@@ -87,6 +87,13 @@ export default function Plugins() {
                     <PluginPage
                         useItems={() => (useNewProxy(pluginSettings), [...registeredPlugins.values()].filter(p => isPluginInstalled(p.id)))}
                         resolveItem={unifyBunnyPlugin}
+                        ListHeaderComponent={() => (
+                            <View style={{ marginBottom: 10 }}>
+                                <HelpMessage messageType={0}>
+                                    Bunny plugin system is in no way ready, try not getting yourself burnt ⚠️
+                                </HelpMessage>
+                            </View>
+                        )}
                         ListFooterComponent={() => (
                             <View style={{ alignItems: "center", justifyContent: "center", paddingTop: 16, gap: 12 }}>
                                 <Text variant="heading-lg/bold">{"Looking for more?"}</Text>

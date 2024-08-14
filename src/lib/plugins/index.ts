@@ -2,6 +2,7 @@ import { getCorePlugins } from "@core/plugins";
 import { readFile, removeFile, writeFile } from "@lib/api/native/fs";
 import { awaitStorage, createStorage, getPreloadedStorage, preloadStorageIfExists, updateStorageAsync } from "@lib/api/storage/new";
 import { safeFetch } from "@lib/utils";
+import { OFFICIAL_PLUGINS_REPO_URL } from "@lib/utils/constants";
 import { semver } from "@metro/common";
 
 import { createBunnyPluginAPI } from "./api";
@@ -191,7 +192,7 @@ export async function updateRepository(repoUrl: string) {
  * Deletes a repository from registrations and uninstalls ALL plugins under this repository
 */
 export async function deleteRepository(repoUrl: string) {
-    // Once when we have our "official repository", make sure to make it non-deleteable
+    assert(repoUrl !== OFFICIAL_PLUGINS_REPO_URL, repoUrl, "delete the official repository");
     assert(pluginRepositories[repoUrl], repoUrl, "delete a non-registered repository");
 
     const promQueues = [] as Promise<unknown>[];
@@ -366,8 +367,11 @@ export async function checkAndRegisterUpdates() {
         corePluginInstances.set(id, instance);
     }
 
+    await updateRepository(OFFICIAL_PLUGINS_REPO_URL);
     await Promise.allSettled(Object.keys(pluginRepositories).map(async repo => {
-        await updateRepository(repo);
+        if (repo !== OFFICIAL_PLUGINS_REPO_URL) {
+            await updateRepository(repo);
+        }
     }));
 }
 

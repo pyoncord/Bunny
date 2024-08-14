@@ -24,6 +24,7 @@ interface AddonPageProps<T extends object> {
     card: ComponentType<CardWrapper<T>>;
     searchKeywords: SearchKeywords;
     onFabPress?: () => void;
+    ListHeaderComponent?: ComponentType<any>;
     ListFooterComponent?: ComponentType<any>;
 }
 
@@ -45,6 +46,7 @@ export default function AddonPage<T extends object>({ card: CardComponent, ...pr
 
     const headerElement = (
         <View style={{ paddingBottom: 8 }}>
+            {props.ListHeaderComponent && <props.ListHeaderComponent />}
             {settings.safeMode?.enabled && <View style={{ marginBottom: 10 }}>
                 <HelpMessage messageType={0}>{props.safeModeMessage}</HelpMessage>
                 {props.safeModeExtras}

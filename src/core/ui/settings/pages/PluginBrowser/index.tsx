@@ -3,6 +3,7 @@ import { installPlugin, isPluginInstalled, uninstallPlugin } from "@lib/plugins"
 import { BunnyPluginManifest } from "@lib/plugins/types";
 import { showToast } from "@lib/ui/toasts";
 import { safeFetch } from "@lib/utils";
+import { OFFICIAL_PLUGINS_REPO_URL } from "@lib/utils/constants";
 import { Button, Card, FlashList, IconButton, Stack, Text } from "@metro/common/components";
 import { QueryClient, QueryClientProvider, useMutation, useQuery } from "@tanstack/react-query";
 import { chunk } from "es-toolkit";
@@ -17,8 +18,8 @@ async function arrayFromAsync<T>(iterableOrArrayLike: AsyncIterable<T>): Promise
     return arr;
 }
 
-async function fetchManifest(id: string) {
-    const url = `https://bn-plugins.github.io/dist/plugins/${id}/manifest.json`;
+async function fetchManifest(repoURL: string, id: string) {
+    const url = new URL(`plugins/${id}/manifest.json`, repoURL);
     const data = await safeFetch(url).then(d => d.json());
 
     queryClient.setQueryData(["plugin-manifest-dist", { id }], data);
@@ -26,12 +27,12 @@ async function fetchManifest(id: string) {
     return data as BunnyPluginManifest;
 }
 
-async function* getManifests() {
-    const rawResponse = await safeFetch("https://bn-plugins.github.io/dist/repo.json");
+async function* getManifests(repoUrl: string) {
+    const rawResponse = await safeFetch(repoUrl);
     const pluginIds = Object.keys(await rawResponse.json());
 
     for (const idChunks of chunk(pluginIds, 5)) {
-        const manifests = idChunks.map(fetchManifest);
+        const manifests = idChunks.map(id => fetchManifest(OFFICIAL_PLUGINS_REPO_URL, id));
         for (const manifest of manifests) {
             yield await manifest;
         }
@@ -74,10 +75,10 @@ function TrailingButtons(props: { id: string }) {
     </Stack>;
 }
 
-function PluginCard(props: { id: string, manifest: BunnyPluginManifest; }) {
+function PluginCard(props: { repoUrl: string, id: string, manifest: BunnyPluginManifest; }) {
     const { isPending, error, data: plugin } = useQuery({
         queryKey: ["plugin-manifest-dist", { id: props.id }],
-        queryFn: () => fetchManifest(props.id)
+        queryFn: () => fetchManifest(props.repoUrl, props.id)
     });
 
     return (
@@ -113,7 +114,7 @@ function PluginCard(props: { id: string, manifest: BunnyPluginManifest; }) {
 function BrowserPage() {
     const { data, error, isPending, refetch } = useQuery({
         queryKey: ["plugins-repo-fetch"],
-        queryFn: () => arrayFromAsync(getManifests())
+        queryFn: () => arrayFromAsync(getManifests(OFFICIAL_PLUGINS_REPO_URL))
     });
 
     if (error) {
@@ -148,7 +149,7 @@ function BrowserPage() {
         contentContainerStyle={{ paddingBottom: 90, paddingHorizontal: 5 }}
         renderItem={({ item: manifest }: any) => (
             <View style={{ paddingVertical: 6, paddingHorizontal: 8 }}>
-                <PluginCard id={manifest.id} manifest={manifest} />
+                <PluginCard repoUrl={OFFICIAL_PLUGINS_REPO_URL} id={manifest.id} manifest={manifest} />
             </View>
         )}
     />;
