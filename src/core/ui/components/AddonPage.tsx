@@ -60,15 +60,12 @@ export default function AddonPage<T extends object>({ card: CardComponent, ...pr
             <FlashList
                 data={data}
                 extraData={search}
-                keyExtractor={(i: any) => i?.id}
                 estimatedItemSize={136}
                 ListHeaderComponent={headerElement}
                 contentContainerStyle={{ padding: 8, paddingHorizontal: 12 }}
                 ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
                 ListFooterComponent={props.ListFooterComponent}
-                renderItem={({ item }: any) => (
-                    <CardComponent item={item} />
-                )}
+                renderItem={({ item }: any) => <CardComponent item={item} />}
             />
             {(props.fetchFunction ?? props.onFabPress) && <FloatingActionButton
                 icon={findAssetId("PlusLargeIcon")}
