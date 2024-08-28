@@ -71,6 +71,7 @@ interface OverflowAction extends Action {
 
 export interface CardWrapper<T> {
     item: T;
+    result: Fuzzysort.KeysResult<T>;
 }
 
 interface CardProps {

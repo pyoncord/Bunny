@@ -33,16 +33,13 @@ export default function AddonPage<T extends object>({ card: CardComponent, ...pr
 
     const [search, setSearch] = React.useState("");
 
-    const items = useMemo(() => {
+    const results = useMemo(() => {
         let values = props.items;
         if (props.resolveItem) values = values.map(props.resolveItem);
-        return values.filter(i => i && typeof i === "object");
-    }, [props.items]);
+        const items = values.filter(i => i && typeof i === "object");
 
-    const data = useMemo(() => {
-        if (!search) return items;
-        return fuzzysort.go(search, items, { keys: props.searchKeywords }).map(r => r.obj);
-    }, [items, search]);
+        return fuzzysort.go(search, items, { keys: props.searchKeywords, all: true });
+    }, [props.items, search]);
 
     const headerElement = (
         <View style={{ paddingBottom: 8 }}>
@@ -58,14 +55,14 @@ export default function AddonPage<T extends object>({ card: CardComponent, ...pr
     return (
         <ErrorBoundary>
             <FlashList
-                data={data}
+                data={results}
                 extraData={search}
                 estimatedItemSize={136}
                 ListHeaderComponent={headerElement}
                 contentContainerStyle={{ padding: 8, paddingHorizontal: 12 }}
                 ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
                 ListFooterComponent={props.ListFooterComponent}
-                renderItem={({ item }: any) => <CardComponent item={item} />}
+                renderItem={({ item }: any) => <CardComponent item={item.obj} result={item} />}
             />
             {(props.fetchFunction ?? props.onFabPress) && <FloatingActionButton
                 icon={findAssetId("PlusLargeIcon")}
