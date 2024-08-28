@@ -10,8 +10,10 @@ import { BUNNY_PROXY_PREFIX, VD_PROXY_PREFIX } from "@lib/utils/constants";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { Author } from "@lib/utils/types";
 import { findByProps } from "@metro";
-import { Card, Text } from "@metro/common/components";
+import { NavigationNative } from "@metro/common";
+import { Button, Card, FlashList, Text } from "@metro/common/components";
 import { ComponentProps } from "react";
+import { View } from "react-native";
 
 import unifyVdPlugin from "./models/vendetta";
 
@@ -69,17 +71,51 @@ function PluginPage(props: PluginPageProps) {
 
 export default function Plugins() {
     useProxy(settings);
+    const navigation = NavigationNative.useNavigation();
 
     return <PluginPage
         useItems={() => useProxy(VdPluginManager.plugins) && Object.values(VdPluginManager.plugins)}
         resolveItem={unifyVdPlugin}
+        ListHeaderComponent={() => {
+            const unproxiedPlugins = Object.values(VdPluginManager.plugins).filter(p => !p.id.startsWith(VD_PROXY_PREFIX) && !p.id.startsWith(BUNNY_PROXY_PREFIX));
+            if (!unproxiedPlugins.length) return null;
+
+            // TODO: Make this dismissable
+            return <Card style={{ marginVertical: 8, gap: 4 }}>
+                <Text variant="heading-lg/bold">Unproxied Plugins Detected</Text>
+                <Text variant="text-md/medium">Installed plugins from unproxied sources may execute unreviewed code in this app without your knowledge.</Text>
+                <View style={{ marginTop: 8, flexDirection: "row" }}>
+                    <Button
+                        style={{ flexShrink: 1 }}
+                        size="sm"
+                        text="Review"
+                        variant="secondary"
+                        onPress={() => {
+                            navigation.push("BUNNY_CUSTOM_PAGE", {
+                                title: "Unproxied Plugins",
+                                render: () => {
+                                    return <FlashList
+                                        data={unproxiedPlugins}
+                                        contentContainerStyle={{ padding: 8 }}
+                                        ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
+                                        renderItem={({ item: p }: any) => <Card>
+                                            <Text variant="heading-md/semibold">{p.id}</Text>
+                                        </Card>}
+                                    />;
+                                }
+                            });
+                        }}
+                    />
+                </View>
+            </Card>;
+        }}
         installAction={{
             label: "Install a plugin",
             fetchFn: async (url: string) => {
                 if (!url.startsWith(VD_PROXY_PREFIX) && !url.startsWith(BUNNY_PROXY_PREFIX) && !settings.developerSettings) {
                     openAlert("bunny-plugin-unproxied-confirmation", <AlertModal
                         title="Hold On!"
-                        content="You're trying to install a plugin from an external source. This means you're trusting the creator to run their code in this app. Are you sure you want to continue?"
+                        content="You're trying to install a plugin from an unproxied external source. This means you're trusting the creator to run their code in this app without your knowledge. Are you sure you want to continue?"
                         extraContent={<Card><Text variant="text-md/bold">{url}</Text></Card>}
                         actions={<AlertActions>
                             <AlertActionButton text="Continue" variant="primary" onPress={() => {

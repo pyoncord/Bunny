@@ -60,6 +60,7 @@ function InputAlert(props: { label: string, fetchFn: (url: string) => Promise<vo
             <Stack style={{ marginTop: -12 }}>
                 <TextInput
                     autoFocus={true}
+                    isClearable={true}
                     value={value}
                     onChange={(v: string) => {
                         setValue(v);
@@ -149,7 +150,6 @@ export default function AddonPage<T extends object>({ CardComponent, ...props }:
 
     const headerElement = (
         <View style={{ paddingBottom: 8 }}>
-            {props.ListHeaderComponent && <props.ListHeaderComponent />}
             {settings.safeMode?.enabled && <View style={{ marginBottom: 10 }}>
                 <HelpMessage messageType={0}>
                     {props.safeModeHint?.message}
@@ -160,7 +160,7 @@ export default function AddonPage<T extends object>({ CardComponent, ...props }:
                 <Search style={{ flexGrow: 1 }} isRound={!!props.sortOptions} onChangeText={v => setSearch(v)} />
                 {props.sortOptions && <IconButton
                     icon={findAssetId("ic_forum_channel_sort_order_24px")}
-                    variant="secondary"
+                    variant="tertiary"
                     disabled={!!search}
                     onPress={() => showSimpleActionSheet({
                         key: "AddonListSortOptions",
@@ -175,6 +175,7 @@ export default function AddonPage<T extends object>({ CardComponent, ...props }:
                     })}
                 />}
             </View>
+            {props.ListHeaderComponent && <props.ListHeaderComponent />}
         </View>
     );
 

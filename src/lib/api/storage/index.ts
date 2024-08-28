@@ -9,6 +9,7 @@ export function createProxy(target: any = {}): { proxy: any; emitter: Emitter; }
     const parentTarget = target;
 
     const childrens = new WeakMap<any, any>();
+    const proxiedChildrenSet = new WeakSet<any>();
 
     function createProxy(target: any, path: string[]): any {
         return new Proxy(target, {
@@ -26,6 +27,7 @@ export function createProxy(target: any = {}): { proxy: any; emitter: Emitter; }
                     });
 
                     if (typeof value === "object") {
+                        if (proxiedChildrenSet.has(value)) return value;
                         if (childrens.has(value)) return childrens.get(value);
 
                         const childrenProxy = createProxy(value, newPath);
@@ -41,11 +43,14 @@ export function createProxy(target: any = {}): { proxy: any; emitter: Emitter; }
 
             set(target, prop: string, value) {
                 if (typeof value === "object") {
-                    if (childrens.has(value)) return childrens.get(value);
-
-                    const childrenProxy = createProxy(value, [...path, prop]);
-                    childrens.set(value, childrenProxy);
-                    target[prop] = childrenProxy;
+                    if (childrens.has(value)) {
+                        target[prop] = childrens.get(value);
+                    } else {
+                        const childrenProxy = createProxy(value, [...path, prop]);
+                        childrens.set(value, childrenProxy);
+                        proxiedChildrenSet.add(value);
+                        target[prop] = childrenProxy;
+                    }
                 } else {
                     target[prop] = value;
                 }
@@ -53,7 +58,7 @@ export function createProxy(target: any = {}): { proxy: any; emitter: Emitter; }
                 emitter.emit("SET", {
                     parent: parentTarget,
                     path: [...path, prop],
-                    value,
+                    value: target[prop],
                 });
                 // we do not care about success, if this actually does fail we have other problems
                 return true;
@@ -88,7 +93,6 @@ export function useProxy<T>(storage: T): T {
     React.useEffect(() => {
         const listener: EmitterListener = (event: EmitterEvent, data: EmitterListenerData) => {
             if (event === "DEL" && data.value === storage) return;
-            console.log({ event, data });
             forceUpdate();
         };
 
@@ -99,7 +103,7 @@ export function useProxy<T>(storage: T): T {
             emitter.off("SET", listener);
             emitter.off("DEL", listener);
         };
-    }, [storage]);
+    }, []);
 
     return storage;
 }

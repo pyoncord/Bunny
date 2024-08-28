@@ -123,6 +123,7 @@ const Actions = memo(() => {
 export default function PluginCard({ result, item: plugin }: CardWrapper<UnifiedPluginModel>) {
     plugin.usePluginState();
 
+    const [, forceUpdate] = React.useReducer(() => ({}), 0);
     const cardContextValue = useMemo(() => ({ plugin, result }), [plugin, result]);
 
     return (
@@ -141,6 +142,7 @@ export default function PluginCard({ result, item: plugin }: CardWrapper<Unified
                                     value={plugin.isEnabled()}
                                     onValueChange={(v: boolean) => {
                                         plugin.toggle(v);
+                                        forceUpdate();
                                     }}
                                 />
                             </Stack>

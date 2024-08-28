@@ -147,7 +147,7 @@ export const VdPluginManager = {
             delete pluginInstance[id];
         }
 
-        disable && (plugin.enabled = false);
+        if (disable) plugin.enabled = false;
     },
 
     async removePlugin(id: string) {
