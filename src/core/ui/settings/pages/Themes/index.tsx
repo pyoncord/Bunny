@@ -15,9 +15,9 @@ export default function Themes() {
         <AddonPage<Theme>
             title={Strings.THEMES}
             searchKeywords={[
-                "manifest.name",
-                "manifest.description",
-                p => p.manifest.authors?.map((a: Author) => a.name).join(", ")
+                "data.name",
+                "data.description",
+                p => p.data.authors?.map((a: Author) => a.name).join(", ")
             ]}
             fetchFunction={installTheme}
             items={Object.values(themes)}
