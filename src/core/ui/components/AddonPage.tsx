@@ -1,20 +1,20 @@
-import { Strings } from "@core/i18n";
 import { CardWrapper } from "@core/ui/components/AddonCard";
 import { findAssetId } from "@lib/api/assets";
 import { settings } from "@lib/api/settings";
 import { useProxy } from "@lib/api/storage";
-import { HTTP_REGEX_MULTI } from "@lib/utils/constants";
+import isValidHttpUrl from "@lib/utils/isValidHttpUrl";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { findByProps } from "@metro";
 import { clipboard } from "@metro/common";
-import { Button, FlashList, FloatingActionButton, HelpMessage, IconButton, Text } from "@metro/common/components";
-import { showInputAlert } from "@ui/alerts";
+import { Button, FlashList, FloatingActionButton, HelpMessage, IconButton, Stack, Text, TextInput } from "@metro/common/components";
 import { ErrorBoundary, Search } from "@ui/components";
 import fuzzysort from "fuzzysort";
 import { ComponentType, ReactNode, useCallback, useMemo } from "react";
-import { Image, View } from "react-native";
+import { Image, ScrollView, View } from "react-native";
 
 const { showSimpleActionSheet, hideActionSheet } = lazyDestructure(() => findByProps("showSimpleActionSheet"));
+const { openAlert, dismissAlert } = lazyDestructure(() => findByProps("openAlert", "dismissAlert"));
+const { AlertModal, AlertActionButton } = lazyDestructure(() => findByProps("AlertModal", "AlertActions"));
 
 type SearchKeywords = Array<string | ((obj: any & {}) => string)>;
 
@@ -39,6 +39,72 @@ interface AddonPageProps<T extends object, I = any> {
     ListFooterComponent?: ComponentType<any>;
 }
 
+function InputAlert(props: { label: string, fetchFn: (url: string) => Promise<void> }) {
+    const [value, setValue] = React.useState("");
+    const [error, setError] = React.useState("");
+    const [isFetching, setIsFetching] = React.useState(false);
+
+    function onConfirmWrapper() {
+        setIsFetching(true);
+
+        props.fetchFn(value)
+            .then(() => dismissAlert("AddonInputAlert"))
+            .catch((e: unknown) => e instanceof Error ? setError(e.message) : String(e))
+            .finally(() => setIsFetching(false));
+    }
+
+    return <AlertModal
+        title={props.label}
+        content="Type in the source URL you want to install from:"
+        extraContent={
+            <Stack style={{ marginTop: -12 }}>
+                <TextInput
+                    autoFocus={true}
+                    value={value}
+                    onChange={(v: string) => {
+                        setValue(v);
+                        if (error) setError("");
+                    }}
+                    returnKeyType="done"
+                    onSubmitEditing={onConfirmWrapper}
+                    state={error ? "error" : undefined}
+                    errorMessage={error || undefined}
+                />
+                <ScrollView
+                    horizontal={true}
+                    showsHorizontalScrollIndicator={false}
+                    style={{ gap: 8 }}
+                >
+                    <Button
+                        size="sm"
+                        variant="tertiary"
+                        text="Import from clipboard"
+                        icon={findAssetId("ClipboardListIcon")}
+                        onPress={() => clipboard.getString().then((str: string) => setValue(str))}
+                    />
+                </ScrollView>
+            </Stack>
+        }
+        actions={
+            <Stack>
+                {/* Manual button as we don't want alert to immediately dismiss when we tap on it */}
+                <Button
+                    loading={isFetching}
+                    text="Install"
+                    variant="primary"
+                    disabled={!value || !isValidHttpUrl(value)}
+                    onPress={onConfirmWrapper}
+                />
+                <AlertActionButton
+                    disabled={isFetching}
+                    text="Cancel"
+                    variant="secondary"
+                />
+            </Stack>
+        }
+    />;
+}
+
 export default function AddonPage<T extends object>({ CardComponent, ...props }: AddonPageProps<T>) {
     useProxy(settings);
 
@@ -56,18 +122,9 @@ export default function AddonPage<T extends object>({ CardComponent, ...props }:
 
     const onInstallPress = useCallback(() => {
         if (!props.installAction) return () => {};
-        const { onPress, fetchFn } = props.installAction;
+        const { label, onPress, fetchFn } = props.installAction;
         if (fetchFn) {
-            clipboard.getString().then((content: string) =>
-                showInputAlert({
-                    title: props.installAction?.label,
-                    initialValue: content.match(HTTP_REGEX_MULTI)?.[0] ?? "",
-                    placeholder: Strings.URL_PLACEHOLDER,
-                    onConfirm: (input: string) => fetchFn(input),
-                    confirmText: Strings.INSTALL,
-                    cancelText: Strings.CANCEL,
-                })
-            );
+            openAlert("AddonInputAlert", <InputAlert label={label ?? "Install"} fetchFn={fetchFn} />);
         } else {
             onPress?.();
         }

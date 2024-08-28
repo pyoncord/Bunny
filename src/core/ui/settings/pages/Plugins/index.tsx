@@ -71,21 +71,19 @@ export default function Plugins() {
         installAction={{
             label: "Install a plugin",
             fetchFn: async (url: string) => {
-                const install = () =>
-                    VdPluginManager.installPlugin(url)
-                        .then(() => showToast(Strings.TOASTS_INSTALLED_PLUGIN, findAssetId("Check")))
-                        .catch(x => showToast(x?.message ?? `${x}`, findAssetId("Small")));
-
                 if (!url.startsWith(VD_PROXY_PREFIX) && !url.startsWith(BUNNY_PROXY_PREFIX) && !settings.developerSettings)
                     setImmediate(() => showConfirmationAlert({
                         title: Strings.MODAL_UNPROXIED_PLUGIN_HEADER,
                         content: Strings.MODAL_UNPROXIED_PLUGIN_DESC,
                         confirmText: Strings.CONTINUE,
-                        onConfirm: install,
+                        onConfirm: () =>
+                            VdPluginManager.installPlugin(url)
+                                .then(() => showToast(Strings.TOASTS_INSTALLED_PLUGIN, findAssetId("Check")))
+                                .catch(x => showToast(x?.message ?? `${x}`, findAssetId("Small"))),
                         cancelText: Strings.CANCEL
                     }));
                 else {
-                    return await install();
+                    return await VdPluginManager.installPlugin(url);
                 }
             }
         }}
