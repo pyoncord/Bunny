@@ -39,7 +39,7 @@ function PluginPage(props: PluginPageProps) {
     const items = props.useItems();
 
     return <AddonPage<UnifiedPluginModel>
-        card={PluginCard}
+        CardComponent={PluginCard}
         title={Strings.PLUGINS}
         searchKeywords={[
             "name",
@@ -48,7 +48,11 @@ function PluginPage(props: PluginPageProps) {
                 (a: Author | string) => typeof a === "string" ? a : a.name
             ).join()
         ]}
-        safeModeMessage={Strings.SAFE_MODE_NOTICE_PLUGINS}
+        sortOptions={{
+            "Name (A-Z)": (a, b) => a.name.localeCompare(b.name),
+            "Name (Z-A)": (a, b) => b.name.localeCompare(a.name)
+        }}
+        safeModeHint={{ message: Strings.SAFE_MODE_NOTICE_PLUGINS }}
         items={items}
         {...props}
     />;

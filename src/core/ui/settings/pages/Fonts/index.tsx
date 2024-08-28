@@ -18,10 +18,14 @@ export default function Fonts() {
         <AddonPage<FontDefinition>
             title={Strings.FONTS}
             searchKeywords={["name", "description"]}
+            sortOptions={{
+                "Name (A-Z)": (a, b) => a.name.localeCompare(b.name),
+                "Name (Z-A)": (a, b) => b.name.localeCompare(a.name)
+            }}
             fetchFunction={installFont}
             items={Object.values(fonts)}
-            safeModeMessage={Strings.SAFE_MODE_NOTICE_FONTS}
-            card={FontCard}
+            safeModeHint={{ message: Strings.SAFE_MODE_NOTICE_FONTS }}
+            CardComponent={FontCard}
             onFabPress={() => {
                 navigation.push("BUNNY_CUSTOM_PAGE", {
                     title: "Import Font",

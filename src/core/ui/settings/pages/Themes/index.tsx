@@ -19,16 +19,22 @@ export default function Themes() {
                 "data.description",
                 p => p.data.authors?.map((a: Author) => a.name).join(", ")
             ]}
+            sortOptions={{
+                "Name (A-Z)": (a, b) => a.name.localeCompare(b.name),
+                "Name (Z-A)": (a, b) => b.name.localeCompare(a.name)
+            }}
             fetchFunction={installTheme}
             items={Object.values(themes)}
-            safeModeMessage={formatString("SAFE_MODE_NOTICE_THEMES", { enabled: Boolean(settings.safeMode?.currentThemeId) })}
-            safeModeExtras={settings.safeMode?.currentThemeId ? <Button
-                text={Strings.DISABLE_THEME}
-                size="small"
-                onPress={() => delete settings.safeMode?.currentThemeId}
-                style={{ marginTop: 8 }}
-            /> : undefined}
-            card={ThemeCard}
+            safeModeHint={{
+                message: formatString("SAFE_MODE_NOTICE_THEMES", { enabled: Boolean(settings.safeMode?.currentThemeId) }),
+                footer: settings.safeMode?.currentThemeId && <Button
+                    size="small"
+                    text={Strings.DISABLE_THEME}
+                    onPress={() => delete settings.safeMode?.currentThemeId}
+                    style={{ marginTop: 8 }}
+                />
+            }}
+            CardComponent={ThemeCard}
         />
     );
 }
