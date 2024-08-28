@@ -7,12 +7,12 @@ import { HTTP_REGEX_MULTI } from "@lib/utils/constants";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { findByProps } from "@metro";
 import { clipboard } from "@metro/common";
-import { FlashList, FloatingActionButton, HelpMessage, IconButton } from "@metro/common/components";
+import { Button, FlashList, FloatingActionButton, HelpMessage, IconButton, Text } from "@metro/common/components";
 import { showInputAlert } from "@ui/alerts";
 import { ErrorBoundary, Search } from "@ui/components";
 import fuzzysort from "fuzzysort";
-import { ComponentType, ReactNode, useMemo } from "react";
-import { View } from "react-native";
+import { ComponentType, ReactNode, useCallback, useMemo } from "react";
+import { Image, View } from "react-native";
 
 const { showSimpleActionSheet, hideActionSheet } = lazyDestructure(() => findByProps("showSimpleActionSheet"));
 
@@ -21,15 +21,19 @@ type SearchKeywords = Array<string | ((obj: any & {}) => string)>;
 interface AddonPageProps<T extends object, I = any> {
     title: string;
     items: I[];
+    searchKeywords: SearchKeywords;
     sortOptions?: Record<string, (a: I, b: I) => number>;
-    fetchFunction?: (url: string) => Promise<void>;
     resolveItem?: (value: I) => T | undefined;
     safeModeHint?: {
         message?: string;
         footer?: ReactNode;
     }
-    searchKeywords: SearchKeywords;
-    onFabPress?: () => void;
+    installAction?: {
+        label?: string;
+        // Ignored when onPress is defined!
+        fetchFn?: (url: string) => Promise<void>;
+        onPress?: () => void;
+    }
     CardComponent: ComponentType<CardWrapper<T>>;
     ListHeaderComponent?: ComponentType<any>;
     ListFooterComponent?: ComponentType<any>;
@@ -49,6 +53,42 @@ export default function AddonPage<T extends object>({ CardComponent, ...props }:
 
         return fuzzysort.go(search, items, { keys: props.searchKeywords, all: true });
     }, [props.items, sortFn, search]);
+
+    const onInstallPress = useCallback(() => {
+        if (!props.installAction) return () => {};
+        const { onPress, fetchFn } = props.installAction;
+        if (fetchFn) {
+            clipboard.getString().then((content: string) =>
+                showInputAlert({
+                    title: props.installAction?.label,
+                    initialValue: content.match(HTTP_REGEX_MULTI)?.[0] ?? "",
+                    placeholder: Strings.URL_PLACEHOLDER,
+                    onConfirm: (input: string) => fetchFn(input),
+                    confirmText: Strings.INSTALL,
+                    cancelText: Strings.CANCEL,
+                })
+            );
+        } else {
+            onPress?.();
+        }
+    }, []);
+
+    if (results.length === 0 && !search) {
+        return <View style={{ gap: 32, flexGrow: 1, justifyContent: "center", alignItems: "center" }}>
+            <View style={{ gap: 8, alignItems: "center" }}>
+                <Image source={findAssetId("empty_quick_switcher")} />
+                <Text variant="text-lg/semibold" color="text-normal">
+                    Oops! Nothing to see here… yet!
+                </Text>
+            </View>
+            <Button
+                size="lg"
+                icon={findAssetId("DownloadIcon")}
+                text={props.installAction?.label ?? "Install"}
+                onPress={onInstallPress}
+            />
+        </View>;
+    }
 
     const headerElement = (
         <View style={{ paddingBottom: 8 }}>
@@ -88,25 +128,20 @@ export default function AddonPage<T extends object>({ CardComponent, ...props }:
                 extraData={search}
                 estimatedItemSize={136}
                 ListHeaderComponent={headerElement}
+                ListEmptyComponent={() => <View style={{ gap: 12, padding: 12, alignItems: "center" }}>
+                    <Image source={findAssetId("devices_not_found")} />
+                    <Text variant="text-lg/semibold" color="text-normal">
+                        Hmmm... could not find that!
+                    </Text>
+                </View>}
                 contentContainerStyle={{ padding: 8, paddingHorizontal: 12 }}
                 ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
                 ListFooterComponent={props.ListFooterComponent}
                 renderItem={({ item }: any) => <CardComponent item={item.obj} result={item} />}
             />
-            {(props.fetchFunction ?? props.onFabPress) && <FloatingActionButton
+            {props.installAction && <FloatingActionButton
                 icon={findAssetId("PlusLargeIcon")}
-                onPress={props.onFabPress ?? (() => {
-                    // from ./InstallButton.tsx
-                    clipboard.getString().then((content: string) =>
-                        showInputAlert({
-                            initialValue: content.match(HTTP_REGEX_MULTI)?.[0] ?? "",
-                            placeholder: Strings.URL_PLACEHOLDER,
-                            onConfirm: (input: string) => props.fetchFunction!(input),
-                            confirmText: Strings.INSTALL,
-                            cancelText: Strings.CANCEL,
-                        })
-                    );
-                })}
+                onPress={onInstallPress}
             />}
         </ErrorBoundary>
     );

@@ -23,7 +23,10 @@ export default function Themes() {
                 "Name (A-Z)": (a, b) => a.name.localeCompare(b.name),
                 "Name (Z-A)": (a, b) => b.name.localeCompare(a.name)
             }}
-            fetchFunction={installTheme}
+            installAction={{
+                label: "Install a theme",
+                fetchFn: installTheme
+            }}
             items={Object.values(themes)}
             safeModeHint={{
                 message: formatString("SAFE_MODE_NOTICE_THEMES", { enabled: Boolean(settings.safeMode?.currentThemeId) }),

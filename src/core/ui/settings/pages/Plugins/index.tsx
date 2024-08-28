@@ -2,8 +2,12 @@ import { Strings } from "@core/i18n";
 import AddonPage from "@core/ui/components/AddonPage";
 import PluginCard from "@core/ui/settings/pages/Plugins/components/PluginCard";
 import { VdPluginManager } from "@core/vendetta/plugins";
+import { findAssetId } from "@lib/api/assets";
 import { settings } from "@lib/api/settings";
 import { useProxy } from "@lib/api/storage";
+import { showConfirmationAlert } from "@lib/ui/alerts";
+import { showToast } from "@lib/ui/toasts";
+import { BUNNY_PROXY_PREFIX, VD_PROXY_PREFIX } from "@lib/utils/constants";
 import { Author } from "@lib/utils/types";
 import { ComponentProps } from "react";
 
@@ -64,7 +68,27 @@ export default function Plugins() {
     return <PluginPage
         useItems={() => useProxy(VdPluginManager.plugins) && Object.values(VdPluginManager.plugins)}
         resolveItem={unifyVdPlugin}
-        fetchFunction={(url: string) => VdPluginManager.installPlugin(url)}
+        installAction={{
+            label: "Install a plugin",
+            fetchFn: async (url: string) => {
+                const install = () =>
+                    VdPluginManager.installPlugin(url)
+                        .then(() => showToast(Strings.TOASTS_INSTALLED_PLUGIN, findAssetId("Check")))
+                        .catch(x => showToast(x?.message ?? `${x}`, findAssetId("Small")));
+
+                if (!url.startsWith(VD_PROXY_PREFIX) && !url.startsWith(BUNNY_PROXY_PREFIX) && !settings.developerSettings)
+                    setImmediate(() => showConfirmationAlert({
+                        title: Strings.MODAL_UNPROXIED_PLUGIN_HEADER,
+                        content: Strings.MODAL_UNPROXIED_PLUGIN_DESC,
+                        confirmText: Strings.CONTINUE,
+                        onConfirm: install,
+                        cancelText: Strings.CANCEL
+                    }));
+                else {
+                    return await install();
+                }
+            }
+        }}
     />;
 
     // const navigation = NavigationNative.useNavigation();

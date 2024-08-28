@@ -3,7 +3,7 @@ import AddonPage from "@core/ui/components/AddonPage";
 import FontEditor from "@core/ui/settings/pages/Fonts/FontEditor";
 import { settings } from "@lib/api/settings";
 import { useProxy } from "@lib/api/storage";
-import { FontDefinition, fonts, installFont } from "@lib/fonts";
+import { FontDefinition, fonts } from "@lib/fonts";
 import { NavigationNative } from "@metro/common";
 
 import FontCard from "./FontCard";
@@ -22,15 +22,17 @@ export default function Fonts() {
                 "Name (A-Z)": (a, b) => a.name.localeCompare(b.name),
                 "Name (Z-A)": (a, b) => b.name.localeCompare(a.name)
             }}
-            fetchFunction={installFont}
             items={Object.values(fonts)}
             safeModeHint={{ message: Strings.SAFE_MODE_NOTICE_FONTS }}
             CardComponent={FontCard}
-            onFabPress={() => {
-                navigation.push("BUNNY_CUSTOM_PAGE", {
-                    title: "Import Font",
-                    render: () => <FontEditor />
-                });
+            installAction={{
+                label: "Install a font",
+                onPress: () => {
+                    navigation.push("BUNNY_CUSTOM_PAGE", {
+                        title: "Import Font",
+                        render: () => <FontEditor />
+                    });
+                }
             }}
         />
     );
