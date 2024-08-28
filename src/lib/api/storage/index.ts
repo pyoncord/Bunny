@@ -1,11 +1,14 @@
 import { StorageBackend } from "@lib/api/storage/backends";
-import { Emitter } from "@lib/utils/Emitter";
+import { Emitter, EmitterEvent, EmitterListener, EmitterListenerData } from "@lib/utils/Emitter";
 
 const emitterSymbol = Symbol.for("vendetta.storage.emitter");
 const syncAwaitSymbol = Symbol.for("vendetta.storage.accessor");
 
 export function createProxy(target: any = {}): { proxy: any; emitter: Emitter; } {
     const emitter = new Emitter();
+    const parentTarget = target;
+
+    const childrens = new WeakMap<any, any>();
 
     function createProxy(target: any, path: string[]): any {
         return new Proxy(target, {
@@ -17,12 +20,19 @@ export function createProxy(target: any = {}): { proxy: any; emitter: Emitter; }
 
                 if (value !== undefined && value !== null) {
                     emitter.emit("GET", {
+                        parent: parentTarget,
                         path: newPath,
                         value,
                     });
+
                     if (typeof value === "object") {
-                        return createProxy(value, newPath);
+                        if (childrens.has(value)) return childrens.get(value);
+
+                        const childrenProxy = createProxy(value, newPath);
+                        childrens.set(value, childrenProxy);
+                        return childrenProxy;
                     }
+
                     return value;
                 }
 
@@ -30,8 +40,18 @@ export function createProxy(target: any = {}): { proxy: any; emitter: Emitter; }
             },
 
             set(target, prop: string, value) {
-                target[prop] = value;
+                if (typeof value === "object") {
+                    if (childrens.has(value)) return childrens.get(value);
+
+                    const childrenProxy = createProxy(value, [...path, prop]);
+                    childrens.set(value, childrenProxy);
+                    target[prop] = childrenProxy;
+                } else {
+                    target[prop] = value;
+                }
+
                 emitter.emit("SET", {
+                    parent: parentTarget,
                     path: [...path, prop],
                     value,
                 });
@@ -40,9 +60,12 @@ export function createProxy(target: any = {}): { proxy: any; emitter: Emitter; }
             },
 
             deleteProperty(target, prop: string) {
+                const value = typeof target[prop] === "object" ? childrens.get(target[prop])! : target[prop];
                 const success = delete target[prop];
                 if (success)
                     emitter.emit("DEL", {
+                        value,
+                        parent: parentTarget,
                         path: [...path, prop],
                     });
                 return success;
@@ -57,13 +80,17 @@ export function createProxy(target: any = {}): { proxy: any; emitter: Emitter; }
 }
 
 export function useProxy<T>(storage: T): T {
-    const emitter = (storage as any)[emitterSymbol] as Emitter;
-    if (!emitter) throw new Error("storage[emitterSymbol] is undefined");
+    const emitter = (storage as any)?.[emitterSymbol] as Emitter;
+    if (!emitter) throw new Error("storage?.[emitterSymbol] is undefined");
 
     const [, forceUpdate] = React.useReducer(n => ~n, 0);
 
     React.useEffect(() => {
-        const listener = () => forceUpdate();
+        const listener: EmitterListener = (event: EmitterEvent, data: EmitterListenerData) => {
+            if (event === "DEL" && data.value === storage) return;
+            console.log({ event, data });
+            forceUpdate();
+        };
 
         emitter.on("SET", listener);
         emitter.on("DEL", listener);
@@ -72,7 +99,7 @@ export function useProxy<T>(storage: T): T {
             emitter.off("SET", listener);
             emitter.off("DEL", listener);
         };
-    }, []);
+    }, [storage]);
 
     return storage;
 }

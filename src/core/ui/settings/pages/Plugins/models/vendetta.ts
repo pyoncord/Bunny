@@ -12,6 +12,7 @@ export default function unifyVdPlugin(vdPlugin: VendettaPlugin): UnifiedPluginMo
         icon: vdPlugin.manifest.vendetta?.icon,
 
         isEnabled: () => vdPlugin.enabled,
+        isInstalled: () => Boolean(vdPlugin && VdPluginManager.plugins[vdPlugin.id]),
         usePluginState() {
             useProxy(VdPluginManager.plugins[vdPlugin.id]);
         },

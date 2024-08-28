@@ -10,9 +10,8 @@ export default function unifyBunnyPlugin(manifest: BunnyPluginManifest): Unified
         name: manifest.name,
         description: manifest.description,
         authors: manifest.authors,
-        isEnabled() {
-            return isPluginEnabled(getId(manifest));
-        },
+        isEnabled: () => isPluginEnabled(getId(manifest)),
+        isInstalled: () => manifest.id in pluginSettings,
         usePluginState() {
             useProxy(pluginSettings);
         },
