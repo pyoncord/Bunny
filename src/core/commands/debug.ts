@@ -1,6 +1,6 @@
 import { Strings } from "@core/i18n";
 import { ApplicationCommand, ApplicationCommandOptionType } from "@lib/api/commands/types";
-import { getDebugInfo } from "@lib/debug";
+import { getDebugInfo } from "@lib/api/debug";
 import { messageUtil } from "@metro/common";
 
 export default () => <ApplicationCommand>{

@@ -1,105 +1,206 @@
-import { Strings } from "@core/i18n";
-import { CardWrapper } from "@core/ui/components/Card";
-import { getAssetIDByName } from "@lib/api/assets";
+import { CardWrapper } from "@core/ui/components/AddonCard";
+import { findAssetId } from "@lib/api/assets";
+import { settings } from "@lib/api/settings";
 import { useProxy } from "@lib/api/storage";
-import { findByProps } from "@lib/metro/filters";
-import { settings } from "@lib/settings";
-import { HelpMessage } from "@lib/ui/components/discord";
-import { HTTP_REGEX_MULTI } from "@lib/utils/constants";
+import isValidHttpUrl from "@lib/utils/isValidHttpUrl";
+import { lazyDestructure } from "@lib/utils/lazy";
+import { findByProps } from "@metro";
 import { clipboard } from "@metro/common";
-import { showInputAlert } from "@ui/alerts";
+import { Button, FlashList, FloatingActionButton, HelpMessage, IconButton, Stack, Text, TextInput } from "@metro/common/components";
 import { ErrorBoundary, Search } from "@ui/components";
 import fuzzysort from "fuzzysort";
-import { createContext } from "react";
-import { FlatList, View } from "react-native";
+import { ComponentType, ReactNode, useCallback, useMemo } from "react";
+import { Image, ScrollView, View } from "react-native";
 
-export const RemoveModeContext = createContext(false);
+const { showSimpleActionSheet, hideActionSheet } = lazyDestructure(() => findByProps("showSimpleActionSheet"));
+const { openAlert, dismissAlert } = lazyDestructure(() => findByProps("openAlert", "dismissAlert"));
+const { AlertModal, AlertActionButton } = lazyDestructure(() => findByProps("AlertModal", "AlertActions"));
 
-interface AddonPageProps<T> {
+type SearchKeywords = Array<string | ((obj: any & {}) => string)>;
+
+interface AddonPageProps<T extends object, I = any> {
     title: string;
-    floatingButtonText: string;
-    fetchFunction: (url: string) => Promise<void>;
-    items: Record<string, T & ({ id: string; } | { name: string; })>;
-    safeModeMessage: string;
-    safeModeExtras?: JSX.Element | JSX.Element[];
-    card: React.ComponentType<CardWrapper<T>>;
-    isRemoveMode?: boolean;
-    headerComponent?: JSX.Element;
-    onFABPress?: () => void;
+    items: I[];
+    searchKeywords: SearchKeywords;
+    sortOptions?: Record<string, (a: I, b: I) => number>;
+    resolveItem?: (value: I) => T | undefined;
+    safeModeHint?: {
+        message?: string;
+        footer?: ReactNode;
+    }
+    installAction?: {
+        label?: string;
+        // Ignored when onPress is defined!
+        fetchFn?: (url: string) => Promise<void>;
+        onPress?: () => void;
+    }
+    CardComponent: ComponentType<CardWrapper<T>>;
+    ListHeaderComponent?: ComponentType<any>;
+    ListFooterComponent?: ComponentType<any>;
 }
 
-function getItemsByQuery<T extends AddonPageProps<unknown>["items"][string]>(items: T[], query: string): T[] {
-    if (!query) return items;
+function InputAlert(props: { label: string, fetchFn: (url: string) => Promise<void> }) {
+    const [value, setValue] = React.useState("");
+    const [error, setError] = React.useState("");
+    const [isFetching, setIsFetching] = React.useState(false);
 
-    return fuzzysort.go(query, items, {
-        keys: [
-            "id",
-            "name",
-            "manifest.name",
-            "manifest.description",
-            "manifest.authors.0.name",
-            "manifest.authors.1.name"
-        ]
-    }).map(r => r.obj);
+    function onConfirmWrapper() {
+        setIsFetching(true);
+
+        props.fetchFn(value)
+            .then(() => dismissAlert("AddonInputAlert"))
+            .catch((e: unknown) => e instanceof Error ? setError(e.message) : String(e))
+            .finally(() => setIsFetching(false));
+    }
+
+    return <AlertModal
+        title={props.label}
+        content="Type in the source URL you want to install from:"
+        extraContent={
+            <Stack style={{ marginTop: -12 }}>
+                <TextInput
+                    autoFocus={true}
+                    isClearable={true}
+                    value={value}
+                    onChange={(v: string) => {
+                        setValue(v);
+                        if (error) setError("");
+                    }}
+                    returnKeyType="done"
+                    onSubmitEditing={onConfirmWrapper}
+                    state={error ? "error" : undefined}
+                    errorMessage={error || undefined}
+                />
+                <ScrollView
+                    horizontal={true}
+                    showsHorizontalScrollIndicator={false}
+                    style={{ gap: 8 }}
+                >
+                    <Button
+                        size="sm"
+                        variant="tertiary"
+                        text="Import from clipboard"
+                        icon={findAssetId("ClipboardListIcon")}
+                        onPress={() => clipboard.getString().then((str: string) => setValue(str))}
+                    />
+                </ScrollView>
+            </Stack>
+        }
+        actions={
+            <Stack>
+                {/* Manual button as we don't want alert to immediately dismiss when we tap on it */}
+                <Button
+                    loading={isFetching}
+                    text="Install"
+                    variant="primary"
+                    disabled={!value || !isValidHttpUrl(value)}
+                    onPress={onConfirmWrapper}
+                />
+                <AlertActionButton
+                    disabled={isFetching}
+                    text="Cancel"
+                    variant="secondary"
+                />
+            </Stack>
+        }
+    />;
 }
 
-const reanimated = findByProps("useSharedValue");
-const { FloatingActionButton } = findByProps("FloatingActionButton");
-
-export default function AddonPage<T>({ floatingButtonText, fetchFunction, items, safeModeMessage, safeModeExtras, card: CardComponent, isRemoveMode, headerComponent, onFABPress }: AddonPageProps<T>) {
-    useProxy(items);
+export default function AddonPage<T extends object>({ CardComponent, ...props }: AddonPageProps<T>) {
     useProxy(settings);
 
-    const collapseText = reanimated.useSharedValue(0);
-    const yOffset = React.useRef<number>(0);
     const [search, setSearch] = React.useState("");
+    const [sortFn, setSortFn] = React.useState<((a: unknown, b: unknown) => number) | null>(() => null);
+
+    const results = useMemo(() => {
+        let values = props.items;
+        if (props.resolveItem) values = values.map(props.resolveItem);
+        const items = values.filter(i => i && typeof i === "object");
+        if (!search && sortFn) items.sort(sortFn);
+
+        return fuzzysort.go(search, items, { keys: props.searchKeywords, all: true });
+    }, [props.items, sortFn, search]);
+
+    const onInstallPress = useCallback(() => {
+        if (!props.installAction) return () => {};
+        const { label, onPress, fetchFn } = props.installAction;
+        if (fetchFn) {
+            openAlert("AddonInputAlert", <InputAlert label={label ?? "Install"} fetchFn={fetchFn} />);
+        } else {
+            onPress?.();
+        }
+    }, []);
+
+    if (results.length === 0 && !search) {
+        return <View style={{ gap: 32, flexGrow: 1, justifyContent: "center", alignItems: "center" }}>
+            <View style={{ gap: 8, alignItems: "center" }}>
+                <Image source={findAssetId("empty_quick_switcher")} />
+                <Text variant="text-lg/semibold" color="text-normal">
+                    Oops! Nothing to see here… yet!
+                </Text>
+            </View>
+            <Button
+                size="lg"
+                icon={findAssetId("DownloadIcon")}
+                text={props.installAction?.label ?? "Install"}
+                onPress={onInstallPress}
+            />
+        </View>;
+    }
+
+    const headerElement = (
+        <View style={{ paddingBottom: 8 }}>
+            {settings.safeMode?.enabled && <View style={{ marginBottom: 10 }}>
+                <HelpMessage messageType={0}>
+                    {props.safeModeHint?.message}
+                </HelpMessage>
+                {props.safeModeHint?.footer}
+            </View>}
+            <View style={{ flexDirection: "row", gap: 8 }}>
+                <Search style={{ flexGrow: 1 }} isRound={!!props.sortOptions} onChangeText={v => setSearch(v)} />
+                {props.sortOptions && <IconButton
+                    icon={findAssetId("ic_forum_channel_sort_order_24px")}
+                    variant="tertiary"
+                    disabled={!!search}
+                    onPress={() => showSimpleActionSheet({
+                        key: "AddonListSortOptions",
+                        header: {
+                            title: "Sort Options",
+                            onClose: () => hideActionSheet("AddonListSortOptions"),
+                        },
+                        options: Object.entries(props.sortOptions!).map(([name, fn]) => ({
+                            label: name,
+                            onPress: () => setSortFn(() => fn)
+                        }))
+                    })}
+                />}
+            </View>
+            {props.ListHeaderComponent && <props.ListHeaderComponent />}
+        </View>
+    );
 
     return (
         <ErrorBoundary>
-            {/* TODO: Implement better searching than just by ID */}
-            <FlatList
-                ListHeaderComponent={<>
-                    {settings.safeMode?.enabled && <View style={{ marginBottom: 10 }}>
-                        <HelpMessage messageType={0}>{safeModeMessage}</HelpMessage>
-                        {safeModeExtras}
-                    </View>}
-                    <Search
-                        style={{ marginBottom: 15 }}
-                        onChangeText={(v: string) => setSearch(v.toLowerCase())}
-                        placeholder={Strings.SEARCH}
-                    />
-                    {headerComponent}
-                </>}
-                onScroll={e => {
-                    if (e.nativeEvent.contentOffset.y <= 0) return;
-                    collapseText.value = Number(e.nativeEvent.contentOffset.y > yOffset.current);
-                    yOffset.current = e.nativeEvent.contentOffset.y;
-                }}
-                style={{ paddingHorizontal: 10, paddingTop: 10 }}
-                contentContainerStyle={{ paddingBottom: 90, paddingHorizontal: 5 }}
-                data={getItemsByQuery(Object.values(items).filter(i => typeof i === "object"), search)}
-                renderItem={({ item, index }) => <RemoveModeContext.Provider value={!!isRemoveMode}>
-                    <CardComponent item={item} index={index} />
-                </RemoveModeContext.Provider>}
+            <FlashList
+                data={results}
+                extraData={search}
+                estimatedItemSize={136}
+                ListHeaderComponent={headerElement}
+                ListEmptyComponent={() => <View style={{ gap: 12, padding: 12, alignItems: "center" }}>
+                    <Image source={findAssetId("devices_not_found")} />
+                    <Text variant="text-lg/semibold" color="text-normal">
+                        Hmmm... could not find that!
+                    </Text>
+                </View>}
+                contentContainerStyle={{ padding: 8, paddingHorizontal: 12 }}
+                ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
+                ListFooterComponent={props.ListFooterComponent}
+                renderItem={({ item }: any) => <CardComponent item={item.obj} result={item} />}
             />
-            <FloatingActionButton
-                text={floatingButtonText}
-                icon={getAssetIDByName("PlusLargeIcon")}
-                state={{ collapseText }}
-                onPress={onFABPress ?? (() => {
-                    // from ./InstallButton.tsx
-                    clipboard.getString().then(content =>
-                        showInputAlert({
-                            title: floatingButtonText,
-                            initialValue: content.match(HTTP_REGEX_MULTI)?.[0] ?? "",
-                            placeholder: Strings.URL_PLACEHOLDER,
-                            onConfirm: (input: string) => fetchFunction(input),
-                            confirmText: Strings.INSTALL,
-                            cancelText: Strings.CANCEL,
-                        })
-                    );
-                })}
-            />
+            {props.installAction && <FloatingActionButton
+                icon={findAssetId("PlusLargeIcon")}
+                onPress={onInstallPress}
+            />}
         </ErrorBoundary>
     );
 }

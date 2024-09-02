@@ -5,41 +5,30 @@
     "compilerOptions": {
         "strict": true,
         "paths": {
-            "@core/*": [
-                "./src/core/*"
-            ],
-            "@lib": [
-                "./src/lib"
-            ],
-            "@lib/*": [
-                "./src/lib/*"
-            ],
-            "@metro": [
-                "./src/lib/metro"
-            ],
-            "@metro/*": [
-                "./src/lib/metro/*"
-            ],
-            "@ui": [
-                "./src/lib/ui"
-            ],
-            "@ui/*": [
-                "./src/lib/ui/*"
-            ],
-            "@types": [
-                "./src/lib/utils/types.ts"
-            ],
-            "@assets/*": [
-                "./src/assets/*"
-            ]
+            // Just to discourage from consuming the module directly
+            "spitroast": ["./shims/emptyModule"],
+
+            "@core/*": ["./src/core/*"],
+            "@lib": ["./src/lib"],
+            "@lib/*": ["./src/lib/*"],
+            "@metro": ["./src/metro"],
+            "@metro/*": ["./src/metro/*"],
+            "@ui": ["./src/lib/ui"],
+            "@ui/*": ["./src/lib/ui/*"],
+            "@types": ["./src/lib/utils/types.ts"],
+            "@assets/*": ["./src/assets/*"]
         },
         "module": "esnext",
         "moduleResolution": "bundler",
         "resolveJsonModule": true,
-        "noEmit": true,
         "allowJs": true,
         "checkJs": true,
-        "jsx": "react",
-        "target": "esnext"
+        "jsx": "react-jsx",
+        "target": "esnext",
+
+        "skipLibCheck": true,
+        "declaration": true,
+        "emitDeclarationOnly": true,
+        "stripInternal": true
     }
 }

@@ -1,17 +1,19 @@
-import { findByProps } from "@lib/metro";
+import { lazyDestructure, proxyLazy } from "@lib/utils/lazy";
+import { findByProps, findByPropsLazy } from "@metro/wrappers";
 import { isSemanticColor, resolveSemanticColor } from "@ui/color";
-import { CompatfulRedesign } from "@ui/components/discord/Redesign";
 import { DiscordTextStyles } from "@ui/types";
 import { ImageStyle, StyleSheet, TextStyle, ViewStyle } from "react-native";
 
 type NamedStyles<T> = { [P in keyof T]: ViewStyle | TextStyle | ImageStyle };
 
-export const { TextStyleSheet } = findByProps("TextStyleSheet") as unknown as {
+const CompatfulRedesign = findByPropsLazy("createStyles");
+
+export const { TextStyleSheet } = lazyDestructure(() => findByProps("TextStyleSheet")) as unknown as {
     TextStyleSheet: { [key in DiscordTextStyles]: TextStyle; };
 };
 
 export function createStyles<T extends NamedStyles<T>>(sheet: T | ((props: any) => T)): () => T {
-    return CompatfulRedesign.createStyles(sheet);
+    return proxyLazy(() => CompatfulRedesign.createStyles(sheet));
 }
 
 // Reimplementation of Discord's createThemedStyleSheet, which was removed since 204201

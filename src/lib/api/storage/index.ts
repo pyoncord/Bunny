@@ -1,11 +1,15 @@
 import { StorageBackend } from "@lib/api/storage/backends";
-import { createEmitter, Emitter } from "@lib/utils/emitter";
+import { Emitter, EmitterEvent, EmitterListener, EmitterListenerData } from "@lib/utils/Emitter";
 
 const emitterSymbol = Symbol.for("vendetta.storage.emitter");
 const syncAwaitSymbol = Symbol.for("vendetta.storage.accessor");
 
 export function createProxy(target: any = {}): { proxy: any; emitter: Emitter; } {
-    const emitter = createEmitter();
+    const emitter = new Emitter();
+    const parentTarget = target;
+
+    const childrens = new WeakMap<any, any>();
+    const proxiedChildrenSet = new WeakSet<any>();
 
     function createProxy(target: any, path: string[]): any {
         return new Proxy(target, {
@@ -17,12 +21,20 @@ export function createProxy(target: any = {}): { proxy: any; emitter: Emitter; }
 
                 if (value !== undefined && value !== null) {
                     emitter.emit("GET", {
+                        parent: parentTarget,
                         path: newPath,
                         value,
                     });
+
                     if (typeof value === "object") {
-                        return createProxy(value, newPath);
+                        if (proxiedChildrenSet.has(value)) return value;
+                        if (childrens.has(value)) return childrens.get(value);
+
+                        const childrenProxy = createProxy(value, newPath);
+                        childrens.set(value, childrenProxy);
+                        return childrenProxy;
                     }
+
                     return value;
                 }
 
@@ -30,19 +42,35 @@ export function createProxy(target: any = {}): { proxy: any; emitter: Emitter; }
             },
 
             set(target, prop: string, value) {
-                target[prop] = value;
+                if (typeof value === "object") {
+                    if (childrens.has(value)) {
+                        target[prop] = childrens.get(value);
+                    } else {
+                        const childrenProxy = createProxy(value, [...path, prop]);
+                        childrens.set(value, childrenProxy);
+                        proxiedChildrenSet.add(value);
+                        target[prop] = childrenProxy;
+                    }
+                } else {
+                    target[prop] = value;
+                }
+
                 emitter.emit("SET", {
+                    parent: parentTarget,
                     path: [...path, prop],
-                    value,
+                    value: target[prop],
                 });
                 // we do not care about success, if this actually does fail we have other problems
                 return true;
             },
 
             deleteProperty(target, prop: string) {
+                const value = typeof target[prop] === "object" ? childrens.get(target[prop])! : target[prop];
                 const success = delete target[prop];
                 if (success)
                     emitter.emit("DEL", {
+                        value,
+                        parent: parentTarget,
                         path: [...path, prop],
                     });
                 return success;
@@ -57,12 +85,16 @@ export function createProxy(target: any = {}): { proxy: any; emitter: Emitter; }
 }
 
 export function useProxy<T>(storage: T): T {
-    const emitter = (storage as any)[emitterSymbol] as Emitter;
+    const emitter = (storage as any)?.[emitterSymbol] as Emitter;
+    if (!emitter) throw new Error("storage?.[emitterSymbol] is undefined");
 
     const [, forceUpdate] = React.useReducer(n => ~n, 0);
 
     React.useEffect(() => {
-        const listener = () => forceUpdate();
+        const listener: EmitterListener = (event: EmitterEvent, data: EmitterListenerData) => {
+            if (event === "DEL" && data.value === storage) return;
+            forceUpdate();
+        };
 
         emitter.on("SET", listener);
         emitter.on("DEL", listener);
@@ -111,7 +143,11 @@ export function wrapSync<T extends Promise<any>>(store: T): Awaited<T> {
     });
 }
 
-export const awaitSyncWrapper = (store: any) => new Promise<void>(res => store[syncAwaitSymbol](res));
+export function awaitStorage(...stores: any[]) {
+    return Promise.all(
+        stores.map(store => new Promise<void>(res => store[syncAwaitSymbol](res)))
+    );
+}
 
 export {
     createFileBackend,

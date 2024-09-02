@@ -1,6 +1,5 @@
-import { getAssetIDByName } from "@lib/api/assets";
-import { FormRow } from "@ui/components/discord/Forms";
-import { TableRow } from "@ui/components/discord/Redesign";
+import { findAssetId } from "@lib/api/assets";
+import { LegacyFormRow, TableRow } from "@metro/common/components";
 import { LayoutAnimation, View } from "react-native";
 
 export interface SummaryProps {
@@ -18,8 +17,8 @@ export default function Summary({ label, icon, noPadding = false, noAnimation = 
         <>
             <TableRow
                 label={label}
-                icon={icon && <TableRow.Icon source={getAssetIDByName(icon)} />}
-                trailing={<FormRow.Arrow style={{ transform: [{ rotate: `${hidden ? 180 : 90}deg` }] }} />}
+                icon={icon && <TableRow.Icon source={findAssetId(icon)} />}
+                trailing={<LegacyFormRow.Arrow style={{ transform: [{ rotate: `${hidden ? 180 : 90}deg` }] }} />}
                 onPress={() => {
                     setHidden(!hidden);
                     if (!noAnimation) LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);

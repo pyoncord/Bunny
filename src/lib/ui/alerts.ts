@@ -1,8 +1,8 @@
 import { ButtonColors } from "@lib/utils/types";
-import { findByProps } from "@metro/filters";
+import { findByPropsLazy } from "@metro/wrappers";
 import InputAlert, { InputAlertProps } from "@ui/components/InputAlert";
 
-const Alerts = findByProps("openLazy", "close");
+const Alerts = findByPropsLazy("openLazy", "close");
 
 interface InternalConfirmationAlertOptions extends Omit<ConfirmationAlertOptions, "content"> {
     content?: ConfirmationAlertOptions["content"];

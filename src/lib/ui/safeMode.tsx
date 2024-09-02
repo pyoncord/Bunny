@@ -1,20 +1,23 @@
 import { Strings } from "@core/i18n";
+import { toggleSafeMode } from "@lib/api/debug";
 import { DeviceManager } from "@lib/api/native/modules";
 import { after } from "@lib/api/patcher";
-import { toggleSafeMode } from "@lib/debug";
-import { settings } from "@lib/settings";
+import { settings } from "@lib/api/settings";
+import { lazyDestructure } from "@lib/utils/lazy";
 import { ButtonColors } from "@lib/utils/types";
-import { findByName, findByProps } from "@metro/filters";
+import { Button, CompatButton, SafeAreaView } from "@metro/common/components";
+import { _lazyContextSymbol } from "@metro/lazy";
+import { LazyModuleContext } from "@metro/types";
+import { findByNameLazy, findByProps } from "@metro/wrappers";
 import { semanticColors } from "@ui/color";
 import { Codeblock, ErrorBoundary as _ErrorBoundary } from "@ui/components";
-import { Button, SafeAreaView } from "@ui/components/discord";
 import { createThemedStyleSheet, TextStyleSheet } from "@ui/styles";
 import { Text, View } from "react-native";
 
-const ErrorBoundary = findByName("ErrorBoundary");
+const ErrorBoundary = findByNameLazy("ErrorBoundary");
 
 // Let's just pray they have this.
-const { BadgableTabBar } = findByProps("BadgableTabBar");
+const { BadgableTabBar } = lazyDestructure(() => findByProps("BadgableTabBar"));
 
 const styles = createThemedStyleSheet({
     container: {
@@ -67,7 +70,16 @@ const tabs: Tab[] = [
     { id: "componentStack", title: () => Strings.COMPONENT, trimWhitespace: true },
 ];
 
-export default () => after("render", ErrorBoundary.prototype, function (this: any, _, ret) {
+function getErrorBoundaryContext() {
+    const ctxt: LazyModuleContext = findByNameLazy("ErrorBoundary")[_lazyContextSymbol];
+    return new Promise(resolve => {
+        ctxt.getExports(exp => {
+            resolve(exp.prototype);
+        });
+    });
+}
+
+export default () => after.await("render", getErrorBoundaryContext(), function (this: any, _, ret) {
     if (!this.state.error) return;
 
     // Not using setState here as we don't want to cause a re-render, we want this to be set in the initial render
@@ -116,12 +128,21 @@ export default () => after("render", ErrorBoundary.prototype, function (this: an
                     {buttons.map(button => {
                         const buttonIndex = buttons.indexOf(button) !== 0 ? 8 : 0;
 
-                        return <Button
+                        return <CompatButton
                             text={button.text}
                             color={button.color ?? ButtonColors.BRAND}
                             size={button.size ?? "small"}
                             onPress={button.onPress}
-                            style={DeviceManager.isTablet ? { flex: `0.${buttons.length}`, marginLeft: buttonIndex } : { marginTop: buttonIndex }}
+                            style={{
+                                ...(DeviceManager.isTablet ? {
+                                    flex: `0.${buttons.length}`,
+                                    marginLeft: buttonIndex
+                                } : {
+                                    marginTop: buttonIndex
+                                }),
+
+                                borderRadius: 16
+                            }}
                         />;
                     })}
                 </View>

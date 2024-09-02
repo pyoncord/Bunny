@@ -1,9 +1,9 @@
-import { NavigationNative } from "@lib/metro/common";
-import { findByProps } from "@lib/metro/filters";
-import { ErrorBoundary } from "@lib/ui/components";
-import { RowConfig } from "@lib/ui/settings";
+import { NavigationNative } from "@metro/common";
+import { findByPropsLazy } from "@metro/wrappers";
+import { ErrorBoundary } from "@ui/components";
+import { RowConfig } from "@ui/settings";
 
-const tabsNavigationRef = findByProps("getRootNavigationRef");
+const tabsNavigationRef = findByPropsLazy("getRootNavigationRef");
 
 export const CustomPageRenderer = React.memo(() => {
     const navigation = NavigationNative.useNavigation();
@@ -33,7 +33,7 @@ export function wrapOnPress(
         }
 
         navigation ??= tabsNavigationRef.getRootNavigationRef();
-        navigation.navigate("VendettaCustomPage", {
+        navigation.navigate("BUNNY_CUSTOM_PAGE", {
             ...screenOptions,
             render: () => <Component {...props} />
         });

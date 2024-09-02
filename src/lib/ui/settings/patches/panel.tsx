@@ -1,9 +1,9 @@
-import { findByName } from "@lib/metro";
-import { i18n, NavigationNative } from "@lib/metro/common";
-import { FormIcon, FormRow, FormSection } from "@lib/ui/components/discord/Forms";
-import { registeredSections } from "@lib/ui/settings";
+import { after } from "@lib/api/patcher";
 import { findInReactTree } from "@lib/utils";
-import { after } from "spitroast";
+import { i18n, NavigationNative } from "@metro/common";
+import { LegacyFormIcon, LegacyFormRow, LegacyFormSection } from "@metro/common/components";
+import { findByNameLazy } from "@metro/wrappers";
+import { registeredSections } from "@ui/settings";
 
 import { CustomPageRenderer, wrapOnPress } from "./shared";
 
@@ -12,31 +12,35 @@ function SettingsSection() {
 
     return <>
         {Object.keys(registeredSections).map(sect => (
-            <FormSection key={sect} title={sect}>
+            <LegacyFormSection key={sect} title={sect}>
                 { /** Is usePredicate here safe? */}
                 {registeredSections[sect].filter(r => r.usePredicate?.() ?? true).map(row => (
-                    <FormRow
+                    <LegacyFormRow
                         label={row.title()}
-                        leading={<FormIcon source={row.icon} />}
-                        trailing={FormRow.Arrow}
+                        leading={<LegacyFormIcon source={row.icon} />}
+                        trailing={LegacyFormRow.Arrow}
                         onPress={wrapOnPress(row.onPress, navigation, row.render, row.title())}
                     />
                 ))}
-            </FormSection>
+            </LegacyFormSection>
         ))}
     </>;
 }
 
 export function patchPanelUI(unpatches: (() => void | boolean)[]) {
-    unpatches.push(after("default", findByName("getScreens", false), (_a, screens) => ({
+    unpatches.push(after("default", findByNameLazy("getScreens", false), (_a, screens) => ({
         ...screens,
         VendettaCustomPage: {
-            title: "Bnuuy",
+            title: "Bunny",
+            render: () => <CustomPageRenderer />
+        },
+        BUNNY_CUSTOM_PAGE: {
+            title: "Bunny",
             render: () => <CustomPageRenderer />
         }
     })));
 
-    const unpatch = after("default", findByName("UserSettingsOverviewWrapper", false), (_a, ret) => {
+    const unpatch = after("default", findByNameLazy("UserSettingsOverviewWrapper", false), (_a, ret) => {
         const UserSettingsOverview = findInReactTree(ret.props.children, n => n.type?.name === "UserSettingsOverview");
 
         unpatches.push(after("renderSupportAndAcknowledgements", UserSettingsOverview.type.prototype, (_args, { props: { children } }) => {
@@ -49,11 +53,13 @@ export function patchPanelUI(unpatches: (() => void | boolean)[]) {
 
             const sections = findInReactTree(
                 res.props.children,
-                n => n?.children?.[1]?.type === FormSection
-            ).children;
+                n => n?.children?.[1]?.type === LegacyFormSection
+            )?.children;
 
-            const index = sections.findIndex((c: any) => titles.includes(c?.props.label));
-            sections.splice(-~index || 4, 0, <SettingsSection />);
+            if (sections) {
+                const index = sections.findIndex((c: any) => titles.includes(c?.props.label));
+                sections.splice(-~index || 4, 0, <SettingsSection />);
+            }
         }));
     }, true);
 

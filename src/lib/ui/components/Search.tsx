@@ -1,20 +1,21 @@
 import { Strings } from "@core/i18n";
-import { getAssetIDByName } from "@lib/api/assets";
-import { TextInput } from "@ui/components/discord/Redesign";
+import { findAssetId } from "@lib/api/assets";
+import { TextInput } from "@metro/common/components";
 import ErrorBoundary from "@ui/components/ErrorBoundary";
-import { Image, View } from "react-native";
+import { Image, View, ViewStyle } from "react-native";
 
 export interface SearchProps {
     onChangeText?: (v: string) => void;
     placeholder?: string;
-    style?: import("react-native").TextStyle;
+    style?: ViewStyle;
+    isRound?: boolean;
 }
 
 function SearchIcon() {
-    return <Image style={{ transform: [{ scale: 0.8 }] }} source={getAssetIDByName("search")} />;
+    return <Image style={{ width: 16, height: 16 }} source={findAssetId("search")} />;
 }
 
-export default ({ onChangeText, placeholder, style }: SearchProps) => {
+export default ({ onChangeText, placeholder, style, isRound }: SearchProps) => {
     const [query, setQuery] = React.useState("");
 
     const onChange = (value: string) => {
@@ -25,15 +26,16 @@ export default ({ onChangeText, placeholder, style }: SearchProps) => {
     return <ErrorBoundary>
         <View style={style}>
             <TextInput
-                grow
-                isClearable
+                grow={true}
+                isClearable={true}
                 leadingIcon={SearchIcon}
                 placeholder={placeholder ?? Strings.SEARCH}
                 onChange={onChange}
-                returnKeyType={"search"}
+                returnKeyType="search"
                 size="md"
                 autoCapitalize="none"
                 autoCorrect={false}
+                isRound={isRound}
                 value={query}
             />
         </View>

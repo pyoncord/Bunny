@@ -1,10 +1,10 @@
 import { Strings } from "@core/i18n";
 import { ApplicationCommand, ApplicationCommandOptionType } from "@lib/api/commands/types";
-import { settings } from "@lib/settings";
+import { settings } from "@lib/api/settings";
 import { messageUtil } from "@metro/common";
-import { findByProps } from "@metro/filters";
+import { findByPropsLazy } from "@metro/wrappers";
 
-const util = findByProps("inspect");
+const util = findByPropsLazy("inspect");
 const AsyncFunction = (async () => void 0).constructor;
 
 const ZERO_WIDTH_SPACE_CHARACTER = "\u200B";

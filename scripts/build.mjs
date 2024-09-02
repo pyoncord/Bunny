@@ -1,14 +1,21 @@
 // @ts-nocheck
 /* eslint-disable no-restricted-syntax */
 import swc from "@swc/core";
+import { execSync } from "child_process";
 import crypto from "crypto";
 import { build } from "esbuild";
-import { readFile, writeFile } from "fs/promises";
+import globalPlugin from "esbuild-plugin-globals";
 import path from "path";
 import { fileURLToPath } from "url";
 import yargs from "yargs-parser";
 
 import { printBuildSuccess } from "./util.mjs";
+
+/** @type string[] */
+const metroDeps = await (async () => {
+    const ast = await swc.parseFile(path.resolve("./shims/depsModule.ts"));
+    return ast.body.at(-1).expression.right.properties.map(p => p.key.value);
+})();
 
 const args = yargs(process.argv.slice(2));
 const {
@@ -24,10 +31,9 @@ const config = {
     outfile: "dist/bunny.js",
     format: "iife",
     splitting: false,
-    minify: false,
     external: [],
     supported: {
-        // Hermes does not actually supports const and let, even though it syntactically
+        // Hermes does not actually support const and let, even though it syntactically
         // accepts it, but it's treated just like 'var' and causes issues
         "const-and-let": false
     },
@@ -40,33 +46,24 @@ const config = {
     define: {
         __DEV__: JSON.stringify(releaseBranch !== "main")
     },
+    inject: ["./shims/asyncIteratorSymbol.js", "./shims/promiseAllSettled.js"],
     legalComments: "none",
+    alias: {
+        "!bunny-deps-shim!": "./shims/depsModule.ts",
+        "spitroast": "./node_modules/spitroast",
+        "react/jsx-runtime": "./shims/jsxRuntime"
+    },
     plugins: [
-        {
-            name: "runtimeGlobalAlias",
-            setup: async build => {
-                const globalMap = {
-                    "react": "globalThis.React",
-                    "react-native": "globalThis.ReactNative"
-                };
-
-                Object.keys(globalMap).forEach(key => {
-                    const filter = new RegExp(`^${key}$`);
-                    build.onResolve({ filter }, args => ({
-                        namespace: "glob-" + key, path: args.path
-                    }));
-                    build.onLoad({ filter, namespace: "glob-" + key }, () => ({
-                        // @ts-ignore
-                        contents: `Object.defineProperty(module, 'exports', { get: () => ${globalMap[key]} })`,
-                        resolveDir: "src",
-                    }));
-                });
-            }
-        },
+        globalPlugin({
+            ...metroDeps.reduce((obj, key) => {
+                obj[key] = `require("!bunny-deps-shim!")[${JSON.stringify(key)}]`;
+                return obj;
+            }, {})
+        }),
         {
             name: "swc",
             setup(build) {
-                build.onLoad({ filter: /\.[jt]sx?$/ }, async args => {
+                build.onLoad({ filter: /\.[cm]?[jt]sx?$/ }, async args => {
                     const result = await swc.transformFile(args.path, {
                         jsc: {
                             externalHelpers: true,
@@ -77,6 +74,9 @@ const config = {
                                             version: `"${context.hash}-${releaseBranch ?? "local"}"`
                                         }
                                     }
+                                },
+                                react: {
+                                    runtime: "automatic"
                                 }
                             },
                         },
@@ -85,20 +85,20 @@ const config = {
                         env: {
                             targets: "fully supports es6",
                             include: [
-                                // Pretend that arrow functions are unsupported, since hermes does not support async arrow functions for some reason
-                                "transform-arrow-functions",
                                 "transform-block-scoping",
-                                "transform-classes"
+                                "transform-classes",
+                                "transform-async-to-generator",
+                                "transform-async-generator-functions"
                             ],
                             exclude: [
                                 "transform-parameters",
                                 "transform-template-literals",
-                                "transform-async-to-generator",
                                 "transform-exponentiation-operator",
                                 "transform-named-capturing-groups-regex",
                                 "transform-nullish-coalescing-operator",
                                 "transform-object-rest-spread",
-                                "transform-optional-chaining"
+                                "transform-optional-chaining",
+                                "transform-logical-assignment-operators"
                             ]
                         },
                     });
@@ -110,13 +110,13 @@ const config = {
     ]
 };
 
-export async function buildBundle() {
+export async function buildBundle(overrideConfig = {}) {
     context = {
-        hash: crypto.randomBytes(8).toString("hex").slice(0, 7)
+        hash: releaseBranch ? execSync("git rev-parse --short HEAD").toString().trim() : crypto.randomBytes(8).toString("hex").slice(0, 7)
     };
 
     const initialStartTime = performance.now();
-    await build(config);
+    await build({ ...config, ...overrideConfig });
 
     return {
         config,
@@ -139,18 +139,16 @@ if (isThisFileBeingRunViaCLI) {
     );
 
     if (buildMinify) {
-        const bundleBuffer = await readFile(config.outfile);
+        const { timeTook } = await buildBundle({
+            minify: true,
+            outfile: config.outfile.replace(/\.js$/, ".min.js")
+        });
 
-        let { code } = await swc.minify(
-            bundleBuffer.toString(),
-            {
-                compress: true,
-                mangle: true,
-            }
+        printBuildSuccess(
+            context.hash,
+            releaseBranch,
+            timeTook,
+            true
         );
-        code += config.footer.js;
-
-        const minFilePath = config.outfile.replace(/\.js$/, ".min.js");
-        await writeFile(minFilePath, code);
     }
 }

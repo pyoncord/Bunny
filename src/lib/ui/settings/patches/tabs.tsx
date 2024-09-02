@@ -1,13 +1,13 @@
-import { findByName, findByProps } from "@lib/metro";
-import { i18n } from "@lib/metro/common";
-import { registeredSections } from "@lib/ui/settings";
+import { after } from "@lib/api/patcher";
 import { findInReactTree } from "@lib/utils";
-import { after } from "spitroast";
+import { i18n } from "@metro/common";
+import { findByNameLazy, findByPropsLazy } from "@metro/wrappers";
+import { registeredSections } from "@ui/settings";
 
 import { CustomPageRenderer, wrapOnPress } from "./shared";
 
-const settingConstants = findByProps("SETTING_RENDERER_CONFIG");
-const SettingsOverviewScreen = findByName("SettingsOverviewScreen", false);
+const settingConstants = findByPropsLazy("SETTING_RENDERER_CONFIG");
+const SettingsOverviewScreen = findByNameLazy("SettingsOverviewScreen", false);
 
 function useIsFirstRender() {
     let firstRender = false;
@@ -16,15 +16,6 @@ function useIsFirstRender() {
 }
 
 export function patchTabsUI(unpatches: (() => void | boolean)[]) {
-    settingConstants.SETTING_RENDERER_CONFIG.VendettaCustomPage = {
-        type: "route",
-        title: () => "Bunny",
-        screen: {
-            route: "VendettaCustomPage",
-            getComponent: () => CustomPageRenderer
-        }
-    };
-
     const getRows = () => Object.values(registeredSections)
         .flatMap(sect => sect.map(row => ({
             [row.key]: {
@@ -40,15 +31,41 @@ export function patchTabsUI(unpatches: (() => void | boolean)[]) {
         .reduce((a, c) => Object.assign(a, c));
 
     const origRendererConfig = settingConstants.SETTING_RENDERER_CONFIG;
-    settingConstants.SETTING_RENDERER_CONFIG = new Proxy(origRendererConfig, {
-        get: (target, prop: string, reciever) => Reflect.get({ ...target, ...getRows() }, prop, reciever),
-        getOwnPropertyDescriptor: (target, prop: string) => Reflect.getOwnPropertyDescriptor({ ...target, ...getRows() }, prop),
-        ownKeys: target => [...Reflect.ownKeys(target), ...Object.keys(getRows())]
+    let rendererConfigValue = settingConstants.SETTING_RENDERER_CONFIG;
+
+    Object.defineProperty(settingConstants, "SETTING_RENDERER_CONFIG", {
+        enumerable: true,
+        configurable: true,
+        get: () => ({
+            ...rendererConfigValue,
+            VendettaCustomPage: {
+                type: "route",
+                title: () => "Bunny",
+                screen: {
+                    route: "VendettaCustomPage",
+                    getComponent: () => CustomPageRenderer
+                }
+            },
+            BUNNY_CUSTOM_PAGE: {
+                type: "route",
+                title: () => "Bunny",
+                screen: {
+                    route: "BUNNY_CUSTOM_PAGE",
+                    getComponent: () => CustomPageRenderer
+                }
+            },
+            ...getRows()
+        }),
+        set: v => rendererConfigValue = v,
     });
 
     unpatches.push(() => {
-        settingConstants.SETTING_RENDERER_CONFIG = origRendererConfig;
-        delete settingConstants.SETTING_RENDERER_CONFIG.VendettaCustomPage;
+        Object.defineProperty(settingConstants, "SETTING_RENDERER_CONFIG", {
+            value: origRendererConfig,
+            writable: true,
+            get: undefined,
+            set: undefined
+        });
     });
 
     unpatches.push(after("default", SettingsOverviewScreen, (_, ret) => {
