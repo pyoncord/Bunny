@@ -367,12 +367,12 @@ export async function checkAndRegisterUpdates() {
         corePluginInstances.set(id, instance);
     }
 
-    await updateRepository(OFFICIAL_PLUGINS_REPO_URL);
-    await Promise.allSettled(Object.keys(pluginRepositories).map(async repo => {
-        if (repo !== OFFICIAL_PLUGINS_REPO_URL) {
-            await updateRepository(repo);
-        }
-    }));
+    // await updateRepository(OFFICIAL_PLUGINS_REPO_URL);
+    // await Promise.allSettled(Object.keys(pluginRepositories).map(async repo => {
+    //     if (repo !== OFFICIAL_PLUGINS_REPO_URL) {
+    //         await updateRepository(repo);
+    //     }
+    // }));
 }
 
 /**
