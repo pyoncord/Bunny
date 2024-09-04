@@ -10,7 +10,6 @@ async function initializeBunny() {
         Object.freeze = Object.seal = Object;
 
         await require("@metro/internals/caches").initMetroCache();
-        require("@metro/internals/modules");
         await require(".").default();
     } catch (e) {
         const { ClientInfoManager } = require("@lib/api/native/modules");

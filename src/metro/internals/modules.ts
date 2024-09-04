@@ -16,6 +16,7 @@ const functionToString = Function.prototype.toString;
 
 let patchedInspectSource = false;
 let patchedImportTracker = false;
+let patchedNativeComponentRegistry = false;
 let _importingModuleId: number = -1;
 
 for (const key in metroModules) {
@@ -89,15 +90,16 @@ function onModuleRequire(moduleExports: any, id: Metro.ModuleID) {
     }
 
     // There are modules registering the same native component
-    if (moduleExports?.default?.name === "requireNativeComponent") {
-        instead("default", moduleExports, (args: any, origFunc: any) => {
+    if (!patchedNativeComponentRegistry && ["customBubblingEventTypes", "customDirectEventTypes", "register", "get"].every(x => moduleExports[x])) {
+        instead("register", moduleExports, (args: any, origFunc: any) => {
             try {
                 return origFunc(...args);
-            } catch {
-                return args[0];
-            }
+            } catch { }
         });
+
+        patchedNativeComponentRegistry = true;
     }
+
 
     // Hook DeveloperExperimentStore
     if (moduleExports?.default?.constructor?.displayName === "DeveloperExperimentStore") {
