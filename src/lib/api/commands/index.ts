@@ -54,7 +54,9 @@ export function registerCommand(command: BunnyApplicationCommand): () => void {
     command.type ??= ApplicationCommandType.CHAT;
     command.inputType = ApplicationCommandInputType.BUILT_IN;
     command.displayName ??= command.name;
+    command.untranslatedName ??= command.name;
     command.displayDescription ??= command.description;
+    command.untranslatedDescription ??= command.description;
 
     if (command.options) for (const opt of command.options) {
         opt.displayName ??= opt.name;

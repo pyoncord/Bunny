@@ -15,6 +15,8 @@ export interface ApplicationCommand {
     applicationId?: string;
     displayName?: string;
     displayDescription?: string;
+    untranslatedDescription?: string;
+    untranslatedName?: string;
     inputType?: ApplicationCommandInputType;
     type?: ApplicationCommandType;
     __bunny?: {
