@@ -6,7 +6,7 @@ import isValidHttpUrl from "@lib/utils/isValidHttpUrl";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { findByProps } from "@metro";
 import { clipboard } from "@metro/common";
-import { Button, FlashList, FloatingActionButton, HelpMessage, IconButton, Stack, Text, TextInput } from "@metro/common/components";
+import { ActionSheet, BottomSheetTitleHeader, Button, FlashList, FloatingActionButton, HelpMessage, IconButton, Stack, Text, TextInput } from "@metro/common/components";
 import { ErrorBoundary, Search } from "@ui/components";
 import fuzzysort from "fuzzysort";
 import { ComponentType, ReactNode, useCallback, useMemo } from "react";
@@ -15,6 +15,8 @@ import { Image, ScrollView, View } from "react-native";
 const { showSimpleActionSheet, hideActionSheet } = lazyDestructure(() => findByProps("showSimpleActionSheet"));
 const { openAlert, dismissAlert } = lazyDestructure(() => findByProps("openAlert", "dismissAlert"));
 const { AlertModal, AlertActionButton } = lazyDestructure(() => findByProps("AlertModal", "AlertActions"));
+
+const actionSheet = findByProps("hideActionSheet");
 
 type SearchKeywords = Array<string | ((obj: any & {}) => string)>;
 
@@ -27,19 +29,103 @@ interface AddonPageProps<T extends object, I = any> {
     safeModeHint?: {
         message?: string;
         footer?: ReactNode;
-    }
+    };
     installAction?: {
         label?: string;
         // Ignored when onPress is defined!
         fetchFn?: (url: string) => Promise<void>;
         onPress?: () => void;
-    }
+    };
     CardComponent: ComponentType<CardWrapper<T>>;
     ListHeaderComponent?: ComponentType<any>;
     ListFooterComponent?: ComponentType<any>;
 }
 
-function InputAlert(props: { label: string, fetchFn: (url: string) => Promise<void> }) {
+function InputSheet(props: { fetchFn: (url: string) => Promise<void>; }) {
+    const [value, setValue] = React.useState("");
+    const [error, setError] = React.useState("");
+    const [isFetching, setIsFetching] = React.useState(false);
+
+    function onConfirmWrapper() {
+        setIsFetching(true);
+
+        props.fetchFn(value)
+            .then(() => actionSheet.hideActionSheet())
+            .catch((e) => (e instanceof Error ? setError(e.message) : String(e)))
+            .finally(() => setIsFetching(false));
+    }
+
+    return (
+        <View
+            style={{
+                padding: 8,
+                gap: 12,
+            }}
+        >
+            <TextInput
+                autoFocus={true}
+                isClearable={true}
+                value={value}
+                label={"URL"}
+                placeholder={"https://bunny.repo.local/"}
+                onChange={(v) => {
+                    setValue(v);
+                    if (error) setError("");
+                }}
+                returnKeyType="done"
+                onSubmitEditing={onConfirmWrapper}
+                state={error ? "error" : undefined}
+                errorMessage={error || undefined}
+            />
+            <ScrollView
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}
+                style={{ gap: 8 }}
+            >
+                <Button
+                    size="sm"
+                    variant="tertiary"
+                    text="Import from clipboard"
+                    icon={findAssetId("ClipboardListIcon")}
+                    onPress={() => clipboard.getString().then((str: string) => setValue(str))}
+                />
+            </ScrollView>
+            <Button
+                loading={isFetching}
+                text="Install"
+                variant="primary"
+                disabled={!value || !isValidHttpUrl(value)}
+                onPress={onConfirmWrapper}
+            />
+            <Button
+                disabled={isFetching}
+                text="Cancel"
+                variant="secondary"
+                onPress={() => actionSheet.hideActionSheet()}
+            />
+        </View>
+    );
+}
+
+
+/// Based on src/core/ui/settings/Fonts/FontEditor.js:165 - maybe worth deduplicating :)
+function promptActionSheet(Component: any, label: string, props: any) {
+    actionSheet.openLazy(
+        Promise.resolve({
+            default: () => (
+                <ErrorBoundary>
+                    <ActionSheet>
+                        <BottomSheetTitleHeader title={label} />
+                        <Component {...props} />
+                    </ActionSheet>
+                </ErrorBoundary>
+            ),
+        }),
+        "AddonPageActionSheet",
+    );
+}
+
+function InputAlert(props: { label: string, fetchFn: (url: string) => Promise<void>; }) {
     const [value, setValue] = React.useState("");
     const [error, setError] = React.useState("");
     const [isFetching, setIsFetching] = React.useState(false);
@@ -122,10 +208,13 @@ export default function AddonPage<T extends object>({ CardComponent, ...props }:
     }, [props.items, sortFn, search]);
 
     const onInstallPress = useCallback(() => {
-        if (!props.installAction) return () => {};
+        if (!props.installAction) return () => { };
         const { label, onPress, fetchFn } = props.installAction;
         if (fetchFn) {
-            openAlert("AddonInputAlert", <InputAlert label={label ?? "Install"} fetchFn={fetchFn} />);
+            promptActionSheet(InputSheet, label ?? "Install", {
+                fetchFn: fetchFn,
+            });
+            // openAlert("AddonInputAlert", <InputAlert label={label ?? "Install"} fetchFn={fetchFn} />);
         } else {
             onPress?.();
         }
