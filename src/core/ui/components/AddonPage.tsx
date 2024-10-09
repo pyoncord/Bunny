@@ -2,6 +2,7 @@ import { CardWrapper } from "@core/ui/components/AddonCard";
 import { findAssetId } from "@lib/api/assets";
 import { settings } from "@lib/api/settings";
 import { useProxy } from "@lib/api/storage";
+import AlertModal, { AlertActionButton } from "@lib/ui/components/wrappers/AlertModal";
 import isValidHttpUrl from "@lib/utils/isValidHttpUrl";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { findByProps } from "@metro";
@@ -14,7 +15,6 @@ import { Image, ScrollView, View } from "react-native";
 
 const { showSimpleActionSheet, hideActionSheet } = lazyDestructure(() => findByProps("showSimpleActionSheet"));
 const { openAlert, dismissAlert } = lazyDestructure(() => findByProps("openAlert", "dismissAlert"));
-const { AlertModal, AlertActionButton } = lazyDestructure(() => findByProps("AlertModal", "AlertActions"));
 
 type SearchKeywords = Array<string | ((obj: any & {}) => string)>;
 
@@ -55,7 +55,7 @@ function InputAlert(props: { label: string, fetchFn: (url: string) => Promise<vo
 
     return <AlertModal
         title={props.label}
-        content="Type in the source URL you want to install from:"
+        content="Enter the URL of the source you want to install from:"
         extraContent={
             <Stack style={{ marginTop: -12 }}>
                 <TextInput
