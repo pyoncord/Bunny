@@ -347,7 +347,7 @@ export function stopPlugin(id: string) {
     pluginInstances.delete(id);
 }
 
-export async function checkAndRegisterUpdates() {
+export async function registerCorePlugins() {
     await awaitStorage(pluginRepositories, pluginSettings);
 
     const corePlugins = getCorePlugins();
@@ -366,13 +366,6 @@ export async function checkAndRegisterUpdates() {
         manifestToId.set(instance.manifest, id);
         corePluginInstances.set(id, instance);
     }
-
-    // await updateRepository(OFFICIAL_PLUGINS_REPO_URL);
-    // await Promise.allSettled(Object.keys(pluginRepositories).map(async repo => {
-    //     if (repo !== OFFICIAL_PLUGINS_REPO_URL) {
-    //         await updateRepository(repo);
-    //     }
-    // }));
 }
 
 /**

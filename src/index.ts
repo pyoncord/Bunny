@@ -10,7 +10,7 @@ import { removeFile, writeFile } from "@lib/api/native/fs";
 import { isPyonLoader, isThemeSupported } from "@lib/api/native/loader";
 import { FileManager } from "@lib/api/native/modules";
 import { updateFonts } from "@lib/fonts";
-import { initPlugins } from "@lib/plugins";
+import { initPlugins, registerCorePlugins } from "@lib/plugins";
 import { initThemes, patchChatBackground } from "@lib/themes";
 import { logger } from "@lib/utils/logger";
 import initSafeMode from "@ui/safeMode";
@@ -46,7 +46,8 @@ export default async () => {
         initFetchI18nStrings(),
         initSettings(),
         initFixes(),
-        initSafeMode()
+        initSafeMode(),
+        registerCorePlugins()
     ]).then(
         // Push them all to unloader
         u => u.forEach(f => f && lib.unload.push(f))
