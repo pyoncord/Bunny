@@ -11,9 +11,9 @@ import { lazyDestructure } from "@lib/utils/lazy";
 import { Author } from "@lib/utils/types";
 import { findByProps } from "@metro";
 import { NavigationNative } from "@metro/common";
-import { Button, Card, FlashList, Text } from "@metro/common/components";
+import { Button, Card, FlashList, IconButton, Stack, Text } from "@metro/common/components";
 import { ComponentProps } from "react";
-import { View } from "react-native";
+import { Image, View } from "react-native";
 
 import unifyVdPlugin from "./models/vendetta";
 
@@ -34,13 +34,6 @@ export interface UnifiedPluginModel {
 
 const { openAlert } = lazyDestructure(() => findByProps("openAlert", "dismissAlert"));
 const { AlertModal, AlertActions, AlertActionButton } = lazyDestructure(() => findByProps("AlertModal", "AlertActions"));
-
-function navigateToPluginBrowser(navigation: any) {
-    navigation.push("BUNNY_CUSTOM_PAGE", {
-        title: "Plugin Browser",
-        render: React.lazy(() => import("../PluginBrowser")),
-    });
-}
 
 interface PluginPageProps extends Partial<ComponentProps<typeof AddonPage<UnifiedPluginModel>>> {
     useItems: () => unknown[];
@@ -80,32 +73,37 @@ export default function Plugins() {
             const unproxiedPlugins = Object.values(VdPluginManager.plugins).filter(p => !p.id.startsWith(VD_PROXY_PREFIX) && !p.id.startsWith(BUNNY_PROXY_PREFIX));
             if (!unproxiedPlugins.length) return null;
 
-            // TODO: Make this dismissable
-            return <Card style={{ marginVertical: 8, gap: 4 }}>
-                <Text variant="heading-lg/bold">Unproxied Plugins Detected</Text>
-                <Text variant="text-md/medium">Installed plugins from unproxied sources may execute unreviewed code in this app without your knowledge.</Text>
-                <View style={{ marginTop: 8, flexDirection: "row" }}>
-                    <Button
-                        style={{ flexShrink: 1 }}
-                        size="sm"
-                        text="Review"
-                        variant="secondary"
-                        onPress={() => {
-                            navigation.push("BUNNY_CUSTOM_PAGE", {
-                                title: "Unproxied Plugins",
-                                render: () => {
-                                    return <FlashList
-                                        data={unproxiedPlugins}
-                                        contentContainerStyle={{ padding: 8 }}
-                                        ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
-                                        renderItem={({ item: p }: any) => <Card>
-                                            <Text variant="heading-md/semibold">{p.id}</Text>
-                                        </Card>}
-                                    />;
-                                }
-                            });
-                        }}
-                    />
+            return <Card style={{ marginVertical: 12, marginHorizontal: 10 }} border="strong">
+                <View style={{ flex: 1, justifyContent: "center", alignItems: "center", flexDirection: "row" }}>
+                    <View style={{ gap: 6, flexShrink: 1 }}>
+                        <Text variant="heading-md/bold">Unproxied Plugins Found</Text>
+                        <Text variant="text-sm/medium" color="text-muted">
+                            Plugins installed from unproxied sources may run unverified code in this app without your awareness.
+                        </Text>
+                    </View>
+                    <View style={{ marginLeft: "auto" }}>
+                        <IconButton
+                            size="sm"
+                            variant="secondary"
+                            icon={findAssetId("CircleInformationIcon-primary")}
+                            style={{ marginLeft: 8 }}
+                            onPress={() => {
+                                navigation.push("BUNNY_CUSTOM_PAGE", {
+                                    title: "Unproxied Plugins",
+                                    render: () => {
+                                        return <FlashList
+                                            data={unproxiedPlugins}
+                                            contentContainerStyle={{ padding: 8 }}
+                                            ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
+                                            renderItem={({ item: p }: any) => <Card>
+                                                <Text variant="heading-md/semibold">{p.id}</Text>
+                                            </Card>}
+                                        />;
+                                    }
+                                });
+                            }}
+                        />
+                    </View>
                 </View>
             </Card>;
         }}
