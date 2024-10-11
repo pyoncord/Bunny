@@ -9,11 +9,16 @@ export default function PluginInfoActionSheet({ plugin, navigation }: PluginInfo
     plugin.usePluginState();
 
     return <ActionSheet>
-        <ScrollView>
+        <ScrollView contentContainerStyle={{ gap: 8, marginBottom: 12 }}>
             <View style={{ flexDirection: "row", alignItems: "center", paddingVertical: 24 }}>
-                <Text variant="heading-xl/semibold">
-                    {plugin.name}
-                </Text>
+                <View style={{ gap: 4 }}>
+                    <Text variant="heading-xl/semibold">
+                        {plugin.name}
+                    </Text>
+                    <Text variant="text-md/medium" color="text-muted">
+                        {plugin.description}
+                    </Text>
+                </View>
                 <View style={{ marginLeft: "auto" }}>
                     {plugin.getPluginSettingsComponent() && <Button
                         size="md"
@@ -29,6 +34,11 @@ export default function PluginInfoActionSheet({ plugin, navigation }: PluginInfo
                         }}
                     />}
                 </View>
+            </View>
+            <View style={{ flexDirection: "row", justifyContent: "center", alignContent: "center" }}>
+                <Text variant="text-lg/medium">
+                    Oops, you shouldn't see this!
+                </Text>
             </View>
         </ScrollView>
     </ActionSheet>;

@@ -51,6 +51,10 @@ function isExternalPlugin(manifest: t.BunnyPluginManifest): manifest is t.BunnyP
     return "parentRepository" in manifest;
 }
 
+export function isCorePlugin(id: string) {
+    return corePluginInstances.has(id);
+}
+
 export function getId<T extends t.BunnyPluginManifest>(manifest: T): string {
     const id = manifestToId.get(manifest);
     assert(id, manifest?.name ?? "unknown", "getting ID from an unregistered/invalid manifest");

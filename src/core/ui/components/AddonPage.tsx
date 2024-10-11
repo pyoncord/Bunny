@@ -27,19 +27,19 @@ interface AddonPageProps<T extends object, I = any> {
     safeModeHint?: {
         message?: string;
         footer?: ReactNode;
-    }
+    };
     installAction?: {
         label?: string;
         // Ignored when onPress is defined!
         fetchFn?: (url: string) => Promise<void>;
         onPress?: () => void;
-    }
+    };
     CardComponent: ComponentType<CardWrapper<T>>;
     ListHeaderComponent?: ComponentType<any>;
     ListFooterComponent?: ComponentType<any>;
 }
 
-function InputAlert(props: { label: string, fetchFn: (url: string) => Promise<void> }) {
+function InputAlert(props: { label: string, fetchFn: (url: string) => Promise<void>; }) {
     const [value, setValue] = React.useState("");
     const [error, setError] = React.useState("");
     const [isFetching, setIsFetching] = React.useState(false);
@@ -122,7 +122,7 @@ export default function AddonPage<T extends object>({ CardComponent, ...props }:
     }, [props.items, sortFn, search]);
 
     const onInstallPress = useCallback(() => {
-        if (!props.installAction) return () => {};
+        if (!props.installAction) return () => { };
         const { label, onPress, fetchFn } = props.installAction;
         if (fetchFn) {
             openAlert("AddonInputAlert", <InputAlert label={label ?? "Install"} fetchFn={fetchFn} />);
@@ -175,7 +175,7 @@ export default function AddonPage<T extends object>({ CardComponent, ...props }:
                     })}
                 />}
             </View>
-            {props.ListHeaderComponent && <props.ListHeaderComponent />}
+            {props.ListHeaderComponent && !search && <props.ListHeaderComponent />}
         </View>
     );
 
