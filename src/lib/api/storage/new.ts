@@ -193,8 +193,6 @@ export async function preloadStorageIfExists(path: string) {
     if (await backend.exists()) {
         return _loadedPath[path] = await backend.get();
     }
-
-    console.log("no " + path);
 }
 
 export function getPreloadedStorage<T>(path: string): T {
