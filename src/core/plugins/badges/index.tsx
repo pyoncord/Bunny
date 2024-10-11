@@ -1,8 +1,7 @@
 import { addJSXCallback } from "@lib/api/jsx";
 import { after } from "@lib/api/patcher";
 import { findByName } from "@metro";
-import { FC, useEffect, useState } from "react";
-import { ImageSourcePropType, ViewStyle } from "react-native";
+import { useEffect, useState } from "react";
 
 import { defineCorePlugin } from "..";
 
@@ -42,19 +41,21 @@ export default defineCorePlugin({
                 }
             }, [user]);
 
-            badges.forEach((badges, i) => {
-                propHolder[`bunny-${user.userId}-${i}`] = {
-                    source: { uri: badges.url },
-                    id: `bunny-${i}`,
-                    label: badges.label
-                };
+            if (user) {
+                badges.forEach((badges, i) => {
+                    propHolder[`bunny-${user.userId}-${i}`] = {
+                        source: { uri: badges.url },
+                        id: `bunny-${i}`,
+                        label: badges.label
+                    };
 
-                r.push({
-                    id: `bunny-${user.userId}-${i}`,
-                    description: badges.label,
-                    icon: "2ba85e8026a8614b640c2837bcdfe21b",
+                    r.push({
+                        id: `bunny-${user.userId}-${i}`,
+                        description: badges.label,
+                        icon: "_",
+                    });
                 });
-            });
+            }
         });
     }
 });
