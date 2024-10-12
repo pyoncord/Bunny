@@ -12,6 +12,10 @@ export * as metro from "@metro";
 import * as fonts from "./fonts";
 import * as plugins from "./plugins";
 import * as themes from "./themes";
+
+/** @internal */
+export * as _jsx from "react/jsx-runtime";
+
 import { proxyLazy } from "./utils/lazy";
 
 export const managers = proxyLazy(() => {

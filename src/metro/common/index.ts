@@ -2,6 +2,8 @@ import { findByFilePathLazy, findByProps, findByPropsLazy } from "@metro/wrapper
 
 import type { Dispatcher } from "./types/flux";
 
+export * as components from "./components";
+
 // Discord
 export const constants = findByPropsLazy("Fonts", "Permissions");
 export const channels = findByPropsLazy("getVoiceChannelId");
