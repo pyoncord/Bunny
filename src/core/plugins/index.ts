@@ -1,4 +1,4 @@
-import { PluginInstanceInternal } from "@lib/plugins/types";
+import { PluginInstanceInternal } from "@lib/addons/plugins/types";
 
 interface CorePlugin {
     default: PluginInstanceInternal;

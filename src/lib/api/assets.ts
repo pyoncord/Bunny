@@ -4,6 +4,7 @@ import { getImportingModuleId, requireModule } from "@metro/internals/modules";
 
 // TODO: Deprecate this map, make another that maps to an array of assets (Asset[]) instead
 /**
+ * @internal
  * Pitfall: Multiple assets may have the same name, this is fine if we require the asset only for display,\
  * but not when used to get the registered id/index. In some condition, this would break some plugins like HideGiftButton that gets id by name for patching.\
  */

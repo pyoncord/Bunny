@@ -13,18 +13,18 @@ function SettingsSection() {
     return <>
         {Object.keys(registeredSections).map(sect => registeredSections[sect].length > 0 && (
             <LegacyFormSection key={sect} title={sect}>
-            { /** Is usePredicate here safe? */}
-            {registeredSections[sect].filter(r => r.usePredicate?.() ?? true).map((row, i, arr) => (
-                <>
-                    <LegacyFormRow
-                        label={row.title()}
-                        leading={<LegacyFormIcon source={row.icon} />}
-                        trailing={<LegacyFormRow.Arrow label={row.rawTabsConfig?.useTrailing?.() || undefined} />}
-                        onPress={wrapOnPress(row.onPress, navigation, row.render, row.title())}
-                    />
-                    {i !== arr.length - 1 && <LegacyFormDivider />}
-                </>
-            ))}
+                { /** Is usePredicate here safe? */}
+                {registeredSections[sect].filter(r => r.usePredicate?.() ?? true).map((row, i, arr) => (
+                    <>
+                        <LegacyFormRow
+                            label={row.title()}
+                            leading={<LegacyFormIcon source={row.icon} />}
+                            trailing={<LegacyFormRow.Arrow label={row.useTrailing?.() || undefined} />}
+                            onPress={wrapOnPress(row.onPress, navigation, row.render, row.title())}
+                        />
+                        {i !== arr.length - 1 && <LegacyFormDivider />}
+                    </>
+                ))}
             </LegacyFormSection>
         ))}
     </>;

@@ -1,6 +1,6 @@
 import { useProxy } from "@lib/api/storage/new";
-import { disablePlugin, enablePlugin, getId, getPluginSettingsComponent, isPluginEnabled, pluginSettings } from "@lib/plugins";
-import { BunnyPluginManifest } from "@lib/plugins/types";
+import { disablePlugin, enablePlugin, getId, getPluginSettingsComponent, isPluginEnabled, pluginSettings } from "@lib/addons/plugins";
+import { BunnyPluginManifest } from "@lib/addons/plugins/types";
 
 import { UnifiedPluginModel } from "..";
 

@@ -3,12 +3,11 @@ import { getLoaderName, getLoaderVersion, isThemeSupported } from "@lib/api/nati
 import { BundleUpdaterManager, ClientInfoManager, DeviceManager } from "@lib/api/native/modules";
 import { after } from "@lib/api/patcher";
 import { settings } from "@lib/api/settings";
-import { getThemeFromLoader, selectTheme, themes } from "@lib/themes";
+import { getThemeFromLoader, selectTheme, themes } from "@lib/addons/themes";
 import { logger } from "@lib/utils/logger";
 import { showToast } from "@ui/toasts";
 import { version } from "bunny-build-info";
 import { Platform, type PlatformConstants } from "react-native";
-export let socket: WebSocket;
 
 export interface RNConstants extends PlatformConstants {
     // Android
@@ -44,6 +43,7 @@ export async function toggleSafeMode() {
     setTimeout(BundleUpdaterManager.reload, 400);
 }
 
+let socket: WebSocket;
 export function connectToDebugger(url: string) {
     if (socket !== undefined && socket.readyState !== WebSocket.CLOSED) socket.close();
 

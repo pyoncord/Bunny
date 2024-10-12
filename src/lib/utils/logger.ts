@@ -1,6 +1,6 @@
 import { findByNameLazy } from "@metro/wrappers";
 
-export type LoggerFunction = (...messages: any[]) => void;
+type LoggerFunction = (...messages: any[]) => void;
 export interface Logger {
     log: LoggerFunction;
     info: LoggerFunction;
@@ -11,5 +11,5 @@ export interface Logger {
     verbose: LoggerFunction;
 }
 
-export const DiscordLogger = findByNameLazy("Logger");
-export const logger: Logger = new DiscordLogger("Bunny");
+export const LoggerClass = findByNameLazy("Logger");
+export const logger: Logger = new LoggerClass("Bunny");

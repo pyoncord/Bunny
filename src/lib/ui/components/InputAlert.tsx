@@ -1,4 +1,3 @@
-import { ButtonColors } from "@lib/utils/types";
 import { LegacyAlert, LegacyFormInput } from "@metro/common/components";
 import { findByPropsLazy } from "@metro/wrappers";
 
@@ -7,7 +6,7 @@ const Alerts = findByPropsLazy("openLazy", "close");
 export interface InputAlertProps {
     title?: string;
     confirmText?: string;
-    confirmColor?: ButtonColors;
+    confirmColor?: string;
     onConfirm: (input: string) => (void | Promise<void>);
     cancelText?: string;
     placeholder?: string;

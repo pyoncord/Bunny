@@ -1,4 +1,3 @@
-import { ButtonColors } from "@lib/utils/types";
 import { findByPropsLazy } from "@metro/wrappers";
 import InputAlert, { InputAlertProps } from "@ui/components/InputAlert";
 
@@ -13,7 +12,7 @@ export interface ConfirmationAlertOptions {
     title?: string;
     content: string | JSX.Element | (string | JSX.Element)[];
     confirmText?: string;
-    confirmColor?: ButtonColors;
+    confirmColor?: string;
     onConfirm: () => void;
     secondaryConfirmText?: string;
     onConfirmSecondary?: () => void;

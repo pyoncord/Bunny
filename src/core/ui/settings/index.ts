@@ -18,9 +18,7 @@ export default function initSettings() {
                 title: () => Strings.BUNNY,
                 icon: { uri: PyoncordIcon },
                 render: () => import("@core/ui/settings/pages/General"),
-                rawTabsConfig: {
-                    useTrailing: () => `(${version})`
-                }
+                useTrailing: () => `(${version})`
             },
             {
                 key: "BUNNY_PLUGINS",

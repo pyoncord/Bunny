@@ -3,14 +3,14 @@ import { VdPluginManager } from "@core/vendetta/plugins";
 import { findAssetId } from "@lib/api/assets";
 import { isThemeSupported } from "@lib/api/native/loader";
 import { after, instead } from "@lib/api/patcher";
-import { installTheme } from "@lib/themes";
-import { THEMES_CHANNEL_ID, VD_PROXY_PREFIX } from "@lib/utils/constants";
+import { installTheme } from "@lib/addons/themes";
+import { VD_THEMES_CHANNEL_ID, VD_PROXY_PREFIX } from "@lib/utils/constants";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { channels, url } from "@metro/common";
 import { byMutableProp } from "@metro/filters";
 import { findExports } from "@metro/finders";
 import { findByProps, findByPropsLazy } from "@metro/wrappers";
-import { showConfirmationAlert } from "@ui/alerts";
+import { showConfirmationAlert } from "@core/vendetta/alerts";
 import { showToast } from "@ui/toasts";
 
 const showSimpleActionSheet = findExports(byMutableProp("showSimpleActionSheet"));
@@ -66,7 +66,7 @@ export default () => {
             if (!urlType) return orig.apply(this, args);
 
             // Make clicking on theme links only work in #themes, should there be a theme proxy in the future, this can be removed.
-            if (urlType === "theme" && getChannel(getChannelId())?.parent_id !== THEMES_CHANNEL_ID) return orig.apply(this, args);
+            if (urlType === "theme" && getChannel(getChannelId())?.parent_id !== VD_THEMES_CHANNEL_ID) return orig.apply(this, args);
 
             showConfirmationAlert({
                 title: Strings.HOLD_UP,

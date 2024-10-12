@@ -3,9 +3,9 @@ import AddonPage from "@core/ui/components/AddonPage";
 import ThemeCard from "@core/ui/settings/pages/Themes/ThemeCard";
 import { settings } from "@lib/api/settings";
 import { useProxy } from "@lib/api/storage";
-import { installTheme, Theme, themes } from "@lib/themes";
-import { Author } from "@lib/utils/types";
+import { installTheme, Theme, themes } from "@lib/addons/themes";
 import { Button } from "@metro/common/components";
+import { Author } from "@lib/addons/types";
 
 export default function Themes() {
     useProxy(settings);

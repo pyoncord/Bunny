@@ -1,4 +1,4 @@
-import { color } from "@lib/themes";
+import { color } from "@lib/addons/themes";
 import { constants } from "@metro/common";
 import { findByStoreNameLazy } from "@metro/wrappers";
 

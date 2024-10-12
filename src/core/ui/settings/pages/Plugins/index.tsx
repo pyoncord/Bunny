@@ -9,7 +9,6 @@ import { useProxy as useNewProxy } from "@lib/api/storage/new";
 import { showToast } from "@lib/ui/toasts";
 import { BUNNY_PROXY_PREFIX, VD_PROXY_PREFIX } from "@lib/utils/constants";
 import { lazyDestructure } from "@lib/utils/lazy";
-import { Author } from "@lib/utils/types";
 import { findByProps } from "@metro";
 import { NavigationNative, tokens } from "@metro/common";
 import { Card, FlashList, IconButton, PressableScale, Stack, Text } from "@metro/common/components";
@@ -17,9 +16,10 @@ import { ComponentProps } from "react";
 import { Image, View } from "react-native";
 
 import unifyVdPlugin from "./models/vendetta";
-import { isCorePlugin, isPluginInstalled, pluginSettings, registeredPlugins } from "@lib/plugins";
+import { isCorePlugin, isPluginInstalled, pluginSettings, registeredPlugins } from "@lib/addons/plugins";
 import unifyBunnyPlugin from "./models/bunny";
 import { createStyles } from "@lib/ui/styles";
+import { Author } from "@lib/addons/types";
 
 const useStyles = createStyles({
     xButton: {
@@ -33,7 +33,7 @@ export interface UnifiedPluginModel {
     id: string;
     name: string;
     description?: string;
-    authors?: Array<Author | string>;
+    authors?: Author;
     icon?: string;
 
     isEnabled(): boolean;

@@ -23,6 +23,7 @@ export function patchTabsUI(unpatches: (() => void | boolean)[]) {
                 title: row.title,
                 icon: row.icon,
                 usePredicate: row.usePredicate,
+                useTrailing: row.useTrailing,
                 onPress: wrapOnPress(row.onPress, null, row.render, row.title()),
                 withArrow: true,
                 ...row.rawTabsConfig

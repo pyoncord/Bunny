@@ -6,15 +6,15 @@ import patcher from "@lib/api/patcher";
 import { loaderConfig, settings } from "@lib/api/settings";
 import * as storage from "@lib/api/storage";
 import { createStorage } from "@lib/api/storage";
-import * as themes from "@lib/themes";
+import * as themes from "@lib/addons/themes";
 import * as utils from "@lib/utils";
 import { cyrb64Hash } from "@lib/utils/cyrb64";
-import { DiscordLogger } from "@lib/utils/logger";
+import { LoggerClass } from "@lib/utils/logger";
 import * as metro from "@metro";
 import * as common from "@metro/common";
 import { Forms } from "@metro/common/components";
 import * as commonComponents from "@metro/common/components";
-import * as alerts from "@ui/alerts";
+import * as alerts from "@core/vendetta/alerts";
 import * as color from "@ui/color";
 import * as components from "@ui/components";
 import { createThemedStyleSheet } from "@ui/styles";
@@ -34,7 +34,7 @@ export async function createVdPluginObject(plugin: VendettaPlugin) {
             // Wrapping this with wrapSync is NOT an option.
             storage: await createStorage<Record<string, any>>(storage.createMMKVBackend(plugin.id)),
         },
-        logger: new DiscordLogger(`Bunny » ${plugin.manifest.name}`),
+        logger: new LoggerClass(`Bunny » ${plugin.manifest.name}`),
     };
 }
 

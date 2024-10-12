@@ -1,10 +1,9 @@
 import { Strings } from "@core/i18n";
-import { Nullish } from "@lib/utils/types";
 import { React } from "@metro/common";
 import { Button, LegacyFormText } from "@metro/common/components";
 import { Codeblock } from "@ui/components";
 import { createThemedStyleSheet } from "@ui/styles";
-import { ScrollView } from "react-native";
+import { Falsy, ScrollView } from "react-native";
 
 type ErrorBoundaryState = {
     hasErr: false;
@@ -14,7 +13,7 @@ type ErrorBoundaryState = {
 };
 
 export interface ErrorBoundaryProps {
-    children: JSX.Element | Nullish | (JSX.Element | Nullish)[];
+    children: JSX.Element | Falsy | (JSX.Element | Falsy)[];
 }
 
 const styles = createThemedStyleSheet({

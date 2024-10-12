@@ -3,7 +3,7 @@
 // Largely inspired by MurmurHash2/3, but with a focus on speed/simplicity.
 // See https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript/52171480#52171480
 // https://github.com/bryc/code/blob/master/jshash/experimental/cyrb53.js
-export function cyrb64(str: string, seed = 0) {
+export default function cyrb64(str: string, seed = 0) {
     let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
     for (let i = 0, ch; i < str.length; i++) {
         ch = str.charCodeAt(i);

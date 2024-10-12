@@ -1,9 +1,9 @@
+import { Author } from "@lib/addons/types";
 import { settings } from "@lib/api/settings";
 import { awaitStorage, createMMKVBackend, createStorage, purgeStorage, wrapSync } from "@lib/api/storage";
 import { safeFetch } from "@lib/utils";
 import { BUNNY_PROXY_PREFIX, VD_PROXY_PREFIX } from "@lib/utils/constants";
-import { DiscordLogger, logger } from "@lib/utils/logger";
-import { Author } from "@lib/utils/types";
+import { LoggerClass, logger } from "@lib/utils/logger";
 
 type EvaledPlugin = {
     onLoad?(): void;
@@ -39,7 +39,9 @@ export const VdPluginManager = {
     plugins,
     async pluginFetch(url: string) {
         if (url.startsWith(VD_PROXY_PREFIX)) {
-            url = url.replace(VD_PROXY_PREFIX, BUNNY_PROXY_PREFIX);
+            url = url
+                .replace("https://bunny-mod.github.io/plugins-proxy", BUNNY_PROXY_PREFIX)
+                .replace(VD_PROXY_PREFIX, BUNNY_PROXY_PREFIX);
         }
 
         return await safeFetch(url, { cache: "no-store" });
@@ -61,7 +63,7 @@ export const VdPluginManager = {
 
         if (existingPlugin?.manifest.hash !== pluginManifest.hash) {
             try {
-            // by polymanifest spec, plugins should always specify their main file, but just in case
+                // by polymanifest spec, plugins should always specify their main file, but just in case
                 pluginJs = await (await this.pluginFetch(id + (pluginManifest.main || "index.js"))).text();
             } catch { } // Empty catch, checked below
         }
@@ -96,7 +98,7 @@ export const VdPluginManager = {
                 // Wrapping this with wrapSync is NOT an option.
                 storage: await createStorage<Record<string, any>>(createMMKVBackend(plugin.id)),
             },
-            logger: new DiscordLogger(`Bunny » ${plugin.manifest.name}`),
+            logger: new LoggerClass(`Bunny » ${plugin.manifest.name}`),
         };
         const pluginString = `vendetta=>{return ${plugin.js}}\n//# sourceURL=${plugin.id}`;
 
@@ -166,7 +168,7 @@ export const VdPluginManager = {
         const allIds = Object.keys(plugins);
 
         if (!settings.safeMode?.enabled) {
-        // Loop over any plugin that is enabled, update it if allowed, then start it.
+            // Loop over any plugin that is enabled, update it if allowed, then start it.
             await Promise.allSettled(allIds.filter(pl => plugins[pl].enabled).map(async pl => (plugins[pl].update && await this.fetchPlugin(pl).catch((e: Error) => logger.error(e.message)), await this.startPlugin(pl))));
             // Wait for the above to finish, then update all disabled plugins that are allowed to.
             allIds.filter(pl => !plugins[pl].enabled && plugins[pl].update).forEach(pl => this.fetchPlugin(pl));

@@ -2,22 +2,26 @@ import "../global.d.ts"; // eslint-disable-line import-alias/import-alias
 import "../modules.d.ts"; // eslint-disable-line import-alias/import-alias
 
 export * as api from "./api";
-export * as fonts from "./fonts";
-export * as plugins from "./plugins";
-export * as themes from "./themes";
+export * as fonts from "./addons/fonts/index.js";
+export * as plugins from "./addons/plugins/index.js";
+export * as themes from "./addons/themes/index.js";
 export * as ui from "./ui";
 export * as utils from "./utils";
 export * as metro from "@metro";
 
-import * as fonts from "./fonts";
-import * as plugins from "./plugins";
-import * as themes from "./themes";
+import * as fonts from "./addons/fonts/index.js";
+import * as plugins from "./addons/plugins/index.js";
+import * as themes from "./addons/themes/index.js";
 
 /** @internal */
 export * as _jsx from "react/jsx-runtime";
 
 import { proxyLazy } from "./utils/lazy";
 
+/**
+ * @internal
+ * @deprecated Moved to top level (bunny.*)
+ */
 export const managers = proxyLazy(() => {
     console.warn("bunny.managers.* is deprecated, and moved the top level (bunny.*). bunny.managers will be eventually removed soon");
 

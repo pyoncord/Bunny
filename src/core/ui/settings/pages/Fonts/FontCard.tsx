@@ -3,14 +3,13 @@ import { CardWrapper } from "@core/ui/components/AddonCard";
 import { findAssetId } from "@lib/api/assets";
 import { BundleUpdaterManager } from "@lib/api/native/modules";
 import { useProxy } from "@lib/api/storage";
-import { FontDefinition, fonts, selectFont } from "@lib/fonts";
+import { FontDefinition, fonts, selectFont } from "@lib/addons/fonts";
 import { lazyDestructure } from "@lib/utils/lazy";
-import { ButtonColors } from "@lib/utils/types";
 import { findByProps } from "@metro";
 import { NavigationNative, tokens } from "@metro/common";
 import { Button, Card, IconButton, Stack, Text } from "@metro/common/components";
 import * as Skia from "@shopify/react-native-skia";
-import { showConfirmationAlert } from "@ui/alerts";
+import { showConfirmationAlert } from "@core/vendetta/alerts";
 import { TextStyleSheet } from "@ui/styles";
 import { useMemo } from "react";
 import { View } from "react-native";
@@ -104,7 +103,7 @@ export default function FontCard({ item: font }: CardWrapper<FontDefinition>) {
                                         content: "Reload Discord to apply changes?",
                                         confirmText: Strings.RELOAD,
                                         cancelText: Strings.CANCEL,
-                                        confirmColor: ButtonColors.RED,
+                                        confirmColor: "red",
                                         onConfirm: BundleUpdaterManager.reload
                                     });
                                 }}

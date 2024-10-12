@@ -12,6 +12,7 @@ export interface RowConfig {
     render?: Parameters<typeof lazy>[0];
     icon?: ImageURISource | number;
     usePredicate?: () => boolean,
+    useTrailing?: () => string | JSX.Element,
     rawTabsConfig?: Record<string, any>;
 }
 

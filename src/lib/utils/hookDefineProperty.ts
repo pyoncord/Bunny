@@ -2,7 +2,7 @@ import { LiteralUnion } from "type-fest";
 
 type KeyOfOrAny<P, T extends object> = P extends keyof T ? T[P] : any;
 
-export function hookDefineProperty<
+export default function hookDefineProperty<
     T extends object,
     P extends LiteralUnion<keyof T, PropertyKey>
 >(target: T, property: LiteralUnion<keyof T, PropertyKey>, cb: (val: KeyOfOrAny<P, T>) => KeyOfOrAny<P, T>) {

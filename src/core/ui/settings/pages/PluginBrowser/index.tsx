@@ -1,6 +1,6 @@
 import { findAssetId } from "@lib/api/assets";
-import { installPlugin, isPluginInstalled, uninstallPlugin } from "@lib/plugins";
-import { BunnyPluginManifest } from "@lib/plugins/types";
+import { installPlugin, isPluginInstalled, uninstallPlugin } from "@lib/addons/plugins";
+import { BunnyPluginManifest } from "@lib/addons/plugins/types";
 import { showToast } from "@lib/ui/toasts";
 import { safeFetch } from "@lib/utils";
 import { OFFICIAL_PLUGINS_REPO_URL } from "@lib/utils/constants";
@@ -41,7 +41,7 @@ async function* getManifests(repoUrl: string) {
 
 function InstallButton(props: { id: string; }) {
     const [installed, setInstalled] = useState(isPluginInstalled(props.id));
-    const installationState = useMutation<void, Error, { install: boolean }>({
+    const installationState = useMutation<void, Error, { install: boolean; }>({
         mutationFn: async ({ install }) => {
             await (install ? installPlugin : uninstallPlugin)(props.id, true);
         },
@@ -63,11 +63,11 @@ function InstallButton(props: { id: string; }) {
     />;
 }
 
-function TrailingButtons(props: { id: string }) {
+function TrailingButtons(props: { id: string; }) {
     return <Stack spacing={8} direction="horizontal">
         <IconButton
             size="sm"
-            onPress={() => {}}
+            onPress={() => { }}
             variant="secondary"
             icon={findAssetId("CircleInformationIcon")}
         />

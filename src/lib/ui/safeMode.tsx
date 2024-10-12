@@ -4,7 +4,6 @@ import { DeviceManager } from "@lib/api/native/modules";
 import { after } from "@lib/api/patcher";
 import { settings } from "@lib/api/settings";
 import { lazyDestructure } from "@lib/utils/lazy";
-import { ButtonColors } from "@lib/utils/types";
 import { Button, CompatButton, SafeAreaView } from "@metro/common/components";
 import { _lazyContextSymbol } from "@metro/lazy";
 import { LazyModuleContext } from "@metro/types";
@@ -91,7 +90,7 @@ export default () => after.await("render", getErrorBoundaryContext(), function (
     const buttons: Button[] = [
         { text: Strings.RELOAD_DISCORD, onPress: this.handleReload },
         ...!settings.safeMode?.enabled ? [{ text: Strings.RELOAD_IN_SAFE_MODE, onPress: toggleSafeMode }] : [],
-        { text: Strings.RETRY_RENDER, color: ButtonColors.RED, onPress: () => this.setState({ info: null, error: null }) },
+        { text: Strings.RETRY_RENDER, color: "red", onPress: () => this.setState({ info: null, error: null }) },
     ];
 
     return (
@@ -130,7 +129,7 @@ export default () => after.await("render", getErrorBoundaryContext(), function (
 
                         return <CompatButton
                             text={button.text}
-                            color={button.color ?? ButtonColors.BRAND}
+                            color={button.color ?? "brand"}
                             size={button.size ?? "small"}
                             onPress={button.onPress}
                             style={{

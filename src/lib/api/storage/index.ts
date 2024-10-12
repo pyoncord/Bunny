@@ -6,7 +6,6 @@ const syncAwaitSymbol = Symbol.for("vendetta.storage.accessor");
 
 export function createProxy(target: any = {}): { proxy: any; emitter: Emitter; } {
     const emitter = new Emitter();
-    const parentTarget = target;
 
     const childrens = new WeakMap<any, any>();
     const proxiedChildrenSet = new WeakSet<any>();

@@ -3,7 +3,7 @@ import AddonPage from "@core/ui/components/AddonPage";
 import FontEditor from "@core/ui/settings/pages/Fonts/FontEditor";
 import { settings } from "@lib/api/settings";
 import { useProxy } from "@lib/api/storage";
-import { FontDefinition, fonts } from "@lib/fonts";
+import { FontDefinition, fonts } from "@lib/addons/fonts";
 import { NavigationNative } from "@metro/common";
 
 import FontCard from "./FontCard";

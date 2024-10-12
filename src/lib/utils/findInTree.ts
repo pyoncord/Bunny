@@ -15,7 +15,7 @@ function treeSearch(tree: SearchTree, filter: SearchFilter, opts: Required<FindI
 
     try {
         if (filter(tree)) return tree;
-    } catch {}
+    } catch { }
 
     if (Array.isArray(tree)) {
         for (const item of tree) {
@@ -24,7 +24,7 @@ function treeSearch(tree: SearchTree, filter: SearchFilter, opts: Required<FindI
             try {
                 const found = treeSearch(item, filter, opts, depth + 1);
                 if (found) return found;
-            } catch {}
+            } catch { }
         }
     } else if (typeof tree === "object") {
         for (const key of Object.keys(tree)) {
@@ -35,12 +35,12 @@ function treeSearch(tree: SearchTree, filter: SearchFilter, opts: Required<FindI
             try {
                 const found = treeSearch(tree[key], filter, opts, depth + 1);
                 if (found) return found;
-            } catch {}
+            } catch { }
         }
     }
 }
 
-export const findInTree = (
+export default function findInTree(
     tree: SearchTree,
     filter: SearchFilter,
     {
@@ -48,4 +48,6 @@ export const findInTree = (
         ignore = [],
         maxDepth = 100
     }: FindInTreeOptions = {},
-): any | undefined => treeSearch(tree, filter, { walkable, ignore, maxDepth }, 0);
+): any | undefined {
+    return treeSearch(tree, filter, { walkable, ignore, maxDepth }, 0);
+};
