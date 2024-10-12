@@ -21,7 +21,6 @@ export function createProxy(target: any = {}): { proxy: any; emitter: Emitter; }
 
                 if (value !== undefined && value !== null) {
                     emitter.emit("GET", {
-                        parent: parentTarget,
                         path: newPath,
                         value,
                     });
@@ -56,7 +55,6 @@ export function createProxy(target: any = {}): { proxy: any; emitter: Emitter; }
                 }
 
                 emitter.emit("SET", {
-                    parent: parentTarget,
                     path: [...path, prop],
                     value: target[prop],
                 });
@@ -70,7 +68,6 @@ export function createProxy(target: any = {}): { proxy: any; emitter: Emitter; }
                 if (success)
                     emitter.emit("DEL", {
                         value,
-                        parent: parentTarget,
                         path: [...path, prop],
                     });
                 return success;

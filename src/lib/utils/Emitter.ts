@@ -8,8 +8,7 @@ export type EmitterEvent = "SET" | "GET" | "DEL";
 
 export interface EmitterListenerData {
     path: string[];
-    value: any;
-    parent: any;
+    value?: any;
 }
 
 export type EmitterListener = (
@@ -17,7 +16,7 @@ export type EmitterListener = (
     data: EmitterListenerData | any
 ) => any;
 
-export type EmitterListeners = Record<string, Set<EmitterListener>>
+export type EmitterListeners = Record<string, Set<EmitterListener>>;
 
 export class Emitter {
     listeners = Object.values(Events).reduce<EmitterListeners>(
