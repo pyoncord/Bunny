@@ -351,9 +351,24 @@ export function stopPlugin(id: string) {
     pluginInstances.delete(id);
 }
 
-export async function registerCorePlugins() {
+async function updateAllRepository() {
+    try {
+        await updateRepository(OFFICIAL_PLUGINS_REPO_URL);
+    } catch (error) {
+        console.error("Failed to update official plugins repository", error);
+    }
+
+    await Promise.allSettled(Object.keys(pluginRepositories).map(async repo => {
+        if (repo !== OFFICIAL_PLUGINS_REPO_URL) {
+            await updateRepository(repo);
+        }
+    }));
+}
+
+export async function updatePlugins() {
     await awaitStorage(pluginRepositories, pluginSettings);
 
+    // Register core plugins
     const corePlugins = getCorePlugins();
     for (const id in corePlugins) {
         const {
@@ -370,6 +385,8 @@ export async function registerCorePlugins() {
         manifestToId.set(instance.manifest, id);
         corePluginInstances.set(id, instance);
     }
+
+    await updateAllRepository();
 }
 
 /**

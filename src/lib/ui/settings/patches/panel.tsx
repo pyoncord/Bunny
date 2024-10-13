@@ -1,7 +1,7 @@
 import { after } from "@lib/api/patcher";
 import { findInReactTree } from "@lib/utils";
 import { i18n, NavigationNative } from "@metro/common";
-import { LegacyFormIcon, LegacyFormRow, LegacyFormSection, LegacyFormDivider } from "@metro/common/components";
+import { LegacyFormDivider,LegacyFormIcon, LegacyFormRow, LegacyFormSection } from "@metro/common/components";
 import { findByNameLazy } from "@metro/wrappers";
 import { registeredSections } from "@ui/settings";
 

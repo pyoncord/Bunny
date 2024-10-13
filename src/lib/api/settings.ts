@@ -1,5 +1,5 @@
-import { getLoaderConfigPath } from "@lib/api/native/loader";
 import { createFileBackend, createMMKVBackend, createStorage, wrapSync } from "@core/vendetta/storage";
+import { getLoaderConfigPath } from "@lib/api/native/loader";
 
 export interface Settings {
     debuggerUrl: string;

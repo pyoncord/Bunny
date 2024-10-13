@@ -50,4 +50,4 @@ export default function findInTree(
     }: FindInTreeOptions = {},
 ): any | undefined {
     return treeSearch(tree, filter, { walkable, ignore, maxDepth }, 0);
-};
+}

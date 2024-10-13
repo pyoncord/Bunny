@@ -1,7 +1,7 @@
 import { CardWrapper } from "@core/ui/components/AddonCard";
+import { useProxy } from "@core/vendetta/storage";
 import { findAssetId } from "@lib/api/assets";
 import { settings } from "@lib/api/settings";
-import { useProxy } from "@core/vendetta/storage";
 import AlertModal, { AlertActionButton } from "@lib/ui/components/wrappers/AlertModal";
 import isValidHttpUrl from "@lib/utils/isValidHttpUrl";
 import { lazyDestructure } from "@lib/utils/lazy";

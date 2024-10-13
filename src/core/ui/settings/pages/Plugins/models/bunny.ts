@@ -1,8 +1,8 @@
 import { disablePlugin, enablePlugin, getId, getPluginSettingsComponent, isPluginEnabled, pluginSettings } from "@lib/addons/plugins";
 import { BunnyPluginManifest } from "@lib/addons/plugins/types";
+import { useObservable } from "@lib/api/storage";
 
 import { UnifiedPluginModel } from "..";
-import { useObservable } from "@lib/api/storage";
 
 export default function unifyBunnyPlugin(manifest: BunnyPluginManifest): UnifiedPluginModel {
     return {

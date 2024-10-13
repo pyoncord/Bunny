@@ -1,5 +1,5 @@
-import { onJsxCreate } from "@lib/api/react/jsx";
 import { after } from "@lib/api/patcher";
+import { onJsxCreate } from "@lib/api/react/jsx";
 import { findByName } from "@metro";
 import { useEffect, useState } from "react";
 

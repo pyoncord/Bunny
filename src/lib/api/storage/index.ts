@@ -1,6 +1,6 @@
+import { Emitter } from "@core/vendetta/Emitter";
 import { Observable, ObserverOptions } from "@gullerya/object-observer";
 import { fileExists, readFile, removeFile, writeFile } from "@lib/api/native/fs";
-import { Emitter } from "@core/vendetta/Emitter";
 import { debounce } from "es-toolkit";
 
 const storageInitErrorSymbol = Symbol.for("bunny.storage.initError");

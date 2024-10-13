@@ -1,11 +1,11 @@
 import { formatString, Strings } from "@core/i18n";
 import AddonCard, { CardWrapper } from "@core/ui/components/AddonCard";
-import { findAssetId } from "@lib/api/assets";
-import { settings } from "@lib/api/settings";
+import { showConfirmationAlert } from "@core/vendetta/alerts";
 import { useProxy } from "@core/vendetta/storage";
 import { applyTheme, fetchTheme, removeTheme, selectTheme, Theme, themes } from "@lib/addons/themes";
+import { findAssetId } from "@lib/api/assets";
+import { settings } from "@lib/api/settings";
 import { clipboard } from "@metro/common";
-import { showConfirmationAlert } from "@core/vendetta/alerts";
 import { showToast } from "@ui/toasts";
 
 function selectAndApply(value: boolean, theme: Theme) {

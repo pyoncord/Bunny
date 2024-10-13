@@ -1,6 +1,6 @@
 import { createStorage } from "@core/vendetta/storage";
+import { Author } from "@lib/addons/types";
 import { Logger } from "@lib/utils/logger";
-import { Author } from "../types";
 
 export interface PluginRepo {
     [id: string]: {

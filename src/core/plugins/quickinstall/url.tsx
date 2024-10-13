@@ -1,16 +1,16 @@
 import { formatString, Strings } from "@core/i18n";
+import { showConfirmationAlert } from "@core/vendetta/alerts";
 import { VdPluginManager } from "@core/vendetta/plugins";
+import { installTheme } from "@lib/addons/themes";
 import { findAssetId } from "@lib/api/assets";
 import { isThemeSupported } from "@lib/api/native/loader";
 import { after, instead } from "@lib/api/patcher";
-import { installTheme } from "@lib/addons/themes";
-import { VD_THEMES_CHANNEL_ID, VD_PROXY_PREFIX } from "@lib/utils/constants";
+import { VD_PROXY_PREFIX,VD_THEMES_CHANNEL_ID } from "@lib/utils/constants";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { channels, url } from "@metro/common";
 import { byMutableProp } from "@metro/filters";
 import { findExports } from "@metro/finders";
 import { findByProps, findByPropsLazy } from "@metro/wrappers";
-import { showConfirmationAlert } from "@core/vendetta/alerts";
 import { showToast } from "@ui/toasts";
 
 const showSimpleActionSheet = findExports(byMutableProp("showSimpleActionSheet"));

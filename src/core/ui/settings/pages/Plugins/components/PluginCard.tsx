@@ -5,7 +5,7 @@ import { NavigationNative, tokens } from "@metro/common";
 import { Card, IconButton, Stack, TableSwitch, Text } from "@metro/common/components";
 import { showSheet } from "@ui/sheets";
 import chroma from "chroma-js";
-import { createContext, memo, useContext, useMemo } from "react";
+import { createContext, useContext, useMemo } from "react";
 import { Image, View } from "react-native";
 
 import { UnifiedPluginModel } from "..";

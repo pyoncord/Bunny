@@ -1,8 +1,8 @@
 import { Strings } from "@core/i18n";
 import Version from "@core/ui/settings/pages/General/Version";
+import { useProxy } from "@core/vendetta/storage";
 import { getDebugInfo } from "@lib/api/debug";
 import { settings } from "@lib/api/settings";
-import { useProxy } from "@core/vendetta/storage";
 import { Stack, TableRowGroup } from "@metro/common/components";
 import { Platform, ScrollView } from "react-native";
 

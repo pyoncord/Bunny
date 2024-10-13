@@ -100,7 +100,6 @@ function onModuleRequire(moduleExports: any, id: Metro.ModuleID) {
         patchedNativeComponentRegistry = true;
     }
 
-
     // Hook DeveloperExperimentStore
     if (moduleExports?.default?.constructor?.displayName === "DeveloperExperimentStore") {
         moduleExports.default = new Proxy(moduleExports.default, {

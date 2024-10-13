@@ -1,11 +1,11 @@
 import { Strings } from "@core/i18n";
 import { VdPluginManager } from "@core/vendetta/plugins";
+import { useProxy } from "@core/vendetta/storage";
+import { installTheme, removeTheme, themes } from "@lib/addons/themes";
 import { findAssetId } from "@lib/api/assets";
 import { isThemeSupported } from "@lib/api/native/loader";
 import { after } from "@lib/api/patcher";
-import { useProxy } from "@core/vendetta/storage";
-import { installTheme, removeTheme, themes } from "@lib/addons/themes";
-import { VD_DISCORD_SERVER_ID, HTTP_REGEX_MULTI, VD_PLUGINS_CHANNEL_ID, VD_THEMES_CHANNEL_ID, VD_PROXY_PREFIX } from "@lib/utils/constants";
+import { HTTP_REGEX_MULTI, VD_DISCORD_SERVER_ID, VD_PLUGINS_CHANNEL_ID, VD_PROXY_PREFIX, VD_THEMES_CHANNEL_ID } from "@lib/utils/constants";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { Button } from "@metro/common/components";
 import { findByProps, findByPropsLazy } from "@metro/wrappers";

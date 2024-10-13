@@ -1,10 +1,10 @@
 import { formatString, Strings } from "@core/i18n";
+import { showConfirmationAlert } from "@core/vendetta/alerts";
 import { VdPluginManager } from "@core/vendetta/plugins";
-import { findAssetId } from "@lib/api/assets";
 import { purgeStorage } from "@core/vendetta/storage";
+import { findAssetId } from "@lib/api/assets";
 import { clipboard } from "@metro/common";
 import { ActionSheet, ActionSheetRow, Button, TableRow, Text } from "@metro/common/components";
-import { showConfirmationAlert } from "@core/vendetta/alerts";
 import { hideSheet } from "@ui/sheets";
 import { showToast } from "@ui/toasts";
 import { ScrollView, View } from "react-native";

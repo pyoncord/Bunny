@@ -229,7 +229,7 @@ export const createFileBackend = (file: string, defaultData = {}, migratePromise
             await FileManager.writeFile("documents", filePathFixer(file), JSON.stringify(defaultData), "utf8");
             return JSON.parse(await FileManager.readFile(path, "utf8"));
         },
-        set: async (data) => {
+        set: async data => {
             await migratePromise;
             await FileManager.writeFile("documents", filePathFixer(file), JSON.stringify(data), "utf8");
         }

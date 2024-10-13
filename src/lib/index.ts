@@ -1,10 +1,10 @@
 import "../global.d.ts"; // eslint-disable-line import-alias/import-alias
 import "../modules.d.ts"; // eslint-disable-line import-alias/import-alias
 
-export * as api from "./api";
 export * as fonts from "./addons/fonts/index.js";
 export * as plugins from "./addons/plugins/index.js";
 export * as themes from "./addons/themes/index.js";
+export * as api from "./api";
 export * as ui from "./ui";
 export * as utils from "./utils";
 export * as metro from "@metro";
