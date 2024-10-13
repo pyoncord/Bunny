@@ -2,7 +2,7 @@ import { Strings } from "@core/i18n";
 import AddonPage from "@core/ui/components/AddonPage";
 import FontEditor from "@core/ui/settings/pages/Fonts/FontEditor";
 import { settings } from "@lib/api/settings";
-import { useProxy } from "@lib/api/storage";
+import { useProxy } from "@core/vendetta/storage";
 import { FontDefinition, fonts } from "@lib/addons/fonts";
 import { NavigationNative } from "@metro/common";
 

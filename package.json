@@ -32,6 +32,7 @@
         "yargs-parser": "^21.1.1"
     },
     "dependencies": {
+        "@gullerya/object-observer": "^6.1.3",
         "@shopify/react-native-skia": "^1.3.8",
         "@tanstack/react-query": "^5.51.16",
         "@types/chroma-js": "~2.4.4",

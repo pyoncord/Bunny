@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@gullerya/object-observer':
+        specifier: ^6.1.3
+        version: 6.1.3
       '@shopify/react-native-skia':
         specifier: ^1.3.8
         version: 1.3.13(react-native-reanimated@3.15.3(@babel/core@7.25.2)(react-native@0.75.3(@babel/core@7.25.2)(@babel/preset-env@7.25.4(@babel/core@7.25.2))(@types/react@18.2.60)(react@18.3.1)(typescript@5.6.2))(react@18.3.1))(react-native@0.75.3(@babel/core@7.25.2)(@babel/preset-env@7.25.4(@babel/core@7.25.2))(@types/react@18.2.60)(react@18.3.1)(typescript@5.6.2))(react@18.3.1)
@@ -959,6 +962,9 @@ packages:
 
   '@formatjs/intl-localematcher@0.5.4':
     resolution: {integrity: sha512-zTwEpWOzZ2CiKcB93BLngUX59hQkuZjT2+SAQEscSm52peDW/getsawMcWF1rGRpMCX6D7nSJA3CzJ8gn13N/g==}
+
+  '@gullerya/object-observer@6.1.3':
+    resolution: {integrity: sha512-omJ9YpdZf/QhrzPDGV+75Gbu1Aw3Q6wP8aqNqg1Hvr3BYFh22I43Pf3MOmQHG9qayDZYFiyhZs1LJbUaO1A/YA==}
 
   '@hapi/hoek@9.3.0':
     resolution: {integrity: sha512-/c6rf4UJlmHlC9b5BaNvzAcFv7HZ2QHaV0D4/HNlBdvFnvQq8RI4kYdhyPCl7Xj+oWvTWQ8ujhqS53LIgAe6KQ==}
@@ -4492,6 +4498,8 @@ snapshots:
   '@formatjs/intl-localematcher@0.5.4':
     dependencies:
       tslib: 2.7.0
+
+  '@gullerya/object-observer@6.1.3': {}
 
   '@hapi/hoek@9.3.0': {}
 

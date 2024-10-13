@@ -1,6 +1,6 @@
 import { getCorePlugins } from "@core/plugins";
 import { readFile, removeFile, writeFile } from "@lib/api/native/fs";
-import { awaitStorage, createStorage, getPreloadedStorage, preloadStorageIfExists, updateStorageAsync } from "@lib/api/storage/new";
+import { awaitStorage, createStorage, getPreloadedStorage, preloadStorageIfExists, updateStorage } from "@lib/api/storage";
 import { safeFetch } from "@lib/utils";
 import { OFFICIAL_PLUGINS_REPO_URL } from "@lib/utils/constants";
 import { semver } from "@metro/common";
@@ -97,7 +97,7 @@ export async function updateAndWritePlugin(repoUrl: string, id: string, fetchScr
         await writeFile(manifest.jsPath, js);
     }
 
-    await updateStorageAsync(`plugins/manifests/${id}.json`, manifest);
+    await updateStorage(`plugins/manifests/${id}.json`, manifest);
 
     if (registeredPlugins.has(id)) {
         const existingManifest = registeredPlugins.get(id)!;

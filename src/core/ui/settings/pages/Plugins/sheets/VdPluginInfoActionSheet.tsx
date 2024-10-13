@@ -1,7 +1,7 @@
 import { formatString, Strings } from "@core/i18n";
 import { VdPluginManager } from "@core/vendetta/plugins";
 import { findAssetId } from "@lib/api/assets";
-import { purgeStorage } from "@lib/api/storage";
+import { purgeStorage } from "@core/vendetta/storage";
 import { clipboard } from "@metro/common";
 import { ActionSheet, ActionSheetRow, Button, TableRow, Text } from "@metro/common/components";
 import { showConfirmationAlert } from "@core/vendetta/alerts";

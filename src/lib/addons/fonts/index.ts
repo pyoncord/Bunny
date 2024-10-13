@@ -1,5 +1,5 @@
 import { clearFolder, downloadFile, fileExists, removeFile, writeFile } from "@lib/api/native/fs";
-import { awaitStorage, createMMKVBackend, createStorage, wrapSync } from "@lib/api/storage";
+import { awaitStorage, createMMKVBackend, createStorage, wrapSync } from "@core/vendetta/storage";
 import { safeFetch } from "@lib/utils";
 
 type FontMap = Record<string, string>;

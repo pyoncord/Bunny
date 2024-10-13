@@ -1,6 +1,6 @@
 import { formatString, Strings } from "@core/i18n";
 import { findAssetId } from "@lib/api/assets";
-import { createProxy, useProxy } from "@lib/api/storage";
+import { createProxy, useProxy } from "@core/vendetta/storage";
 import { FontDefinition, fonts, removeFont, saveFont, validateFont } from "@lib/addons/fonts";
 import { getCurrentTheme } from "@lib/addons/themes";
 import { safeFetch } from "@lib/utils";

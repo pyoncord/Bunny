@@ -1,4 +1,4 @@
-import { createStorage } from "@lib/api/storage";
+import { createStorage } from "@core/vendetta/storage";
 import { Logger } from "@lib/utils/logger";
 import { Author } from "../types";
 

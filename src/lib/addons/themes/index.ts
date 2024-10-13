@@ -5,7 +5,7 @@
 import { getStoredTheme, getThemeFilePath } from "@lib/api/native/loader";
 import { ThemeManager } from "@lib/api/native/modules";
 import { after, before, instead } from "@lib/api/patcher";
-import { awaitStorage, createFileBackend, createMMKVBackend, createStorage, wrapSync } from "@lib/api/storage";
+import { awaitStorage, createFileBackend, createMMKVBackend, createStorage, wrapSync } from "@core/vendetta/storage";
 import { findInReactTree, safeFetch } from "@lib/utils";
 import { lazyDestructure, proxyLazy } from "@lib/utils/lazy";
 import { byMutableProp } from "@metro/filters";

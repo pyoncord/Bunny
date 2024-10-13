@@ -5,7 +5,7 @@ import { findAssetId } from "@lib/api/assets";
 import { connectToDebugger } from "@lib/api/debug";
 import { getReactDevToolsProp, getReactDevToolsVersion, isLoaderConfigSupported, isReactDevToolsPreloaded, isVendettaLoader } from "@lib/api/native/loader";
 import { loaderConfig, settings } from "@lib/api/settings";
-import { useProxy } from "@lib/api/storage";
+import { useProxy } from "@core/vendetta/storage";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { NavigationNative } from "@metro/common";
 import { Button, LegacyFormText, Stack, TableRow, TableRowGroup, TableSwitchRow, TextInput } from "@metro/common/components";

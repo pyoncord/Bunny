@@ -4,8 +4,8 @@ import PluginCard from "@core/ui/settings/pages/Plugins/components/PluginCard";
 import { VdPluginManager } from "@core/vendetta/plugins";
 import { findAssetId } from "@lib/api/assets";
 import { settings } from "@lib/api/settings";
-import { useProxy } from "@lib/api/storage";
-import { useProxy as useNewProxy } from "@lib/api/storage/new";
+import { useProxy } from "@core/vendetta/storage";
+import { useObservable } from "@lib/api/storage";
 import { showToast } from "@lib/ui/toasts";
 import { BUNNY_PROXY_PREFIX, VD_PROXY_PREFIX } from "@lib/utils/constants";
 import { lazyDestructure } from "@lib/utils/lazy";
@@ -33,7 +33,7 @@ export interface UnifiedPluginModel {
     id: string;
     name: string;
     description?: string;
-    authors?: Author;
+    authors?: Author[];
     icon?: string;
 
     isEnabled(): boolean;
@@ -81,7 +81,7 @@ export default function Plugins() {
     return <PluginPage
         useItems={() => {
             useProxy(VdPluginManager.plugins);
-            useNewProxy(pluginSettings);
+            useObservable([pluginSettings]);
 
             const vdPlugins = Object.values(VdPluginManager.plugins).map(unifyVdPlugin);
             const bnPlugins = [...registeredPlugins.values()].filter(p => isPluginInstalled(p.id) && !isCorePlugin(p.id)).map(unifyBunnyPlugin);

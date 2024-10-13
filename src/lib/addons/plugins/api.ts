@@ -1,6 +1,6 @@
 import { patcher } from "@lib/api";
 import { registerCommand } from "@lib/api/commands";
-import { createStorage } from "@lib/api/storage/new";
+import { createStorage } from "@lib/api/storage";
 import { logger } from "@lib/utils/logger";
 
 import { registeredPlugins } from ".";
@@ -39,7 +39,7 @@ export function createBunnyPluginAPI(id: string) {
         },
         // Added something in here? Make sure to also update BunnyPluginProperty in ./types
         plugin: {
-            createStorage: () => createStorage(`plugins/storage/${id}.json`),
+            createStorage: <T extends object = any>() => createStorage<T>(`plugins/storage/${id}.json`),
             manifest: registeredPlugins.get(id),
             logger
         }

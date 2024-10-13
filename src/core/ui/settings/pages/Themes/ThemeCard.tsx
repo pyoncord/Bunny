@@ -2,7 +2,7 @@ import { formatString, Strings } from "@core/i18n";
 import AddonCard, { CardWrapper } from "@core/ui/components/AddonCard";
 import { findAssetId } from "@lib/api/assets";
 import { settings } from "@lib/api/settings";
-import { useProxy } from "@lib/api/storage";
+import { useProxy } from "@core/vendetta/storage";
 import { applyTheme, fetchTheme, removeTheme, selectTheme, Theme, themes } from "@lib/addons/themes";
 import { clipboard } from "@metro/common";
 import { showConfirmationAlert } from "@core/vendetta/alerts";

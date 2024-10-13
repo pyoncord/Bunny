@@ -2,7 +2,7 @@ import { Strings } from "@core/i18n";
 import { CardWrapper } from "@core/ui/components/AddonCard";
 import { findAssetId } from "@lib/api/assets";
 import { BundleUpdaterManager } from "@lib/api/native/modules";
-import { useProxy } from "@lib/api/storage";
+import { useProxy } from "@core/vendetta/storage";
 import { FontDefinition, fonts, selectFont } from "@lib/addons/fonts";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { findByProps } from "@metro";

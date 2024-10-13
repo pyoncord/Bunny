@@ -1,8 +1,8 @@
-import { useProxy } from "@lib/api/storage/new";
 import { disablePlugin, enablePlugin, getId, getPluginSettingsComponent, isPluginEnabled, pluginSettings } from "@lib/addons/plugins";
 import { BunnyPluginManifest } from "@lib/addons/plugins/types";
 
 import { UnifiedPluginModel } from "..";
+import { useObservable } from "@lib/api/storage";
 
 export default function unifyBunnyPlugin(manifest: BunnyPluginManifest): UnifiedPluginModel {
     return {
@@ -13,7 +13,7 @@ export default function unifyBunnyPlugin(manifest: BunnyPluginManifest): Unified
         isEnabled: () => isPluginEnabled(getId(manifest)),
         isInstalled: () => manifest.id in pluginSettings,
         usePluginState() {
-            useProxy(pluginSettings);
+            useObservable([pluginSettings]);
         },
         toggle(start: boolean) {
             start

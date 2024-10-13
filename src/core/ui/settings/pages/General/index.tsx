@@ -4,7 +4,7 @@ import About from "@core/ui/settings/pages/General/About";
 import { findAssetId } from "@lib/api/assets";
 import { getDebugInfo, toggleSafeMode } from "@lib/api/debug";
 import { settings } from "@lib/api/settings";
-import { useProxy } from "@lib/api/storage";
+import { useProxy } from "@core/vendetta/storage";
 import { DISCORD_SERVER, GITHUB } from "@lib/utils/constants";
 import { NavigationNative, url } from "@metro/common";
 import { Stack, TableRow, TableRowGroup, TableSwitchRow } from "@metro/common/components";
