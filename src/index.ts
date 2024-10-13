@@ -6,7 +6,7 @@ import { VdPluginManager } from "@core/vendetta/plugins";
 import { patchCommands } from "@lib/api/commands";
 import { patchLogHook } from "@lib/api/debug";
 import { injectFluxInterceptor } from "@lib/api/flux";
-import { patchJSX } from "@lib/api/jsx";
+import { patchJsx } from "@lib/api/react/jsx";
 import { removeFile, writeFile } from "@lib/api/native/fs";
 import { isPyonLoader, isThemeSupported } from "@lib/api/native/loader";
 import { FileManager } from "@lib/api/native/modules";
@@ -43,7 +43,7 @@ export default async () => {
         patchLogHook(),
         patchCommands(),
         patchChatBackground(),
-        patchJSX(),
+        patchJsx(),
         initVendettaObject(),
         initFetchI18nStrings(),
         initSettings(),

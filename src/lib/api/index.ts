@@ -6,3 +6,4 @@ export * as native from "./native";
 export * as patcher from "./patcher";
 export * as settings from "./settings";
 export * as storage from "./storage";
+export * as react from "./react";

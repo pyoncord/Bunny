@@ -1,4 +1,4 @@
-import { addJSXCallback } from "@lib/api/jsx";
+import { onJsxCreate } from "@lib/api/react/jsx";
 import { after } from "@lib/api/patcher";
 import { findByName } from "@metro";
 import { useEffect, useState } from "react";
@@ -24,7 +24,7 @@ export default defineCorePlugin({
         const propHolder = {} as Record<string, any>;
         const badgeCache = {} as Record<string, BunnyBadge[]>;
 
-        addJSXCallback("RenderedBadge", (_, ret) => {
+        onJsxCreate("RenderedBadge", (_, ret) => {
             if (ret.props.id.match(/bunny-\d+-\d+/)) {
                 Object.assign(ret.props, propHolder[ret.props.id]);
             }
