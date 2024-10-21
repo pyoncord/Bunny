@@ -9,6 +9,19 @@ import chroma from "chroma-js";
 const tokenReference = findByProps("SemanticColor");
 const isThemeModule = createLazyModule(byMutableProp("isThemeDark"));
 
+const SEMANTIC_FALLBACK_MAP: Record<string, string> = {
+    "BG_BACKDROP": "BACKGROUND_FLOATING",
+    "BG_BASE_PRIMARY": "BACKGROUND_PRIMARY",
+    "BG_BASE_SECONDARY": "BACKGROUND_SECONDARY",
+    "BG_BASE_TERTIARY": "BACKGROUND_SECONDARY_ALT",
+    "BG_MOD_FAINT": "BACKGROUND_MODIFIER_ACCENT",
+    "BG_MOD_STRONG": "BACKGROUND_MODIFIER_ACCENT",
+    "BG_MOD_SUBTLE": "BACKGROUND_MODIFIER_ACCENT",
+    "BG_SURFACE_OVERLAY": "BACKGROUND_FLOATING",
+    "BG_SURFACE_OVERLAY_TMP": "BACKGROUND_FLOATING",
+    "BG_SURFACE_RAISED": "BACKGROUND_MOBILE_PRIMARY"
+};
+
 export default function patchDefinitionAndResolver() {
     const callback = ([theme]: any[]) => theme === _colorRef.key ? [_colorRef.current!.reference] : void 0;
 
@@ -35,7 +48,11 @@ export default function patchDefinitionAndResolver() {
 
             const [name, colorDef] = extractInfo(_colorRef.current!.reference, args[1]);
 
-            const semanticDef = _colorRef.current.semantic[name];
+            let semanticDef = _colorRef.current.semantic[name];
+            if (!semanticDef && _colorRef.current?.spec === 2 && name in SEMANTIC_FALLBACK_MAP) {
+                semanticDef = _colorRef.current.semantic[SEMANTIC_FALLBACK_MAP[name]];
+            }
+
             if (semanticDef?.value) {
                 return chroma(semanticDef.value).alpha(semanticDef.opacity).hex();
             }

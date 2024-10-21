@@ -47,6 +47,7 @@ export function parseColorManifest(manifest: ColorManifest): InternalColorDefini
         }
 
         return {
+            spec: 3,
             reference: resolveType(manifest.type),
             semantic: semanticColorDefinitions,
             raw: manifest.raw ?? {},
@@ -83,6 +84,7 @@ export function parseColorManifest(manifest: ColorManifest): InternalColorDefini
 
 
         return {
+            spec: 2,
             reference: resolveType(),
             semantic: semanticDefinitions,
             raw: manifest.rawColors ?? {},
