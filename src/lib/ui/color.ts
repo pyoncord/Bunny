@@ -1,6 +1,5 @@
-import { color } from "@lib/addons/themes";
 import { constants } from "@metro/common";
-import { findByStoreNameLazy } from "@metro/wrappers";
+import { findByProps, findByStoreNameLazy } from "@metro/wrappers";
 
 //! This module is only found on 165.0+, under the assumption that iOS 165.0 is the same as Android 165.0.
 //* In 167.1, most if not all traces of the old color modules were removed.
@@ -9,6 +8,8 @@ import { findByStoreNameLazy } from "@metro/wrappers";
 // ? To stop duplication, it is now exported in our theming code.
 // ? These comments are preserved for historical purposes.
 // const colorModule = findByPropsProxy("colors", "meta");
+
+const color = findByProps("SemanticColor");
 
 // ? SemanticColor and default.colors are effectively ThemeColorMap
 export const semanticColors = (color?.default?.colors ?? constants?.ThemeColorMap) as Record<string, any>;

@@ -2,22 +2,21 @@ import { formatString, Strings } from "@core/i18n";
 import AddonCard, { CardWrapper } from "@core/ui/components/AddonCard";
 import { showConfirmationAlert } from "@core/vendetta/alerts";
 import { useProxy } from "@core/vendetta/storage";
-import { applyTheme, fetchTheme, removeTheme, selectTheme, Theme, themes } from "@lib/addons/themes";
+import { fetchTheme, removeTheme, selectTheme, themes, VdThemeInfo } from "@lib/addons/themes";
 import { findAssetId } from "@lib/api/assets";
 import { settings } from "@lib/api/settings";
 import { clipboard } from "@metro/common";
 import { showToast } from "@ui/toasts";
 
-function selectAndApply(value: boolean, theme: Theme) {
+function selectAndApply(value: boolean, theme: VdThemeInfo) {
     try {
         selectTheme(value ? theme : null);
-        applyTheme(value ? theme : null);
     } catch (e: any) {
         console.error("Error while selectAndApply,", e);
     }
 }
 
-export default function ThemeCard({ item: theme }: CardWrapper<Theme>) {
+export default function ThemeCard({ item: theme }: CardWrapper<VdThemeInfo>) {
     useProxy(theme);
 
     const [removed, setRemoved] = React.useState(false);

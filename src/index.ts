@@ -6,7 +6,7 @@ import { initVendettaObject } from "@core/vendetta/api";
 import { VdPluginManager } from "@core/vendetta/plugins";
 import { updateFonts } from "@lib/addons/fonts";
 import { initPlugins, updatePlugins } from "@lib/addons/plugins";
-import { initThemes, patchChatBackground } from "@lib/addons/themes";
+import { initThemes } from "@lib/addons/themes";
 import { patchCommands } from "@lib/api/commands";
 import { patchLogHook } from "@lib/api/debug";
 import { injectFluxInterceptor } from "@lib/api/flux";
@@ -40,7 +40,6 @@ export default async () => {
         patchSettings(),
         patchLogHook(),
         patchCommands(),
-        patchChatBackground(),
         patchJsx(),
         initVendettaObject(),
         initFetchI18nStrings(),
