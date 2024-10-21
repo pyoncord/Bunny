@@ -1,10 +1,12 @@
 import { awaitStorage, createFileBackend, createMMKVBackend, createStorage, wrapSync } from "@core/vendetta/storage";
-import { getStoredTheme, getThemeFilePath } from "@lib/api/native/loader";
+import { writeFile } from "@lib/api/native/fs";
+import { getStoredTheme, getThemeFilePath, isPyonLoader, isThemeSupported } from "@lib/api/native/loader";
 import { safeFetch } from "@lib/utils";
 import { Platform } from "react-native";
 
 import initColors from "./colors";
 import { applyAndroidAlphaKeys, normalizeToHex } from "./colors/parser";
+import { colorsPref } from "./colors/preferences";
 import { VendettaThemeManifest } from "./colors/types";
 import { updateBunnyColor } from "./colors/updater";
 
@@ -123,9 +125,21 @@ export function getThemeFromLoader(): VdThemeInfo | null {
 /**
  * @internal
  */
-export function initThemes() {
-    const currentTheme = getThemeFromLoader();
-    initColors(currentTheme?.data ?? null);
+export async function initThemes() {
+    if (!isThemeSupported()) return;
 
-    updateThemes().catch(e => console.error("Failed to update themes", e));
+    try {
+        if (isPyonLoader()) {
+            writeFile("../vendetta_theme.json", "null");
+        }
+
+        await awaitStorage(colorsPref);
+
+        const currentTheme = getThemeFromLoader();
+        initColors(currentTheme?.data ?? null);
+
+        updateThemes().catch(e => console.error("Failed to update themes", e));
+    } catch (e) {
+        console.error("Failed to initialize themes", e);
+    }
 }

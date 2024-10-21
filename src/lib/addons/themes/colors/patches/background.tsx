@@ -1,5 +1,7 @@
+import { colorsPref } from "@lib/addons/themes/colors/preferences";
 import { _colorRef } from "@lib/addons/themes/colors/updater";
 import { after } from "@lib/api/patcher";
+import { useObservable } from "@lib/api/storage";
 import { findInReactTree } from "@lib/utils";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { findByNameLazy, findByProps } from "@metro";
@@ -12,11 +14,8 @@ const { MessagesWrapper } = lazyDestructure(() => findByProps("MessagesWrapper")
 export default function patchChatBackground() {
     const patches = [
         after("default", MessagesWrapperConnected, (_, ret) => {
-            // TODO: support custom preferences
-            // useObservable([ColorManager.preferences]);
-            // if (!_colorRef.current || ColorManager.preferences.customBackground === "hidden") return ret;
-
-            if (!_colorRef.current || !_colorRef.current.background?.url) return ret;
+            useObservable([colorsPref]);
+            if (!_colorRef.current || !_colorRef.current.background?.url || colorsPref.customBackground === "hidden") return ret;
 
             return <ImageBackground
                 style={{ flex: 1, height: "100%" }}
@@ -25,8 +24,7 @@ export default function patchChatBackground() {
             >
                 {ret}
             </ImageBackground>;
-        }
-        ),
+        }),
         after("render", MessagesWrapper.prototype, (_, ret) => {
             if (!_colorRef.current || !_colorRef.current.background?.url) return;
             const messagesComponent = findInReactTree(

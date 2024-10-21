@@ -142,7 +142,8 @@ export function wrapSync<T extends Promise<any>>(store: T): Awaited<T> {
 
 export function awaitStorage(...stores: any[]) {
     return Promise.all(
-        stores.map(store => new Promise<void>(res => store[syncAwaitSymbol](res)))
+        stores.map(store =>
+            new Promise<void>(res => store[syncAwaitSymbol](res)))
     );
 }
 
@@ -150,11 +151,14 @@ export interface StorageBackend {
     get: () => unknown | Promise<unknown>;
     set: (data: unknown) => void | Promise<void>;
 }
+
 const ILLEGAL_CHARS_REGEX = /[<>:"/\\|?*]/g;
+
 const filePathFixer = (file: string): string => Platform.select({
     default: file,
     ios: FileManager.saveFileToGallery ? file : `Documents/${file}`,
 });
+
 const getMMKVPath = (name: string): string => {
     if (ILLEGAL_CHARS_REGEX.test(name)) {
         // Replace forbidden characters with hyphens

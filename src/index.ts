@@ -10,32 +10,16 @@ import { initThemes } from "@lib/addons/themes";
 import { patchCommands } from "@lib/api/commands";
 import { patchLogHook } from "@lib/api/debug";
 import { injectFluxInterceptor } from "@lib/api/flux";
-import { writeFile } from "@lib/api/native/fs";
-import { isPyonLoader, isThemeSupported } from "@lib/api/native/loader";
 import { patchJsx } from "@lib/api/react/jsx";
 import { logger } from "@lib/utils/logger";
 import { patchSettings } from "@ui/settings";
 
 import * as lib from "./lib";
 
-function maybeLoadThemes() {
-    if (!isThemeSupported()) return;
-
-    try {
-        if (isPyonLoader()) {
-            writeFile("../vendetta_theme.json", "null");
-        }
-        initThemes();
-    } catch (e) {
-        console.error("Failed to initialize themes", e);
-    }
-}
-
 export default async () => {
-    maybeLoadThemes();
-
     // Load everything in parallel
     await Promise.all([
+        initThemes(),
         injectFluxInterceptor(),
         patchSettings(),
         patchLogHook(),

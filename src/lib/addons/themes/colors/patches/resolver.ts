@@ -49,7 +49,7 @@ export default function patchDefinitionAndResolver() {
             const [name, colorDef] = extractInfo(_colorRef.current!.reference, args[1]);
 
             let semanticDef = _colorRef.current.semantic[name];
-            if (!semanticDef && _colorRef.current?.spec === 2 && name in SEMANTIC_FALLBACK_MAP) {
+            if (!semanticDef && _colorRef.current.spec === 2 && name in SEMANTIC_FALLBACK_MAP) {
                 semanticDef = _colorRef.current.semantic[SEMANTIC_FALLBACK_MAP[name]];
             }
 

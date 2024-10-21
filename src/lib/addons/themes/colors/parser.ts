@@ -3,12 +3,13 @@ import chroma from "chroma-js";
 import { omit } from "es-toolkit";
 import { Platform, processColor } from "react-native";
 
+import { colorsPref } from "./preferences";
 import { ColorManifest, InternalColorDefinition } from "./types";
 
 const tokenRef = findByProps("SemanticColor");
 
 export function parseColorManifest(manifest: ColorManifest): InternalColorDefinition {
-    const resolveType = (type = "dark") => /* (ColorManager.preferences.type ?? type) */ type === "dark" ? "darker" : "light";
+    const resolveType = (type = "dark") => (colorsPref.type ?? type) === "dark" ? "darker" : "light";
 
     if (manifest.spec === 3) {
         const semanticColorDefinitions: InternalColorDefinition["semantic"] = {};
