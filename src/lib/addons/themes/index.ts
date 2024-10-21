@@ -1,6 +1,7 @@
 import { awaitStorage, createFileBackend, createMMKVBackend, createStorage, wrapSync } from "@core/vendetta/storage";
 import { writeFile } from "@lib/api/native/fs";
 import { getStoredTheme, getThemeFilePath, isPyonLoader, isThemeSupported } from "@lib/api/native/loader";
+import { awaitStorage as newAwaitStorage } from "@lib/api/storage";
 import { safeFetch } from "@lib/utils";
 import { Platform } from "react-native";
 
@@ -133,7 +134,7 @@ export async function initThemes() {
             writeFile("../vendetta_theme.json", "null");
         }
 
-        await awaitStorage(colorsPref);
+        await newAwaitStorage(colorsPref);
 
         const currentTheme = getThemeFromLoader();
         initColors(currentTheme?.data ?? null);
