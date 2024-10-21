@@ -1,3 +1,4 @@
+import patchErrorBoundary from "@core/debug/patches/patchErrorBoundary";
 import initFixes from "@core/fixes";
 import { initFetchI18nStrings } from "@core/i18n";
 import initSettings from "@core/ui/settings";
@@ -13,7 +14,6 @@ import { writeFile } from "@lib/api/native/fs";
 import { isPyonLoader, isThemeSupported } from "@lib/api/native/loader";
 import { patchJsx } from "@lib/api/react/jsx";
 import { logger } from "@lib/utils/logger";
-import initSafeMode from "@ui/safeMode";
 import { patchSettings } from "@ui/settings";
 
 import * as lib from "./lib";
@@ -46,7 +46,7 @@ export default async () => {
         initFetchI18nStrings(),
         initSettings(),
         initFixes(),
-        initSafeMode(),
+        patchErrorBoundary(),
         updatePlugins()
     ]).then(
         // Push them all to unloader
