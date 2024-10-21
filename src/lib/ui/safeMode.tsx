@@ -13,8 +13,6 @@ import { Codeblock, ErrorBoundary as _ErrorBoundary } from "@ui/components";
 import { createThemedStyleSheet, TextStyleSheet } from "@ui/styles";
 import { Text, View } from "react-native";
 
-const ErrorBoundary = findByNameLazy("ErrorBoundary");
-
 // Let's just pray they have this.
 const { BadgableTabBar } = lazyDestructure(() => findByProps("BadgableTabBar"));
 
