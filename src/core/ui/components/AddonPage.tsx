@@ -1,28 +1,28 @@
 import { CardWrapper } from "@core/ui/components/AddonCard";
-import { useProxy } from "@core/vendetta/storage";
 import { findAssetId } from "@lib/api/assets";
 import { settings } from "@lib/api/settings";
-import AlertModal, { AlertActionButton } from "@lib/ui/components/wrappers/AlertModal";
+import { dismissAlert, openAlert } from "@lib/ui/alerts";
+import { showSheet } from "@lib/ui/sheets";
 import isValidHttpUrl from "@lib/utils/isValidHttpUrl";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { findByProps } from "@metro";
-import { clipboard } from "@metro/common";
-import { Button, FlashList, FloatingActionButton, HelpMessage, IconButton, Stack, Text, TextInput } from "@metro/common/components";
+import { clipboard, NavigationNative } from "@metro/common";
+import { AlertActionButton, AlertModal, Button, FlashList, FloatingActionButton, HelpMessage, IconButton, Stack, Text, TextInput } from "@metro/common/components";
 import { ErrorBoundary, Search } from "@ui/components";
+import { isNotNil } from "es-toolkit";
 import fuzzysort from "fuzzysort";
-import { ComponentType, ReactNode, useCallback, useMemo } from "react";
+import { ComponentType, ReactNode, useCallback, useEffect, useMemo } from "react";
 import { Image, ScrollView, View } from "react-native";
 
 const { showSimpleActionSheet, hideActionSheet } = lazyDestructure(() => findByProps("showSimpleActionSheet"));
-const { openAlert, dismissAlert } = lazyDestructure(() => findByProps("openAlert", "dismissAlert"));
 
-type SearchKeywords = Array<string | ((obj: any & {}) => string)>;
+type SearchKeywords<T> = Array<string | ((obj: T & {}) => string)>;
 
 interface AddonPageProps<T extends object, I = any> {
     title: string;
     items: I[];
-    searchKeywords: SearchKeywords;
-    sortOptions?: Record<string, (a: I, b: I) => number>;
+    searchKeywords: SearchKeywords<T>;
+    sortOptions?: Record<string, (a: T, b: T) => number>;
     resolveItem?: (value: I) => T | undefined;
     safeModeHint?: {
         message?: string;
@@ -34,6 +34,9 @@ interface AddonPageProps<T extends object, I = any> {
         fetchFn?: (url: string) => Promise<void>;
         onPress?: () => void;
     };
+
+    OptionsActionSheetComponent?: ComponentType<any>;
+
     CardComponent: ComponentType<CardWrapper<T>>;
     ListHeaderComponent?: ComponentType<any>;
     ListFooterComponent?: ComponentType<any>;
@@ -55,7 +58,7 @@ function InputAlert(props: { label: string, fetchFn: (url: string) => Promise<vo
 
     return <AlertModal
         title={props.label}
-        content="Enter the URL of the source you want to install from:"
+        content="Type in the source URL you want to install from:"
         extraContent={
             <Stack style={{ marginTop: -12 }}>
                 <TextInput
@@ -107,15 +110,27 @@ function InputAlert(props: { label: string, fetchFn: (url: string) => Promise<vo
 }
 
 export default function AddonPage<T extends object>({ CardComponent, ...props }: AddonPageProps<T>) {
-    useProxy(settings);
-
     const [search, setSearch] = React.useState("");
-    const [sortFn, setSortFn] = React.useState<((a: unknown, b: unknown) => number) | null>(() => null);
+    const [sortFn, setSortFn] = React.useState<((a: T, b: T) => number) | null>(() => null);
+    const navigation = NavigationNative.useNavigation();
+
+    useEffect(() => {
+        if (props.OptionsActionSheetComponent) {
+            navigation.setOptions({
+                headerRight: () => <IconButton
+                    size="sm"
+                    variant="secondary"
+                    icon={findAssetId("MoreHorizontalIcon")}
+                    onPress={() => showSheet("AddonMoreSheet", props.OptionsActionSheetComponent!)}
+                />
+            });
+        }
+    }, [navigation]);
 
     const results = useMemo(() => {
         let values = props.items;
-        if (props.resolveItem) values = values.map(props.resolveItem);
-        const items = values.filter(i => i && typeof i === "object");
+        if (props.resolveItem) values = values.map(props.resolveItem).filter(isNotNil);
+        const items = values.filter(i => isNotNil(i) && typeof i === "object");
         if (!search && sortFn) items.sort(sortFn);
 
         return fuzzysort.go(search, items, { keys: props.searchKeywords, all: true });
@@ -134,7 +149,7 @@ export default function AddonPage<T extends object>({ CardComponent, ...props }:
     if (results.length === 0 && !search) {
         return <View style={{ gap: 32, flexGrow: 1, justifyContent: "center", alignItems: "center" }}>
             <View style={{ gap: 8, alignItems: "center" }}>
-                <Image source={findAssetId("empty_quick_switcher")} />
+                <Image source={findAssetId("empty_quick_switcher")!} />
                 <Text variant="text-lg/semibold" color="text-normal">
                     Oops! Nothing to see here… yet!
                 </Text>
@@ -175,7 +190,7 @@ export default function AddonPage<T extends object>({ CardComponent, ...props }:
                     })}
                 />}
             </View>
-            {props.ListHeaderComponent && !search && <props.ListHeaderComponent />}
+            {props.ListHeaderComponent && <props.ListHeaderComponent />}
         </View>
     );
 
@@ -187,12 +202,12 @@ export default function AddonPage<T extends object>({ CardComponent, ...props }:
                 estimatedItemSize={136}
                 ListHeaderComponent={headerElement}
                 ListEmptyComponent={() => <View style={{ gap: 12, padding: 12, alignItems: "center" }}>
-                    <Image source={findAssetId("devices_not_found")} />
+                    <Image source={findAssetId("devices_not_found")!} />
                     <Text variant="text-lg/semibold" color="text-normal">
                         Hmmm... could not find that!
                     </Text>
                 </View>}
-                contentContainerStyle={{ padding: 8, paddingHorizontal: 12 }}
+                contentContainerStyle={{ padding: 8, paddingHorizontal: 12, paddingBottom: 90 }}
                 ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
                 ListFooterComponent={props.ListFooterComponent}
                 renderItem={({ item }: any) => <CardComponent item={item.obj} result={item} />}

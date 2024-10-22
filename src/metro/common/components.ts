@@ -12,7 +12,7 @@ const bySingularProp = createFilterDefinition<[string]>(
 );
 
 const findSingular = (prop: string) => proxyLazy(() => findExports(bySingularProp(prop))?.[prop]);
-const findProp = (prop: string) => proxyLazy(() => findByProps(prop)[prop]);
+const findProp = (...props: string[]) => proxyLazy(() => findByProps(...props)[props[0]]);
 
 // Discord
 export const LegacyAlert = findByDisplayNameLazy("FluxContainer(Alert)");
@@ -27,18 +27,22 @@ export const ActionSheetRow = findProp("ActionSheetRow");
 
 // Buttons
 export const Button = findSingular("Button") as t.Button;
-export const TwinButtons = findProp("TwinButtons");
+export const TwinButtons = findProp("TwinButtons") as t.TwinButtons;
 export const IconButton = findSingular("IconButton") as t.IconButton;
 export const RowButton = findProp("RowButton") as t.RowButton;
 
 export const PressableScale = findProp("PressableScale");
 
 // Tables
-export const TableRow = findProp("TableRow");
-export const TableRowIcon = findProp("TableRowIcon");
-export const TableRowTrailingText = findProp("TableRowTrailingText");
-export const TableRowGroup = findProp("TableRowGroup");
-export const TableSwitchRow = findProp("TableSwitchRow");
+export const TableRow = findProp("TableRow") as t.TableRow;
+export const TableRowIcon = findProp("TableRowIcon") as t.TableRowIcon;
+export const TableRowTrailingText = findProp("TableRowTrailingText") as t.TableRowTrailingText;
+export const TableRowGroup = findProp("TableRowGroup") as t.TableRowGroup;
+export const TableRadioGroup = findProp("TableRadioGroup") as t.TableRadioGroup;
+export const TableRadioRow = findProp("TableRadioRow") as t.TableRadioRow;
+export const TableSwitchRow = findProp("TableSwitchRow") as t.TableSwitchRow;
+export const TableCheckboxRow = findProp("TableCheckboxRow") as t.TableCheckboxRow;
+
 export const TableSwitch = findSingular("FormSwitch");
 export const TableRadio = findSingular("FormRadio");
 export const TableCheckbox = findSingular("FormCheckbox");
@@ -51,11 +55,22 @@ export const FormCheckbox = findSingular("FormCheckbox");
 export const Card = findProp("Card");
 export const RedesignCompat = proxyLazy(() => findByProps("RedesignCompat").RedesignCompat);
 
+// Alert
+export const AlertModal = findProp("AlertModal");
+export const AlertActionButton = findProp("AlertActionButton");
+export const AlertActions = findProp("AlertActions");
+
+// Pile
+export const AvatarPile = findSingular("AvatarPile");
+
 // Misc.
 export const Stack = findProp("Stack") as t.Stack;
+export const Avatar = findProp("default", "AvatarSizes", "getStatusSize");
+
 
 // Inputs
 export const TextInput = findSingular("TextInput") as t.TextInput;
+export const TextArea = findSingular("TextArea");
 
 // SegmentedControl
 export const SegmentedControl = findProp("SegmentedControl") as t.SegmentedControl;
