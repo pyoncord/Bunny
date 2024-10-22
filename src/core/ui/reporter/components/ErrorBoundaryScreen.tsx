@@ -14,7 +14,7 @@ import ErrorStackCard from "./ErrorStackCard";
 const useStyles = createStyles({
     container: {
         flex: 1,
-        backgroundColor: tokens.colors.BACKGROUND_PRIMARY,
+        backgroundColor: tokens.colors.BG_BASE_SECONDARY,
         paddingHorizontal: 16,
         height: "100%",
         padding: 8,
