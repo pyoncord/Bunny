@@ -215,8 +215,8 @@ export async function deleteRepository(repoUrl: string) {
 export async function enablePlugin(id: string, start: boolean) {
     assert(isPluginInstalled(id), id, "enable a non-installed plugin");
 
-    pluginSettings[id]!!.enabled = true;
     if (start) await startPlugin(id);
+    pluginSettings[id]!.enabled = true;
 }
 
 /**
@@ -227,7 +227,7 @@ export function disablePlugin(id: string) {
     assert(isPluginInstalled(id), id, "disable a non-installed plugin");
 
     pluginInstances.has(id) && stopPlugin(id);
-    pluginSettings[id]!!.enabled = false;
+    pluginSettings[id]!.enabled = false;
 }
 
 /**
@@ -270,13 +270,12 @@ export async function uninstallPlugin(id: string) {
  * Starts a registered, installed, enabled and unstarted plugin. Otherwise, would throw.
  * @param id The enabled plugin ID
  */
-export async function startPlugin(id: string) {
+export async function startPlugin(id: string, { throwIfDisabled = false } = {}) {
     const manifest = registeredPlugins.get(id);
 
-    // horror
     assert(manifest, id, "start a non-registered plugin");
     assert(isPluginInstalled(id), id, "start a non-installed plugin");
-    assert(pluginSettings[id]?.enabled, id, "start a disabled plugin");
+    assert(!throwIfDisabled || pluginSettings[id]?.enabled, id, "start a disabled plugin");
     assert(!pluginInstances.has(id), id, "start an already started plugin");
 
     await preloadStorageIfExists(`plugins/storage/${id}.json`);
@@ -321,6 +320,7 @@ export async function startPlugin(id: string) {
     // Stage three (of external plugins), start the plugin
     try {
         pluginInstance.start?.();
+        pluginSettings[id]!.enabled = true;
     } catch (error) {
         throw new Error("An error occured while starting the plugin", { cause: error });
         // TODO: stopPlugin? disablePlugin?
