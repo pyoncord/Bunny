@@ -1,4 +1,4 @@
-import { Theme } from "@lib/addons/themes";
+import { VdThemeInfo } from "@lib/addons/themes";
 
 // @ts-ignore
 const pyonLoaderIdentity = globalThis.__PYON_LOADER__;
@@ -124,7 +124,7 @@ export function isThemeSupported() {
     return false;
 }
 
-export function getStoredTheme(): Theme | null {
+export function getStoredTheme(): VdThemeInfo | null {
     if (isPyonLoader()) {
         return pyonLoaderIdentity.storedTheme;
     } else if (isVendettaLoader()) {

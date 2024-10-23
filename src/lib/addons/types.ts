@@ -1,13 +1,15 @@
 export type Author = { name: string, id?: `${bigint}`; };
 
 export interface BunnyManifest {
-    id: string;
-    display: {
-        name: string;
-        description?: string;
-        authors?: Author[];
+    readonly id: string;
+    readonly version: string;
+    readonly type: string;
+    readonly display: {
+        readonly name: string;
+        readonly description?: string;
+        readonly authors?: Author[];
     };
-    extras?: {
-        [key: string]: any;
+    readonly extras?: {
+        readonly [key: string]: any;
     };
 }

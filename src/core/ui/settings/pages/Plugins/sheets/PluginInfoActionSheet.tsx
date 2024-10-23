@@ -36,9 +36,9 @@ export default function PluginInfoActionSheet({ plugin, navigation }: PluginInfo
                 </View>
             </View>
             <View style={{ flexDirection: "row", justifyContent: "center", alignContent: "center" }}>
-                <Text variant="text-lg/medium">
+                {/* <Text variant="text-lg/medium">
                     Oops, you shouldn't see this!
-                </Text>
+                </Text> */}
             </View>
         </ScrollView>
     </ActionSheet>;

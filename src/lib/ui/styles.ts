@@ -1,7 +1,7 @@
 import { lazyDestructure, proxyLazy } from "@lib/utils/lazy";
 import { findByProps, findByPropsLazy } from "@metro/wrappers";
 import { isSemanticColor, resolveSemanticColor } from "@ui/color";
-import { DiscordTextStyles } from "@ui/types";
+import { TextStyles } from "@ui/types";
 import { ImageStyle, StyleSheet, TextStyle, ViewStyle } from "react-native";
 
 type NamedStyles<T> = { [P in keyof T]: ViewStyle | TextStyle | ImageStyle };
@@ -10,7 +10,7 @@ const Styles = findByPropsLazy("createStyles");
 
 export const { ThemeContext } = lazyDestructure(() => findByProps("ThemeContext"), { hint: "object" });
 export const { TextStyleSheet } = lazyDestructure(() => findByProps("TextStyleSheet")) as unknown as {
-    TextStyleSheet: Record<DiscordTextStyles, TextStyle>;
+    TextStyleSheet: Record<TextStyles, TextStyle>;
 };
 
 /**

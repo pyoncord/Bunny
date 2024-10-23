@@ -19,7 +19,7 @@ async function arrayFromAsync<T>(iterableOrArrayLike: AsyncIterable<T>): Promise
 }
 
 async function fetchManifest(repoURL: string, id: string) {
-    const url = new URL(`plugins/${id}/manifest.json`, repoURL);
+    const url = new URL(`builds/${id}/manifest.json`, repoURL);
     const data = await safeFetch(url).then(d => d.json());
 
     queryClient.setQueryData(["plugin-manifest-dist", { id }], data);
@@ -93,10 +93,10 @@ function PluginCard(props: { repoUrl: string, id: string, manifest: BunnyPluginM
                 <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
                     <View style={{ flexShrink: 1 }}>
                         <Text numberOfLines={1} variant="heading-lg/semibold">
-                            {plugin.name}
+                            {plugin.display.name}
                         </Text>
                         <Text variant="text-md/semibold" color="text-muted">
-                            by {plugin.authors.map(a => typeof a === "string" ? a : a.name).join(", ")}
+                            by {plugin.display.authors?.map(a => typeof a === "string" ? a : a.name).join(", ") ?? "Unknown"}
                         </Text>
                     </View>
                     <View>
@@ -104,7 +104,7 @@ function PluginCard(props: { repoUrl: string, id: string, manifest: BunnyPluginM
                     </View>
                 </View>
                 <Text variant="text-md/medium">
-                    {plugin.description}
+                    {plugin.display.description}
                 </Text>
             </Stack>}
         </Card>

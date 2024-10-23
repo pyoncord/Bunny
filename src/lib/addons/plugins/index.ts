@@ -25,8 +25,6 @@ export const apiObjects = new Map<string, ReturnType<typeof createBunnyPluginAPI
 export const pluginRepositories = createStorage<t.PluginRepoStorage>("plugins/repositories.json");
 export const pluginSettings = createStorage<t.PluginSettingsStorage>("plugins/settings.json");
 
-const manifestToId = new WeakMap<t.BunnyPluginManifest, string>();
-
 const _fetch = (repoUrl: string, path: string) => safeFetch(new URL(path, repoUrl), { cache: "no-store" });
 const fetchJS = (repoUrl: string, path: string) => _fetch(repoUrl, path).then(r => r.text());
 const fetchJSON = (repoUrl: string, path: string) => _fetch(repoUrl, path).then(r => r.json());
@@ -53,12 +51,6 @@ function isExternalPlugin(manifest: t.BunnyPluginManifest): manifest is t.BunnyP
 
 export function isCorePlugin(id: string) {
     return corePluginInstances.has(id);
-}
-
-export function getId<T extends t.BunnyPluginManifest>(manifest: T): string {
-    const id = manifestToId.get(manifest);
-    assert(id, manifest?.name ?? "unknown", "getting ID from an unregistered/invalid manifest");
-    return id;
 }
 
 export function getPluginSettingsComponent(id: string): React.ComponentType<any> | null {
@@ -126,7 +118,6 @@ export async function refreshPlugin(id: string, repoUrl?: string) {
 
     registeredPlugins.delete(id);
     registeredPlugins.set(id, manifest);
-    manifestToId.set(manifest, id);
 
     await startPlugin(id);
 }
@@ -186,7 +177,6 @@ export async function updateRepository(repoUrl: string) {
         }
 
         registeredPlugins.set(id, manifest);
-        manifestToId.set(manifest, id);
     }
 
     return updated;
@@ -382,7 +372,6 @@ export async function updatePlugins() {
         };
 
         registeredPlugins.set(id, instance.manifest);
-        manifestToId.set(instance.manifest, id);
         corePluginInstances.set(id, instance);
     }
 

@@ -1,5 +1,5 @@
 import { createStorage } from "@core/vendetta/storage";
-import { Author } from "@lib/addons/types";
+import { BunnyManifest } from "@lib/addons/types";
 import { Logger } from "@lib/utils/logger";
 
 export interface PluginRepo {
@@ -21,12 +21,8 @@ export interface PluginSettingsStorage {
     };
 }
 
-export interface BunnyPluginManifest {
-    readonly id: string;
-    readonly name: string;
-    readonly description: string;
-    readonly version: string;
-    readonly authors: Author[];
+export interface BunnyPluginManifest extends BunnyManifest {
+    readonly main: string;
 }
 
 export interface BunnyPluginManifestInternal extends BunnyPluginManifest {
