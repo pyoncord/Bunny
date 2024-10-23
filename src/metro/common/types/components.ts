@@ -25,6 +25,7 @@ interface ButtonProps {
     scaleAmountInPx?: number;
     icon?: ImageSourcePropType | ReactNode;
     style?: Style;
+    grow?: boolean;
 }
 
 export type Button = React.ForwardRefExoticComponent<ButtonProps>;

@@ -19,7 +19,10 @@ export interface VdThemeInfo {
 
 export const themes = wrapSync(createStorage<Record<string, VdThemeInfo>>(createMMKVBackend("VENDETTA_THEMES")));
 
-async function writeTheme(theme: VdThemeInfo | {}) {
+/**
+ * @internal
+ */
+export async function writeThemeToNative(theme: VdThemeInfo | {}) {
     if (typeof theme !== "object") throw new Error("Theme must be an object");
 
     // Save the current theme as current-theme.json. When supported by loader,
@@ -73,7 +76,7 @@ export async function fetchTheme(id: string, selected = false) {
     };
 
     if (selected) {
-        writeTheme(themes[id]);
+        writeThemeToNative(themes[id]);
         updateBunnyColor(themes[id].data, { update: true });
     }
 }
@@ -91,10 +94,10 @@ export function selectTheme(theme: VdThemeInfo | null, write = true) {
 
     if (theme == null && write) {
         updateBunnyColor(null, { update: true });
-        return writeTheme({});
+        return writeThemeToNative({});
     } else if (theme) {
         updateBunnyColor(theme.data, { update: true });
-        return writeTheme(theme);
+        return writeThemeToNative(theme);
     }
 }
 
