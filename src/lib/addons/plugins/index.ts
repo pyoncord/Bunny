@@ -1,6 +1,6 @@
 import { getCorePlugins } from "@core/plugins";
 import { readFile, removeFile, writeFile } from "@lib/api/native/fs";
-import { awaitStorage, createStorage, getPreloadedStorage, preloadStorageIfExists, updateStorage } from "@lib/api/storage";
+import { awaitStorage, createStorage, getPreloadedStorage, preloadStorageIfExists, purgeStorage, updateStorage } from "@lib/api/storage";
 import { safeFetch } from "@lib/utils";
 import { OFFICIAL_PLUGINS_REPO_URL } from "@lib/utils/constants";
 import { semver } from "@metro/common";
@@ -36,9 +36,10 @@ function assert<T>(condition: T, id: string, attempt: string): asserts condition
 /**
  * Checks if a version is newer than the other. However, this comes with an additional logic,
  * where if the version are equal, one with prerelease "tag" will be considered "newer"
+ * @internal
  * @returns Whether the version is newer
  */
-function newerThan(v1: string, v2: string) {
+export function isGreaterVersion(v1: string, v2: string) {
     if (semver.gt(v1, v2)) return true;
     const coerced = semver.coerce(v1);
     if (coerced == null) return false;
@@ -152,13 +153,13 @@ export async function updateRepository(repoUrl: string) {
     }
 
     await Promise.all(Object.keys(repo).map(async pluginId => {
-        if (!storedRepo || !storedRepo[pluginId] || repo[pluginId].alwaysFetch || newerThan(repo[pluginId].version, storedRepo[pluginId].version)) {
+        if (!storedRepo || !storedRepo[pluginId] || repo[pluginId].alwaysFetch || isGreaterVersion(repo[pluginId].version, storedRepo[pluginId].version)) {
             updated = true;
             pluginRepositories[repoUrl][pluginId] = repo[pluginId];
             await updateAndWritePlugin(repoUrl, pluginId, Boolean(storedRepo && pluginSettings[pluginId]));
         } else {
             const manifest = await preloadStorageIfExists(`plugins/manifests/${pluginId}.json`);
-            if (manifest === undefined) { // File does not exist, so do refetch and stuff
+            if (!manifest) { // File does not exist, so do refetch and stuff
                 await updateAndWritePlugin(repoUrl, pluginId, Boolean(storedRepo && pluginSettings[pluginId]));
             }
         }
@@ -172,7 +173,7 @@ export async function updateRepository(repoUrl: string) {
         const existing = registeredPlugins.get(id);
 
         // Skip if this version isn't any higher
-        if (existing && !newerThan(manifest.version, existing.version)) {
+        if (existing && !isGreaterVersion(manifest.version, existing.version)) {
             continue;
         }
 
@@ -200,11 +201,13 @@ export async function deleteRepository(repoUrl: string) {
         }
 
         // Deregister all plugins under this repository
+        promQueues.push(purgeStorage(`plugins/manifests/${id}.json`));
         registeredPlugins.delete(id);
     }
 
     delete pluginRepositories[repoUrl];
     await Promise.all(promQueues);
+    updateAllRepository();
 }
 
 /**
@@ -341,7 +344,7 @@ export function stopPlugin(id: string) {
     pluginInstances.delete(id);
 }
 
-async function updateAllRepository() {
+export async function updateAllRepository() {
     try {
         await updateRepository(OFFICIAL_PLUGINS_REPO_URL);
     } catch (error) {

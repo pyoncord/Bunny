@@ -2,14 +2,16 @@ import { createStorage } from "@core/vendetta/storage";
 import { BunnyManifest } from "@lib/addons/types";
 import { Logger } from "@lib/utils/logger";
 
-export interface PluginRepo {
-    [id: string]: {
-        version: string;
-
-        // For plugin developing convenience, plugins with this on will always get fetched
-        alwaysFetch?: boolean;
+export type PluginRepo = Record<string, {
+    version: string;
+    // For plugin developing convenience, plugins with this on will always get fetched
+    alwaysFetch?: boolean;
+}> & {
+    $meta: {
+        name: string;
+        description: string;
     };
-}
+};
 
 export interface PluginRepoStorage {
     [repoUrl: string]: PluginRepo;

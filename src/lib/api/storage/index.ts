@@ -169,10 +169,10 @@ export async function preloadStorageIfExists(path: string): Promise<boolean> {
     const backend = createFileBackend(path);
     if (await backend.exists()) {
         _loadedStorage[path] = await backend.get();
-        return false;
+        return true;
     }
 
-    return true;
+    return false;
 }
 
 export async function purgeStorage(path: string) {
