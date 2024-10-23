@@ -84,7 +84,7 @@ export function isPluginEnabled(id: string) {
  * @returns The newly fetched plugin manifest
  */
 export async function updateAndWritePlugin(repoUrl: string, id: string, fetchScript: boolean) {
-    const manifest: t.BunnyPluginManifestInternal = await fetchJSON(repoUrl, `plugins/${id}/manifest.json`);
+    const manifest: t.BunnyPluginManifestInternal = await fetchJSON(repoUrl, `builds/${id}/manifest.json`);
 
     // @ts-expect-error - Setting a readonly property
     manifest.parentRepository = repoUrl;
@@ -93,7 +93,7 @@ export async function updateAndWritePlugin(repoUrl: string, id: string, fetchScr
         // @ts-expect-error - Setting a readonly property
         manifest.jsPath = `plugins/scripts/${id}.js`;
 
-        const js: string = await fetchJS(repoUrl, `plugins/${id}/index.js`);
+        const js: string = await fetchJS(repoUrl, `builds/${id}/index.js`);
         await writeFile(manifest.jsPath, js);
     }
 
