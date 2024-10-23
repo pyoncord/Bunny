@@ -5,7 +5,7 @@ import { safeFetch } from "@lib/utils";
 import { OFFICIAL_PLUGINS_REPO_URL } from "@lib/utils/constants";
 import { semver } from "@metro/common";
 
-import { createBunnyPluginAPI } from "./api";
+import { createBunnyPluginApi } from "./api";
 import * as t from "./types";
 
 type PluginInstantiator = (
@@ -20,7 +20,7 @@ export const corePluginInstances = new Map<string, t.PluginInstanceInternal>();
 
 export const registeredPlugins = new Map<string, t.BunnyPluginManifest>();
 export const pluginInstances = new Map<string, t.PluginInstanceInternal>();
-export const apiObjects = new Map<string, ReturnType<typeof createBunnyPluginAPI>>();
+export const apiObjects = new Map<string, ReturnType<typeof createBunnyPluginApi>>();
 
 export const pluginRepositories = createStorage<t.PluginRepoStorage>("plugins/repositories.json");
 export const pluginSettings = createStorage<t.PluginSettingsStorage>("plugins/settings.json");
@@ -270,7 +270,7 @@ export async function uninstallPlugin(id: string) {
  * Starts a registered, installed, enabled and unstarted plugin. Otherwise, would throw.
  * @param id The enabled plugin ID
  */
-export async function startPlugin(id: string, { throwIfDisabled = false } = {}) {
+export async function startPlugin(id: string, { throwIfDisabled = false, disableWhenThrown = true } = {}) {
     const manifest = registeredPlugins.get(id);
 
     assert(manifest, id, "start a non-registered plugin");
@@ -297,7 +297,7 @@ export async function startPlugin(id: string, { throwIfDisabled = false } = {}) 
 
         // Stage two, load the plugin
         try {
-            const api = createBunnyPluginAPI(id);
+            const api = createBunnyPluginApi(id);
             pluginInstance = instantiator(api.object, p => {
                 return Object.assign(p, {
                     manifest
@@ -322,8 +322,8 @@ export async function startPlugin(id: string, { throwIfDisabled = false } = {}) 
         pluginInstance.start?.();
         pluginSettings[id]!.enabled = true;
     } catch (error) {
+        disableWhenThrown && disablePlugin(id);
         throw new Error("An error occured while starting the plugin", { cause: error });
-        // TODO: stopPlugin? disablePlugin?
     }
 }
 

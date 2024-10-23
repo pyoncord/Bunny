@@ -1,13 +1,15 @@
 import { installPlugin, isPluginInstalled, uninstallPlugin } from "@lib/addons/plugins";
 import { BunnyPluginManifest } from "@lib/addons/plugins/types";
 import { findAssetId } from "@lib/api/assets";
+import { showSheet } from "@lib/ui/sheets";
 import { showToast } from "@lib/ui/toasts";
 import { safeFetch } from "@lib/utils";
 import { OFFICIAL_PLUGINS_REPO_URL } from "@lib/utils/constants";
-import { Button, Card, FlashList, IconButton, Stack, Text } from "@metro/common/components";
+import { NavigationNative } from "@metro/common";
+import { ActionSheet, Button, Card, FlashList, IconButton, Stack, TableRow, TableRowGroup, Text } from "@metro/common/components";
 import { QueryClient, QueryClientProvider, useMutation, useQuery } from "@tanstack/react-query";
 import { chunk } from "es-toolkit";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { View } from "react-native";
 
 const queryClient = new QueryClient();
@@ -112,6 +114,51 @@ function PluginCard(props: { repoUrl: string, id: string, manifest: BunnyPluginM
 }
 
 function BrowserPage() {
+    const navigation = NavigationNative.useNavigation();
+    useEffect(() => {
+        navigation.setOptions({
+            title: "Plugin Browser",
+            headerRight: () => <IconButton
+                size="sm"
+                variant="secondary"
+                icon={findAssetId("PlusSmallIcon")}
+                onPress={() => {
+                    showSheet("plugin-browser-options", () => {
+                        return <ActionSheet>
+                            <TableRowGroup title="Repositories">
+                                <TableRow
+                                    label="Bunny Repository"
+                                    subLabel={OFFICIAL_PLUGINS_REPO_URL}
+                                    trailing={
+                                        <Stack direction="horizontal">
+                                            <IconButton
+                                                size="sm"
+                                                variant="secondary"
+                                                icon={findAssetId("LinkIcon")}
+                                                onPress={() => { }}
+                                            />
+                                            <IconButton
+                                                size="sm"
+                                                variant="destructive"
+                                                disabled={true}
+                                                icon={findAssetId("TrashIcon")}
+                                                onPress={() => { }}
+                                            />
+                                        </Stack>}
+                                />
+                                <TableRow
+                                    label="Add Repository..."
+                                    icon={<TableRow.Icon source={findAssetId("PlusMediumIcon")} />}
+                                    onPress={() => { }}
+                                />
+                            </TableRowGroup>
+                        </ActionSheet>;
+                    });
+                }}
+            />
+        });
+    }, [navigation]);
+
     const { data, error, isPending, refetch } = useQuery({
         queryKey: ["plugins-repo-fetch"],
         queryFn: () => arrayFromAsync(getManifests(OFFICIAL_PLUGINS_REPO_URL))

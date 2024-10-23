@@ -15,7 +15,7 @@ function shimDisposableFn<F extends DisposableFn>(unpatches: (() => void)[], f: 
     }) as F;
 }
 
-export function createBunnyPluginAPI(id: string) {
+export function createBunnyPluginApi(id: string) {
     const disposers = new Array<DisposableFn>;
 
     // proxying this would be a good idea
